@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "updated": "2026-07-17",
+  "apps": [
+    {
+      "id": "spotify",
+      "name": "Spotify",
+      "startUrl": "https://open.spotify.com/",
+      "profile": "spotify",
+      "navAllow": ["spotify.com", "spotifycdn.com", "scdn.co"],
+      "popupAllow": ["accounts.spotify.com"],
+      "notifications": false,
+      "audioPin": true
+    },
+    {
+      "id": "discord",
+      "name": "Discord",
+      "startUrl": "https://discord.com/app",
+      "profile": "discord",
+      "navAllow": ["discord.com", "discordapp.com", "discord.gg", "discordapp.net"],
+      "popupAllow": ["discord.com"],
+      "notifications": true,
+      "audioPin": false
+    },
+    {
+      "id": "youtube",
+      "name": "YouTube",
+      "startUrl": "https://www.youtube.com/",
+      "profile": "google",
+      "navAllow": ["youtube.com", "google.com", "googlevideo.com", "ytimg.com", "ggpht.com", "gstatic.com"],
+      "popupAllow": ["accounts.google.com"],
+      "notifications": true,
+      "audioPin": true
+    },
+    {
+      "id": "gmail",
+      "name": "Gmail",
+      "startUrl": "https://mail.google.com/",
+      "profile": "google",
+      "navAllow": ["google.com", "googleusercontent.com", "gstatic.com"],
+      "popupAllow": ["accounts.google.com"],
+      "notifications": true,
+      "audioPin": false
+    },
+    {
+      "id": "gcalendar",
+      "name": "Google Calendar",
+      "startUrl": "https://calendar.google.com/",
+      "profile": "google",
+      "navAllow": ["google.com", "googleusercontent.com", "gstatic.com"],
+      "popupAllow": ["accounts.google.com"],
+      "notifications": true,
+      "audioPin": false
+    },
+    {
+      "id": "gdrive",
+      "name": "Google Drive",
+      "startUrl": "https://drive.google.com/",
+      "profile": "google",
+      "navAllow": ["google.com", "googleusercontent.com", "gstatic.com"],
+      "popupAllow": ["accounts.google.com"],
+      "notifications": true,
+      "audioPin": false
+    },
+    {
+      "id": "gmaps",
+      "name": "Google Maps",
+      "startUrl": "https://www.google.com/maps",
+      "profile": "google",
+      "navAllow": ["google.com", "googleusercontent.com", "gstatic.com", "googleapis.com"],
+      "popupAllow": ["accounts.google.com"],
+      "notifications": false,
+      "audioPin": false
+    },
+    {
+      "id": "facebook",
+      "name": "Facebook",
+      "startUrl": "https://www.facebook.com/",
+      "profile": "meta",
+      "navAllow": ["facebook.com", "fbcdn.net", "fbsbx.com"],
+      "popupAllow": ["facebook.com"],
+      "notifications": true,
+      "audioPin": false
+    },
+    {
+      "id": "messenger",
+      "name": "Messenger",
+      "startUrl": "https://www.messenger.com/",
+      "profile": "meta",
+      "navAllow": ["messenger.com", "facebook.com", "fbcdn.net", "fbsbx.com"],
+      "popupAllow": ["facebook.com", "messenger.com"],
+      "notifications": true,
+      "audioPin": false
+    }
+  ]
+}

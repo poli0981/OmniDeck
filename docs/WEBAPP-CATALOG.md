@@ -1,0 +1,61 @@
+# OmniDeck — Web App Catalog
+
+The catalog is the single source of truth for which web apps OmniDeck can run and how each is sandboxed. It ships inside the app at `catalog/webapps.json` and is refreshed (at most daily) from this repository's raw URL — so **adding a web app is a pull request, not a release**.
+
+OmniDeck deliberately does **not** allow arbitrary user-added URLs in v1: the curated model is what makes per-app navigation allowlists, profile isolation, and SSO popup handling tractable and reviewable.
+
+## 1. Entry schema
+
+```json
+{
+  "id": "gmail",
+  "name": "Gmail",
+  "startUrl": "https://mail.google.com/",
+  "profile": "google",
+  "navAllow": ["google.com", "googleusercontent.com", "gstatic.com"],
+  "popupAllow": ["accounts.google.com"],
+  "notifications": true,
+  "audioPin": false
+}
+```
+
+| Field | Type | Meaning |
+|---|---|---|
+| `id` | string, unique, `[a-z0-9-]` | stable identifier; also the settings key |
+| `name` | string | display name |
+| `startUrl` | https URL | initial navigation target |
+| `profile` | string | cookie/profile group; entries sharing a value share sign-in. Reserved group: `google`. Anything else should be unique per app unless sharing is intentional |
+| `navAllow` | string[] | registrable-domain suffixes allowed for top-level navigation; anything else opens in the system default browser |
+| `popupAllow` | string[] | domains whose `window.open` popups open **in-app on the same profile** (SSO flows); all other popups go to the default browser |
+| `notifications` | bool | whether web notifications are bridged to Windows toasts (user can still disable per app) |
+| `audioPin` | bool | if true, the governor treats the app as pinned while it is playing audio |
+
+Top-level file fields: `schemaVersion` (int), `updated` (ISO date), `apps` (array). The app rejects any fetched catalog whose `schemaVersion` it does not understand or that fails validation, and keeps the bundled copy.
+
+## 2. Review rules for new entries (PR checklist)
+
+1. HTTPS `startUrl`; service must work in a desktop Chromium/Edge browser without extensions.
+2. `navAllow` is the *minimal* set of registrable domains the app genuinely needs — test sign-in, core flows, and asset domains; do not add ad/tracking domains just to silence the default-browser handoff.
+3. `popupAllow` contains only identity/SSO domains actually used by the sign-in flow.
+4. Isolated `profile` unless there is a concrete single-sign-on reason to share.
+5. `audioPin: true` only for apps whose primary function is audio/video playback.
+6. No services that primarily distribute illegal content, and nothing requiring DRM schemes known not to work in WebView2 (see ROADMAP risk register).
+7. State in the PR description which flows you manually tested inside OmniDeck (or a WebView2 sample) — sign-in, notifications, a core action.
+
+## 3. Initial catalog (v1)
+
+| id | profile | audioPin | Notes |
+|---|---|---|---|
+| spotify | spotify | yes | Web Player; requires DRM in the runtime — beta-gated on the P0 spike result |
+| discord | discord | no | no global PTT on web; host hotkey partial mitigation |
+| youtube | google | yes | |
+| gmail | google | no | |
+| gcalendar | google | no | |
+| gdrive | google | no | |
+| gmaps | google | no | replaces a native map mini-app entirely |
+| facebook | meta | no | |
+| messenger | meta | no | shares `meta` profile with Facebook for one sign-in |
+
+## 4. Known-good candidates for post-v1 PRs
+
+WhatsApp Web, Telegram Web, X, Reddit, Notion — all verified-working-in-Edge, low-controversy additions the community can contribute following §2.

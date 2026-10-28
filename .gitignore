@@ -1,0 +1,20 @@
+# Build
+bin/
+obj/
+*.user
+*.suo
+.vs/
+artifacts/
+publish/
+
+# Velopack output
+Releases/
+
+# Logs & local data (never commit runtime data)
+*.log
+logs/
+bugreport-*.zip
+
+# Tools
+.idea/
+*.DotSettings.user

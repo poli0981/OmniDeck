@@ -1,0 +1,35 @@
+name: Feature request
+description: Suggest an idea or a new web app catalog entry
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Type
+      options:
+        - New web app catalog entry
+        - Mini-app improvement
+        - New mini-app
+        - Shell / governor / other
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: >
+        For catalog entries, include the JSON object per docs/WEBAPP-CATALOG.md
+        and note which flows you tested (sign-in, notifications, a core action).
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
