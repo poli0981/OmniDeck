@@ -31,14 +31,18 @@ public sealed record OdVersionInfo(string Version, string? Commit)
         return new OdVersionInfo(version, commit);
     }
 
+    /// <summary>
+    /// Shown when an assembly carries no informational version, which never happens for
+    /// SDK-built OmniDeck assemblies.
+    /// </summary>
+    public static OdVersionInfo Unknown { get; } = new("unknown", Commit: null);
+
     /// <summary>Reads the informational version stamped on <paramref name="assembly"/>.</summary>
     public static OdVersionInfo FromAssembly(Assembly assembly)
     {
         ArgumentNullException.ThrowIfNull(assembly);
 
         var informational = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
-        return string.IsNullOrWhiteSpace(informational)
-            ? new OdVersionInfo(assembly.GetName().Version?.ToString() ?? "0.0.0", Commit: null)
-            : Parse(informational);
+        return string.IsNullOrWhiteSpace(informational) ? Unknown : Parse(informational);
     }
 }

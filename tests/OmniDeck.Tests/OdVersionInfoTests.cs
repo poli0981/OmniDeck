@@ -1,3 +1,5 @@
+using System.Reflection;
+using System.Reflection.Emit;
 using OmniDeck.Core;
 
 namespace OmniDeck.Tests;
@@ -56,5 +58,35 @@ public sealed class OdVersionInfoTests
 
         Assert.False(string.IsNullOrWhiteSpace(info.Version));
         Assert.DoesNotContain("+", info.Version, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("   ")]
+    public void FromAssembly_WithoutInformationalVersion_IsUnknown(string? informationalVersion)
+    {
+        var info = OdVersionInfo.FromAssembly(CreateAssembly(informationalVersion));
+
+        Assert.Same(OdVersionInfo.Unknown, info);
+    }
+
+    [Fact]
+    public void FromAssembly_RejectsNull()
+    {
+        Assert.Throws<ArgumentNullException>(() => OdVersionInfo.FromAssembly(null!));
+    }
+
+    /// <summary>A dynamic assembly, optionally stamped with an informational version.</summary>
+    private static Assembly CreateAssembly(string? informationalVersion)
+    {
+        var builder = AssemblyBuilder.DefineDynamicAssembly(
+            new AssemblyName($"OdVersionInfoTests.{Guid.NewGuid():N}"), AssemblyBuilderAccess.Run);
+        if (informationalVersion is not null)
+        {
+            var constructor = typeof(AssemblyInformationalVersionAttribute).GetConstructor([typeof(string)])!;
+            builder.SetCustomAttribute(new CustomAttributeBuilder(constructor, [informationalVersion]));
+        }
+
+        return builder;
     }
 }

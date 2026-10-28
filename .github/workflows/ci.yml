@@ -114,7 +114,8 @@ jobs:
         shell: pwsh
         env:
           RUN_NUMBER: ${{ github.run_number }}
-        run: ./scripts/pack.ps1 -Version "0.0.0-ci.$env:RUN_NUMBER"
+        # Velopack needs X.Y.Z >= 0.0.1; the -ci suffix keeps it from looking like a release.
+        run: ./scripts/pack.ps1 -Version "0.0.1-ci.$env:RUN_NUMBER"
 
       - name: Upload installer preview
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

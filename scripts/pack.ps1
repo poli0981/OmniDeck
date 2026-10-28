@@ -38,6 +38,12 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
+# Velopack rejects versions below 0.0.1 (it compares the X.Y.Z part, ignoring the suffix):
+# fail here, before a minute of publishing, rather than in vpk pack.
+if ([version]($Version -replace '-.*$', '') -lt [version]'0.0.1') {
+    throw "Velopack needs a version of at least 0.0.1 (got $Version)."
+}
+
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $publishDir = Join-Path $repoRoot "publish/$Runtime"
 $appProject = Join-Path $repoRoot 'src/OmniDeck.App'

@@ -52,7 +52,7 @@ dotnet test OmniDeck.slnx -c Release
 dotnet format OmniDeck.slnx --verify-no-changes
 dotnet xstyler -c Settings.XamlStyler -d src -r -p  # bỏ -p để tự định dạng
 pwsh scripts/validate-catalog.ps1
-pwsh scripts/pack.ps1 -Version 0.0.0-local          # publish + Velopack → Releases/
+pwsh scripts/pack.ps1 -Version 0.0.1-local          # publish + Velopack → Releases/ (Velopack cần ≥ 0.0.1)
 ```
 
 Repo dùng CRLF (`.gitattributes`, `.editorconfig`); file do tool tạo có thể là LF → chạy `unix2dos` cho `.cs`/`.xaml` trước `dotnet format`. XamlStyler ghi XAML kèm BOM (`.editorconfig` khai báo `charset = utf-8-bom` cho `*.xaml`).

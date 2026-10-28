@@ -28,7 +28,7 @@ dotnet run --project src/OmniDeck.App
 - Dependencies: Dependabot owns version bumps. NuGet Audit fails the restore on moderate-or-worse advisories (transitive included), and Dependency Review blocks risky pull requests. Check with `dotnet package list --outdated` before proposing a manual bump. Package versions live in each `.csproj` (no Central Package Management: GitHub's dependency graph ignores `Directory.Packages.props`).
 - Static analysis: CodeQL and SonarCloud run on every pull request; fix new issues rather than suppressing them.
 - Tests: xUnit v3 in `tests/OmniDeck.Tests`. New governor/provider/catalog logic needs tests; UI code does not (keep view-models testable instead).
-- Packaging: `pwsh scripts/pack.ps1 -Version 0.0.0-local` publishes and packs with Velopack exactly like a release; CI does the same on every pull request.
+- Packaging: `pwsh scripts/pack.ps1 -Version 0.0.1-local` publishes and packs with Velopack exactly like a release; CI does the same on every pull request.
 
 ## Conventions
 
