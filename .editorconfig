@@ -11,8 +11,16 @@ trim_trailing_whitespace = true
 [*.{json,yml,yaml,xml,csproj,props,targets,slnx}]
 indent_size = 2
 
+# Workflows and scripts run on Linux runners too: keep them LF (matches .gitattributes).
+[*.{yml,yaml,sh,py}]
+end_of_line = lf
+
 [*.md]
 trim_trailing_whitespace = false
+
+# XamlStyler (Settings.XamlStyler) owns XAML layout and writes UTF-8 with a BOM; keep it that way.
+[*.xaml]
+charset = utf-8-bom
 
 [*.cs]
 # Style
@@ -21,13 +29,17 @@ csharp_style_var_when_type_is_apparent = true:suggestion
 csharp_prefer_braces = true:warning
 dotnet_sort_system_directives_first = true
 
-# Naming: interfaces IOd*, async suffix
-dotnet_naming_rule.interfaces_begin_with_i.severity = warning
-dotnet_naming_rule.interfaces_begin_with_i.symbols = interface_symbols
-dotnet_naming_rule.interfaces_begin_with_i.style = prefix_i
+# Naming: interfaces start with IOd (public types carry the Od prefix)
+dotnet_naming_rule.interfaces_begin_with_iod.severity = warning
+dotnet_naming_rule.interfaces_begin_with_iod.symbols = interface_symbols
+dotnet_naming_rule.interfaces_begin_with_iod.style = prefix_iod
 dotnet_naming_symbols.interface_symbols.applicable_kinds = interface
-dotnet_naming_style.prefix_i.required_prefix = I
-dotnet_naming_style.prefix_i.capitalization = pascal_case
+dotnet_naming_style.prefix_iod.required_prefix = IOd
+dotnet_naming_style.prefix_iod.capitalization = pascal_case
+
+# Async suffix: methods returning an awaitable end in Async, others don't (test methods are exempt)
+dotnet_diagnostic.MA0137.severity = warning
+dotnet_diagnostic.MA0138.severity = warning
 
 # Dead code: surface as build warnings (warnings are errors in CI)
 dotnet_diagnostic.IDE0051.severity = warning   # unused private member
@@ -37,3 +49,8 @@ dotnet_diagnostic.IDE0005.severity = warning   # unnecessary using
 
 # Analyzer noise control (tune as real code lands)
 dotnet_diagnostic.CA1848.severity = none       # LoggerMessage delegates: overkill here
+dotnet_diagnostic.MA0026.severity = suggestion # TODO comments: SonarCloud (S1135) already tracks them
+
+[src/OmniDeck.App/**.cs]
+# UI code must resume on the dispatcher thread, so ConfigureAwait(false) is wrong here.
+dotnet_diagnostic.MA0004.severity = none

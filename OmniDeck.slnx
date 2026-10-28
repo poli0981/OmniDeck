@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/OmniDeck.App/OmniDeck.App.csproj" />
+    <Project Path="src/OmniDeck.Core/OmniDeck.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/OmniDeck.Tests/OmniDeck.Tests.csproj" />
+  </Folder>
+</Solution>

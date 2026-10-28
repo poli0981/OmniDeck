@@ -1,0 +1,76 @@
+<Project>
+
+  <!--
+    Shared build settings for every OmniDeck project. Target frameworks are declared per project;
+    everything targets net10.0-windows today (Windows 11 only, see docs/SPEC.md).
+  -->
+  <PropertyGroup>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <Deterministic>true</Deterministic>
+
+    <!-- Required so IDE0005 (unnecessary usings) runs at build time (dotnet/roslyn#41640) and so
+         ReferenceTrimmer can see which references are used. CS1591 (missing XML doc) is
+         suppressed so XML docs aren't forced on every public member. -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+
+    <!-- Supply-chain audit: restore checks direct AND transitive packages against the GitHub
+         Advisory Database. Moderate+ advisories (NU1902-NU1904) fail the build through
+         TreatWarningsAsErrors; low-severity ones (NU1901) stay warnings. -->
+    <NuGetAudit>true</NuGetAudit>
+    <NuGetAuditMode>all</NuGetAuditMode>
+    <NuGetAuditLevel>low</NuGetAuditLevel>
+    <WarningsNotAsErrors>$(WarningsNotAsErrors);NU1901</WarningsNotAsErrors>
+
+    <!-- Normalized source paths in PDBs for CI builds (reproducible artifacts). -->
+    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <!--
+    Package / assembly metadata, inherited by every project. Version is only the dev-build
+    default: scripts/pack.ps1 passes the git tag's version (-p:Version) at publish time. The SDK
+    derives FileVersion from it and appends the commit SHA to InformationalVersion, which
+    OdVersionInfo reads for About and bug reports. AssemblyVersion is not pinned on purpose.
+  -->
+  <PropertyGroup>
+    <Product>OmniDeck</Product>
+    <Authors>poli0981</Authors>
+    <Company>poli0981</Company>
+    <Copyright>Copyright © 2026 poli0981</Copyright>
+    <Description>One deck for your everyday apps: a Windows 11 host for native mini-apps and curated web apps.</Description>
+    <RepositoryUrl>https://github.com/poli0981/OmniDeck</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/poli0981/OmniDeck</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <Version>0.0.1-alpha.1</Version>
+  </PropertyGroup>
+
+  <!-- Build-time analyzers (warnings are errors). They live here rather than in each .csproj:
+       GitHub's dependency graph reads .csproj files only, which keeps dev-only tooling (and
+       SonarAnalyzer's source-available license) out of dependency review and the release SBOM,
+       while Dependabot still updates them. Runtime package versions stay in each .csproj. -->
+  <ItemGroup>
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="10.35.0.4138">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Roslynator.Analyzers" Version="5.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Meziantou.Analyzer" Version="3.0.317">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="ReferenceTrimmer" Version="3.5.13">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>

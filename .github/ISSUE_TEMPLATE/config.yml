@@ -1,5 +1,11 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Security vulnerability (private)
+    url: https://github.com/poli0981/OmniDeck/security/advisories/new
+    about: Report security vulnerabilities privately — do NOT open a public issue.
+  - name: Question / discussion
+    url: https://github.com/poli0981/OmniDeck/discussions
+    about: Ask a question or discuss ideas before filing an issue.
   - name: Community Discord
-    url: https://discord.gg/REPLACE_ME
-    about: Questions and discussion — faster than issues for support.
+    url: https://discord.gg/u8tn3YypyX
+    about: Chat with the community — faster than issues for quick help.

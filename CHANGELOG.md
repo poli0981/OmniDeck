@@ -6,7 +6,29 @@ All notable changes to OmniDeck are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.0.1-alpha.1] — 2026-10-28
+
+Kickoff build. It proves the build, packaging, and release pipeline end to end and has no
+user-facing features yet: the window only shows the version.
+
 ### Added
-- Repository scaffolding and full documentation suite (spec, architecture,
-  RAM governor, UI presets, web app catalog, roadmap, legal set).
-- Initial curated web app catalog (9 entries, schema v1).
+- Documentation suite: spec, architecture, RAM governor, UI presets, WPF-UI conventions, web app
+  catalog, roadmap, and the legal set (EULA, disclaimer, privacy policy, third-party notices).
+- Curated web app catalog (9 entries, schema v1) with a JSON Schema and CI validation.
+- Solution skeleton: `OmniDeck.App` (Velopack bootstrap and a placeholder Fluent window),
+  `OmniDeck.Core` (`OdVersionInfo`), and `OmniDeck.Tests`.
+- Self-contained CI: build and tests, C# and XAML formatting, analyzers as errors, NuGet Audit,
+  Velopack packaging smoke test, catalog validation, workflow and link linting, CodeQL,
+  SonarCloud, Dependency Review, and OpenSSF Scorecard.
+- Release pipeline: signed tags on `main` → Velopack packages, build-provenance attestations,
+  SBOM, SHA-256 checksums, and a Discord announcement.
+- Repository governance: protected `main` and release tags, CODEOWNERS, Dependabot, Code of
+  Conduct, issue and pull request templates.
+
+### Changed
+- Roadmap re-baselined: P0 starts on 2026-11-02 and v1.0 is targeted for May 2027.
+- Supported platform narrowed to Windows 11 (24H2 or later), x64.
+- App data moves to `%LocalAppData%\OmniDeck.Data`, outside Velopack's install folder.
+
+[Unreleased]: https://github.com/poli0981/OmniDeck/compare/v0.0.1-alpha.1...HEAD
+[0.0.1-alpha.1]: https://github.com/poli0981/OmniDeck/releases/tag/v0.0.1-alpha.1

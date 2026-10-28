@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <!-- The executable is OmniDeck.exe (Velopack's mainExe); the namespace stays OmniDeck.App. -->
+    <AssemblyName>OmniDeck</AssemblyName>
+    <RootNamespace>OmniDeck.App</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- Custom entry point: Velopack's hooks must run before WPF loads OdApp.xaml resources. -->
+    <StartupObject>OmniDeck.App.Program</StartupObject>
+    <!-- Ship only the UI languages OmniDeck supports (EN neutral, VI, JA). -->
+    <SatelliteResourceLanguages>en;vi;ja</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The application class is OdApp, not App: types carry the Od prefix, and Meziantou MA0049
+         rejects a type named like its namespace. -->
+    <Page Remove="OdApp.xaml" />
+    <ApplicationDefinition Include="OdApp.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OmniDeck.Core\OmniDeck.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Velopack" Version="1.2.161" />
+    <PackageReference Include="WPF-UI" Version="4.3.0" />
+  </ItemGroup>
+
+  <!-- The license and legal documents travel with every build: the self-contained app
+       redistributes MIT/BSD code whose notices must ship with it, and the P1 legal gate shows them. -->
+  <ItemGroup>
+    <None Include="..\..\LICENSE" Link="legal\LICENSE.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="..\..\docs\legal\*.md" Link="legal\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- A self-contained publish redistributes the .NET and Windows Desktop runtimes: their license
+       and third-party notices ship too, under legal\<framework>\ (THIRD-PARTY-NOTICES.md points there). -->
+  <Target Name="OdCopyRuntimeNotices" AfterTargets="Publish" Condition="'$(SelfContained)' == 'true'">
+    <ItemGroup>
+      <_OdRuntimePack Include="@(ResolvedRuntimePack)" Condition="'%(FrameworkName)' == 'Microsoft.NETCore.App' Or '%(FrameworkName)' == 'Microsoft.WindowsDesktop.App'" />
+      <_OdRuntimeNotice Include="%(_OdRuntimePack.PackageDirectory)\LICENSE*;%(_OdRuntimePack.PackageDirectory)\THIRD-PARTY-NOTICES*">
+        <Framework>%(_OdRuntimePack.FrameworkName)</Framework>
+      </_OdRuntimeNotice>
+    </ItemGroup>
+    <Copy SourceFiles="@(_OdRuntimeNotice)" DestinationFiles="@(_OdRuntimeNotice->'$(PublishDir)legal\%(Framework)\%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

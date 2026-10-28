@@ -6,9 +6,14 @@ obj/
 .vs/
 artifacts/
 publish/
+*.binlog
 
 # Velopack output
 Releases/
+
+# Test & analysis output
+TestResults/
+.sonarqube/
 
 # Logs & local data (never commit runtime data)
 *.log
@@ -18,3 +23,7 @@ bugreport-*.zip
 # Tools
 .idea/
 *.DotSettings.user
+.nuget/
+
+# Personal Claude Code settings (.claude/settings.json is shared and committed)
+.claude/settings.local.json

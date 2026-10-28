@@ -12,7 +12,7 @@ body:
     id: version
     attributes:
       label: OmniDeck version
-      placeholder: "0.9.2 (commit abc1234)"
+      placeholder: "0.0.1-alpha.1 (1ab1b36) — shown in About"
     validations:
       required: true
   - type: input
@@ -48,17 +48,18 @@ body:
     attributes:
       label: Console errors
       description: >
-        Required for web app issues. The in-app report captures these automatically;
-        manually you can copy them from the affected page's console. Paste as-is.
+        For web app issues, paste the console errors that About → Report bug captured (they are
+        in the pre-filled issue and the zip). Release builds have no DevTools, so there is no
+        other way to copy them. Leave empty for native mini-apps.
       render: text
     validations:
-      required: true
+      required: false
   - type: textarea
     id: logs
     attributes:
       label: Logs
       description: >
-        Attach the `bugreport-*.zip` from `%LocalAppData%\OmniDeck\reports`
+        Attach the `bugreport-*.zip` from `%LocalAppData%\OmniDeck.Data\reports`
         (drag & drop here), or paste the relevant tail of the latest log.
   - type: checkboxes
     id: checks

@@ -1,0 +1,12 @@
+# Code owners are requested for review automatically. OmniDeck has a single maintainer; the
+# entries below also document who owns the sensitive paths (see SECURITY.md and CLAUDE.md).
+*               @poli0981
+
+# License, legal documents, and the live web app catalog (installed apps fetch it from main)
+/LICENSE        @poli0981
+/docs/legal/    @poli0981
+/catalog/       @poli0981
+
+# CI/CD, repository automation, and AI-agent permissions
+/.github/       @poli0981
+/.claude/       @poli0981

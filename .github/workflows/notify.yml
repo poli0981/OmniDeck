@@ -1,0 +1,66 @@
+name: Notify
+
+# Discord notifications, self-contained in this repository:
+# - ci-failure: a CI, CodeQL, SonarCloud or Release run failed on a push (main or a release tag)
+#   -> DISCORD_CI_WEBHOOK. Pull-request runs are skipped: they report on the pull request, and
+#   runs for forks and Dependabot get no secrets anyway.
+# - announce: a release published by hand, or re-announced with workflow_dispatch
+#   -> DISCORD_RELEASE_WEBHOOK. Tag releases are announced by release.yml itself, because a
+#   release published with GITHUB_TOKEN does not fire the `release` event.
+
+on:
+  workflow_run:
+    workflows: [CI, CodeQL, SonarCloud, Release]
+    types: [completed]
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to announce (e.g. v0.1.0)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  ci-failure:
+    # Filters on the event only, never on forgeable values such as branch names or actor logins.
+    if: >-
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'failure' &&
+      github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Post the failure to Discord
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_CI_WEBHOOK }}
+          WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+          COMMIT_SHA: ${{ github.event.workflow_run.head_sha }}
+          COMMIT_MESSAGE: ${{ github.event.workflow_run.head_commit.message }}
+          ACTOR: ${{ github.event.workflow_run.actor.login }}
+        run: python3 .github/scripts/discord_notify.py failure
+
+  announce:
+    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Announce on Discord
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_RELEASE_WEBHOOK }}
+        run: python3 .github/scripts/discord_notify.py release

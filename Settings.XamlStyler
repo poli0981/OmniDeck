@@ -1,0 +1,10 @@
+{
+  "AttributesTolerance": 2,
+  "KeepFirstAttributeOnSameLine": true,
+  "MaxAttributesPerLine": 1,
+  "PutEndingBracketOnNewLine": false,
+  "RemoveEndingTagOfEmptyElement": true,
+  "SpaceBeforeClosingSlash": true,
+  "IndentSize": 4,
+  "IndentWithTabs": false
+}

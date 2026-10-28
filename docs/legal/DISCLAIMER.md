@@ -1,10 +1,10 @@
 # OmniDeck — Disclaimer
 
-Version 1.0 — effective from first public beta release.
+Version 1.0 — effective from the first public release (0.0.1-alpha.1).
 
-## Beta software
+## Pre-release software
 
-OmniDeck is beta software provided **as is**, without warranty of any kind. Features may be incomplete, change without notice, or malfunction. Keep backups of anything important; do not rely on OmniDeck as your only copy of calendar data or playlists.
+OmniDeck is pre-release (alpha/beta) software provided **as is**, without warranty of any kind. Features may be incomplete, change without notice, or malfunction. Keep backups of anything important; do not rely on OmniDeck as your only copy of calendar data or playlists.
 
 ## Financial data — not investment advice
 
@@ -20,8 +20,12 @@ Web apps accessible through OmniDeck (Spotify, Discord, YouTube, Google services
 
 ## Trademarks
 
-All product names, logos, and brands referenced by OmniDeck are property of their respective owners and are used for identification purposes only. OmniDeck is an independent open-source project and is **not affiliated with, endorsed by, or sponsored by** Microsoft, Spotify, Discord, Google, Meta, VideoLAN, or any other company whose products or services it references or interoperates with.
+All product names, logos, and brands referenced by OmniDeck are property of their respective owners and are used for identification purposes only. OmniDeck is an independent open-source project and is **not affiliated with, endorsed by, or sponsored by** Microsoft, Spotify, Discord, Google, Meta, VideoLAN, or any other company whose products or services it references or interoperates with. Rights holders who want a catalog entry changed or removed can write to takedown@poli0981.dev.
 
 ## Limitation of liability
 
 To the maximum extent permitted by applicable law, the author shall not be liable for any direct, indirect, incidental, consequential, or special damages arising out of or in connection with the use of OmniDeck.
+
+## Contact
+
+Other legal questions: legal@poli0981.dev.

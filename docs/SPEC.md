@@ -1,6 +1,6 @@
 # OmniDeck — Functional Specification
 
-Status: draft for v1.0 (Jan 2027) · Applies to: Windows 10 (1809+)/11 x64 only
+Status: draft for v1.0 (target May 2027) · Applies to: Windows 11 (24H2 or later), x64 only
 
 ## 1. Goals and non-goals
 
@@ -17,6 +17,7 @@ Status: draft for v1.0 (Jan 2027) · Applies to: Windows 10 (1809+)/11 x64 only
 - No admin elevation, ever.
 - No Google Calendar/Drive *sync* into native mini-apps (the web apps cover this; native sync is v2).
 - No native map mini-app — Google Maps ships as a catalog web app instead.
+- No Windows 10: .NET 10 no longer supports its consumer editions, and their security updates ended in October 2026.
 - No mobile/macOS/Linux targets.
 
 ## 2. Shell
@@ -26,8 +27,8 @@ Status: draft for v1.0 (Jan 2027) · Applies to: Windows 10 (1809+)/11 x64 only
 - **Tray:** single-instance app with tray icon; closing the window minimizes to tray (configurable). Tray menu: open, quick timer, media controls when playing, quit.
 - **Windowing:** modules open as tabs in the main window; any module can be popped out into its own top-level window.
 - **Settings:** general (language EN/VI/JA, startup, tray behavior), appearance (preset + per-token overrides), memory (governor thresholds), per-module settings, data (export/import settings JSON, open data folder), about.
-- **Legal gate:** on first run and whenever the accepted legal-doc version differs from the shipped version, show EULA, Disclaimer, Privacy Policy, and Third-Party Notices with links to this repo. Acceptance (doc version + timestamp) is stored locally; the app is unusable until accepted.
-- **About:** app version + commit hash, update check (Velopack), links (GitHub, Discord), credits, **Report bug** button (§6).
+- **Legal gate:** on first run and whenever the acknowledged legal-doc version differs from the shipped version, show EULA, Disclaimer, Privacy Policy, and Third-Party Notices (shipped in the app's `legal\` folder, with links to this repo). The user acknowledges having read them; the acknowledgment (doc version + timestamp) is stored locally and the app stays on the gate until then. It is an acknowledgment, not a condition of the license: GPL-3.0 §9 does not require accepting the license to run the program.
+- **About:** app version + commit hash, update check (Velopack), links (GitHub, Discussions, Discord), credits, **Report bug** button (§6).
 
 ## 3. Native mini-apps
 
@@ -66,7 +67,7 @@ All mini-apps implement the module contract in [ARCHITECTURE](ARCHITECTURE.md) a
 
 ## 4. Web runner
 
-- One shared `CoreWebView2Environment` (user data under `%LocalAppData%\OmniDeck\WebView2`); one `CoreWebView2Profile` per catalog `profile` group (the `google` group is shared across Google apps for single sign-on; all others are isolated).
+- One shared `CoreWebView2Environment` (user data under `%LocalAppData%\OmniDeck.Data\WebView2`); one `CoreWebView2Profile` per catalog `profile` group (the `google` group is shared across Google apps for single sign-on; all others are isolated).
 - **Navigation policy:** top-level navigation outside the entry's `navAllow` suffix list opens in the system default browser. `NewWindowRequested` to a `popupAllow` domain opens an in-app popup on the same profile (SSO); everything else goes to the default browser.
 - **Notifications:** `NotificationReceived` is intercepted and re-raised as a Windows toast tagged with the app name; per-app opt-out in settings.
 - **Permissions:** `PermissionRequested` (mic/camera/clipboard/geolocation) shows a native prompt; the decision is remembered per app and reviewable in settings.
@@ -79,32 +80,32 @@ All mini-apps implement the module contract in [ARCHITECTURE](ARCHITECTURE.md) a
 
 - **i18n:** all shell and mini-app strings in `.resx`, EN (neutral) / VI / JA.
 - **Accessibility:** honor Windows text scaling (multiplies the preset font token) and High Contrast (overrides palette tokens); full keyboard navigation of the shell.
-- **Storage:** SQLite (`omnideck.db`, via Dapper) for module data; `settings.json` for configuration; Serilog rolling files under `%LocalAppData%\OmniDeck\logs` (7-day retention).
+- **Storage:** everything lives under the data root `%LocalAppData%\OmniDeck.Data`: SQLite (`omnideck.db`, via Dapper) for module data; `settings.json` for configuration; Serilog rolling files under `logs\` (7-day retention). Never inside `%LocalAppData%\OmniDeck`, which is Velopack's install folder and is deleted on uninstall and reinstall ([ARCHITECTURE](ARCHITECTURE.md) §5).
 - **Updates:** Velopack against GitHub Releases; per-user install; delta updates.
-- **Security:** see [SECURITY](../SECURITY.md) — no admin, DevTools UI off in release builds, password autosave off, DPAPI for the only secret (Twelve Data key), HTTPS-only service calls, dependency CVE gate in CI.
+- **Security:** see [SECURITY](../SECURITY.md) — no admin, DevTools UI off in release builds, password autosave off, DPAPI for the only secret (Twelve Data key), HTTPS-only service calls; in CI, NuGet Audit (restore fails on moderate+ advisories, transitive packages included) and Dependency Review.
 
 ## 6. Bug reporting flow
 
 1. A DevTools Protocol session per web app subscribes to `Runtime.consoleAPICalled` and `Log.entryAdded`, keeping a 200-entry ring buffer per app. .NET unhandled exceptions and the Serilog tail are collected shell-side.
 2. **Report bug** composes: version, Windows build, UI preset, active modules + RAM snapshot, the relevant console ring buffer, and last log lines.
 3. Before packaging, a scrubber strips query strings, cookie values, and bearer-token-shaped strings.
-4. The app opens a pre-filled GitHub issue (bug template) and writes `bugreport-<timestamp>.zip` to `%LocalAppData%\OmniDeck\reports` for the user to attach (issue-URL prefill has a length limit, so long logs travel in the zip).
+4. The app opens a pre-filled GitHub issue (bug template) and writes `bugreport-<timestamp>.zip` to `%LocalAppData%\OmniDeck.Data\reports` for the user to attach (issue-URL prefill has a length limit, so long logs travel in the zip).
 
-## 7. Reference versions (pin at kickoff, then let Dependabot own them)
+## 7. Reference versions (verified 2026-10-28; Dependabot owns bumps from here)
 
-| Component | Version line | Notes |
+| Component | Version | Notes |
 |---|---|---|
-| .NET | 10.0.10+ (LTS → Nov 2028) | verified Jul 2026 |
+| .NET | 10.0.14 runtime · SDK 10.0.403 | LTS until Nov 2028; SDK pinned in `global.json` |
 | C# | 14 | ships with .NET 10 |
-| WebView2 SDK | 1.0.40xx stable (Jun 2026 line) | runtime is evergreen |
-| WPF-UI | latest stable | Fluent theme base |
-| CommunityToolkit.Mvvm | 8.4+ | |
-| Serilog (+File sink) | 4.x | |
-| Dapper + Microsoft.Data.Sqlite | latest stable | |
-| ScottPlot | 5.x | stocks charts |
-| LibVLCSharp + VideoLAN.LibVLC.Windows | latest stable | media |
-| Ical.Net | latest stable | calendar |
-| H.NotifyIcon.Wpf | latest stable | tray |
-| Velopack | latest stable | updates |
+| WebView2 SDK (`Microsoft.Web.WebView2`) | 1.0.4314.35 | runtime is evergreen and ships with Windows 11 |
+| WPF-UI | 4.3.0 | Fluent theme base; see [WPFUI-CONVENTIONS](WPFUI-CONVENTIONS.md) |
+| CommunityToolkit.Mvvm | 8.4.2 | |
+| Serilog / Serilog.Sinks.File | 4.4.0 / 7.0.0 | |
+| Dapper / Microsoft.Data.Sqlite | 2.1.89 / 10.0.14 | |
+| ScottPlot.WPF | 5.1.59 | stocks charts |
+| LibVLCSharp.WPF / VideoLAN.LibVLC.Windows | 3.10.2 / 3.0.24 | media |
+| Ical.Net | 5.2.3 | calendar (v5 API) |
+| H.NotifyIcon.Wpf | 2.4.1 | tray |
+| Velopack (+ `vpk` CLI) | 1.2.161 | installer & updates; library and CLI move together |
 
-Run `dotnet outdated` and `dotnet list package --vulnerable --include-transitive` on day one; both also run in CI.
+Dependabot (NuGet, .NET SDK, GitHub Actions) proposes updates weekly. To check by hand: `dotnet package list --outdated` and `dotnet package list --vulnerable --include-transitive`. Package versions live in each `.csproj` (no Central Package Management: GitHub's dependency graph ignores `Directory.Packages.props`); build-time analyzers live in `Directory.Build.props`.

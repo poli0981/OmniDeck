@@ -1,12 +1,12 @@
 # OmniDeck — Privacy Policy
 
-Version 1.0 — effective from first public beta release.
+Version 1.0 — effective from the first public release (0.0.1-alpha.1).
 
 **Short version: OmniDeck collects nothing.** There is no telemetry, no analytics, no account, no crash auto-upload, and no server operated by the OmniDeck project that receives your data.
 
 ## 1. Data stored locally on your device
 
-All of the following stays in `%LocalAppData%\OmniDeck` and never leaves your machine unless you export or attach it yourself:
+All of the following stays in `%LocalAppData%\OmniDeck.Data` (the data root) and never leaves your machine unless you export or attach it yourself:
 
 - Settings (language, UI preset, memory thresholds, per-app permissions).
 - Module data: calendar events, stock watchlist and cached quotes, cached weather, media playlists.
@@ -14,7 +14,7 @@ All of the following stays in `%LocalAppData%\OmniDeck` and never leaves your ma
 - Logs (7-day rolling) and any bug-report zips you generate.
 - Your optional Twelve Data API key, encrypted with Windows DPAPI.
 
-Uninstalling the app (or using Settings → Data → open data folder and deleting it) removes this data.
+The app itself is installed separately, in `%LocalAppData%\OmniDeck`. Uninstalling OmniDeck removes both folders. To reset the app without uninstalling it, delete the data root (Settings → Data → open data folder).
 
 ## 2. Network connections the app makes
 
@@ -23,6 +23,7 @@ OmniDeck only talks to the internet for the features you use:
 - **Open-Meteo** — weather forecasts and geocoding for your saved locations.
 - **Stooq** and (only if you configure a key) **Twelve Data** — stock quotes for tickers on your watchlist.
 - **GitHub** — update checks/downloads (Velopack) and the daily web-app catalog refresh; opening a pre-filled bug-report issue happens in your browser and only if you choose to.
+- **Microsoft Edge WebView2 Runtime** — the Microsoft component that renders the web apps may contact Microsoft services on its own, for example Microsoft Defender SmartScreen reputation checks for the pages you visit and the runtime's own updates and diagnostic data. That traffic is governed by Microsoft's privacy statement and your Windows diagnostic-data settings; OmniDeck does not enable any additional reporting.
 - **The third-party web apps you open** (Spotify, Discord, Google services, Facebook, etc.) — these connections go directly from your device to those providers. Their handling of your data is governed by **their** privacy policies, not this one. OmniDeck does not inject analytics into, read the contents of, or proxy these sessions.
 
 ## 3. Bug reports
@@ -35,4 +36,8 @@ OmniDeck itself collects no data from anyone, including children. The third-part
 
 ## 5. Changes
 
-Material changes to this policy will be presented in-app for re-acceptance. History is available in this repository's commit log.
+Material changes to this policy will be presented in-app for acknowledgment. History is available in this repository's commit log.
+
+## 6. Contact
+
+Privacy questions: privacy@poli0981.dev.
