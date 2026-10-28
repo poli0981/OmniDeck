@@ -1,15 +1,22 @@
-# OmniDeck — Roadmap to v1.0 (January 2027)
+# OmniDeck — Roadmap to v1.0 (May 2027)
 
-Solo-developer plan, ~5.5 months from kickoff. Each phase has exit criteria; slipping triggers the cut order in §3, never a death march.
+Solo-developer plan, ~29 weeks from the start of P0 (2 November 2026). Each phase has exit criteria; slipping triggers the cut order in §4, never a death march.
+
+> **Re-baselined 2026-10-28.** The first draft assumed a 20 July 2026 start and a January 2027 release. Development actually starts on 2 November 2026, so every phase keeps its original length and moves; P2 gains one buffer week for Tết (Lunar New Year, 6 February 2027). Windows 10 support was dropped at the same time ([SPEC](SPEC.md) §1).
 
 ## 1. Phases
 
-### P0 — Spikes (Jul 20 – Aug 2, 2026)
+### Kickoff (28 Oct 2026) — done
+
+Repository foundation: documentation suite; solution skeleton (`OmniDeck.App`, `OmniDeck.Core`, `OmniDeck.Tests`); self-contained CI (build, tests, formatting, analyzers as errors, NuGet Audit, catalog validation, workflow and link linting, CodeQL, SonarCloud, Dependency Review, OpenSSF Scorecard); protected `main` and release tags; the Velopack release pipeline proven end to end with the `0.0.1-alpha.1` pre-release.
+
+### P0 — Spikes (2 – 15 Nov 2026)
+
 De-risk everything that could invalidate the design, on real hardware:
 
 1. **DRM/Widevine:** load the Shaka Player support page and the Spotify Web Player in a bare WebView2 PoC. Record which key systems report available and whether Spotify actually plays.
-2. **Google sign-in:** direct gmail.com login + SSO popup flow (`accounts.google.com`) in WebView2 with default UA.
-3. **Memory reality check:** measure Active → `TrySuspendAsync`+`Low` → `Dispose` working sets for Discord, YouTube, Gmail; confirm the ladder's assumed numbers.
+2. **Google sign-in:** direct gmail.com login + SSO popup flow (`accounts.google.com`) in WebView2 with default UA; also Spotify's third-party sign-in buttons (Google/Facebook/Apple).
+3. **Memory reality check:** measure Active → `TrySuspendAsync`+`Low` → `Dispose` for Discord, YouTube, Gmail; confirm the ladder's assumed numbers and choose the governor's memory metric ([RAM-GOVERNOR](RAM-GOVERNOR.md) §4).
 4. **CDP console capture:** `Runtime.consoleAPICalled` / `Log.entryAdded` ring buffer PoC.
 5. **Theme swap:** runtime `ResourceDictionary` preset switching without visual artifacts.
 6. **LibVLCSharp WPF:** airspace behavior — overlay controls + fullscreen toggle over `VideoView`. If blocked, evaluate FlyleafLib as the fallback engine.
@@ -17,25 +24,43 @@ De-risk everything that could invalidate the design, on real hardware:
 
 **Exit:** written go/no-go note per spike committed to `docs/spikes/`.
 
-### P1 — Shell & skeleton (Aug 3 – Sep 27, 2026)
-Shell (nav, tray, single-instance, command palette), module contract + host, RAM governor v1 with task-manager panel, theme engine + three presets (Standard polished, others functional), legal gate + About, settings + storage layer, and the three trivial modules: clock, timer, calculator. CI live (build, test, analyzers, CVE gate).
+### P1 — Shell & skeleton (16 Nov 2026 – 10 Jan 2027)
 
-**Exit:** installable Velopack build; governor demotes/restores the trivial modules correctly; unit tests for governor + storage green.
+Shell (nav, tray, single-instance, command palette), module contract + host, RAM governor v1 with task-manager panel, theme engine + three presets (Standard polished, others functional), legal gate + About, settings + storage layer (data root, Velopack uninstall hook), and the three trivial modules: clock, timer, calculator.
 
-### P2 — Web runner & core modules (Sep 28 – Nov 15, 2026)
+**Exit (0.1.0):** installable Velopack build; governor demotes/restores the trivial modules correctly; unit tests for governor + storage green.
+
+### P2 — Web runner & core modules (11 Jan – 7 Mar 2027)
+
 Full web runner (profiles, nav policy, SSO popups, notifications→toast, permissions, downloads, suspend/hibernate, catalog fetch) with the v1 catalog; weather; calendar (local + .ics); media player v1 on LibVLCSharp. Bug-report flow end to end (CDP capture → scrubber → prefilled issue + zip).
 
-**Exit:** dogfood daily — Gmail + Discord + YouTube stay signed in across hibernation; a full day's use stays under the hard cap.
+**Exit (0.2.0):** dogfood daily — Gmail + Discord + YouTube stay signed in across hibernation; a full day's use stays under the hard cap.
 
-### P3 — Stocks, presets, i18n (Nov 16 – Dec 20, 2026)
-Stocks module (Stooq default + Twelve Data BYO key, watchlist, candlesticks); Dynamic and Comfort presets polished to spec (UI-MODES token table); VI + JA translations; settings import/export; accessibility pass (text scaling, High Contrast, keyboard nav).
+### P3 — Stocks, presets, i18n (8 Mar – 11 Apr 2027)
 
-**Exit:** feature-complete against SPEC v1 scope.
+Stocks module (Stooq default + Twelve Data BYO key, watchlist, candlesticks); Dynamic and Comfort presets polished to spec (UI-MODES token table); VI + JA translations; settings import/export; accessibility pass (text scaling, contrast themes, keyboard nav).
 
-### P4 — Beta & release (Dec 21, 2026 – Jan 31, 2027)
-**0.9 public beta** (~Dec 27) via GitHub Releases + community Discord; two stabilization cycles driven by bug reports; docs final pass; **v1.0 target Jan 31, 2027**.
+**Exit (0.3.0):** feature-complete against SPEC v1 scope.
 
-## 2. Risk register
+### P4 — Beta & release (12 Apr – 23 May 2027)
+
+**0.9 public beta** (~18 Apr) via GitHub Releases + the community Discord; two stabilization cycles driven by bug reports; docs final pass; **v1.0 target 23 May 2027**.
+
+## 2. Versioning
+
+| Milestone | Version |
+|---|---|
+| Kickoff build | `0.0.1-alpha.1` |
+| Interim builds during phase N | `0.N.0-alpha.M` |
+| P1 exit — first installable shell | `0.1.0` |
+| P2 exit | `0.2.0` |
+| P3 exit — feature-complete | `0.3.0` |
+| Public beta | `0.9.0` (fixes as `0.9.x`) |
+| Release | `1.0.0` |
+
+Every version below 1.0.0 is published as a GitHub **pre-release**; 1.0.0 is the first stable release. Releases come from GPG-signed `vX.Y.Z[-suffix]` tags on `main` ([RELEASING](../RELEASING.md)).
+
+## 3. Risk register
 
 | Risk | Impact | Mitigation |
 |---|---|---|
@@ -43,9 +68,10 @@ Stocks module (Stooq default + Twelve Data BYO key, watchlist, candlesticks); Dy
 | Google blocks sign-in in WebView2 | Google group unusable | P0 spike; fallback: session import guidance / treat as upstream limitation, documented |
 | LibVLCSharp airspace friction in WPF | Media UX degraded | P0 spike; fallback engine FlyleafLib |
 | Free API tiers change (Twelve Data/Stooq) | Stocks degraded | provider abstraction; BYO-key model isolates OmniDeck from quota policy |
+| User data stored in Velopack's install folder | Uninstall or reinstall wipes data and sign-ins | data root `%LocalAppData%\OmniDeck.Data`, never `%LocalAppData%\OmniDeck` ([ARCHITECTURE](ARCHITECTURE.md) §5) |
 | Solo bandwidth vs. other projects | Schedule slip | cut order below; phases sized with buffer |
 
-## 3. Cut order if slipping
+## 4. Cut order if slipping
 
 1. **Stocks** → v1.1 (self-contained, no other module depends on it).
 2. Comfort/Dynamic polish reduced to "functional" (Standard stays polished).
@@ -53,6 +79,6 @@ Stocks module (Stooq default + Twelve Data BYO key, watchlist, candlesticks); Dy
 
 The web runner, governor, legal gate, and the trivial modules are never cut — they *are* the product.
 
-## 4. Post-v1 backlog (unordered)
+## 5. Post-v1 backlog (unordered)
 
 Finnhub provider (real-time US), Google Calendar native sync, multi-point global hotkeys per web app, catalog entries from §4 of WEBAPP-CATALOG, per-module popout window session restore, portable build.

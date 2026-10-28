@@ -36,7 +36,9 @@ Pinned modules are skipped by cap enforcement; if the hard cap is exceeded purel
 
 ## 4. Cap enforcement
 
-Total footprint = shell `Process.WorkingSet64` + Σ working sets of all WebView2 processes (`CoreWebView2Environment.GetProcessInfos()` → PID → `Process.WorkingSet64`), sampled every `PollInterval`.
+Total footprint = shell process + Σ all WebView2 processes (`CoreWebView2Environment.GetProcessInfos()` → PID), sampled every `PollInterval`.
+
+**Metric — chosen by P0 spike #3.** Summing `Process.WorkingSet64` over-counts: Chromium processes share DLL and shared-memory pages, and each process reports them again. Working set also drops whenever pages are trimmed (for example by `MemoryUsageTargetLevel.Low`), so a working-set cap would reward exactly the page shuffling the honesty note below rejects. The spike compares private commit (`Process.PrivateMemorySize64`) with private working set and fixes one metric; the caps, the toasts, and the task-manager panel all use it.
 
 - **> SoftCap:** demote the least-recently-used unpinned module one step down the ladder; repeat next tick if still above.
 - **> HardCap:** force-hibernate LRU unpinned modules until below, then raise one toast summarizing what was hibernated.
@@ -47,7 +49,7 @@ Honesty note: for in-process native modules the real win comes from modules *act
 
 ## 5. Task-manager panel
 
-Settings → Memory → "Running modules": live table of every module with state, working-set estimate, last-used time, pin toggle, and Suspend / Hibernate / Close buttons. This is both a user feature and the primary debugging tool for the governor itself; the panel reads and writes the same scheduler, no side channel.
+Settings → Memory → "Running modules": live table of every module with state, memory estimate (the governor metric), last-used time, pin toggle, and Suspend / Hibernate / Close buttons. This is both a user feature and the primary debugging tool for the governor itself; the panel reads and writes the same scheduler, no side channel.
 
 ## 6. Testing
 
