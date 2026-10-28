@@ -1,0 +1,181 @@
+name: Release
+
+# Triggered by pushing a GPG-signed, annotated SemVer tag (vX.Y.Z or vX.Y.Z-suffix) on a commit
+# that is on main. Builds the self-contained Velopack release, publishes it to GitHub Releases
+# with build-provenance attestations, SHA-256 checksums and an SPDX SBOM, then announces it on
+# Discord. Every version below 1.0.0, and any SemVer pre-release, ships as a GitHub pre-release.
+# No workflow_dispatch on purpose: vpk would create the tag itself, unsigned. See RELEASING.md.
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  release:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write # create the release and upload assets
+      id-token: write # OIDC for build-provenance attestations
+      attestations: write
+    outputs:
+      tag: ${{ steps.ver.outputs.tag }}
+    env:
+      REPO_URL: https://github.com/${{ github.repository }}
+      REPOSITORY: ${{ github.repository }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # the main-ancestry check below needs history
+          persist-credentials: false
+
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+
+      - name: Resolve the version and check the tag
+        id: ver
+        shell: pwsh
+        env:
+          TAG: ${{ github.ref_name }}
+          TAG_COMMIT: ${{ github.sha }}
+        run: |
+          $version = $env:TAG -replace '^v', ''
+          $semver = [regex]::Match($version, '^(\d+)\.\d+\.\d+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$')
+          if (-not $semver.Success) { throw "Tag '$env:TAG' is not vX.Y.Z[-prerelease]." }
+          $prerelease = $semver.Groups[1].Value -eq '0' -or $version.Contains('-')
+
+          # Release tags are annotated and GPG-signed by the maintainer (RELEASING.md).
+          $ref = gh api "repos/$env:REPOSITORY/git/ref/tags/$env:TAG" | ConvertFrom-Json
+          if ($ref.object.type -ne 'tag') { throw "Tag $env:TAG is lightweight; use git tag -s." }
+          $verified = gh api "repos/$env:REPOSITORY/git/tags/$($ref.object.sha)" --jq '.verification.verified'
+          if ($verified -ne 'true') { throw "Tag $env:TAG has no verified signature." }
+
+          # Only commits that reached main through a pull request may be released.
+          git fetch --no-tags origin main
+          git merge-base --is-ancestor $env:TAG_COMMIT origin/main
+          if ($LASTEXITCODE -ne 0) { throw "Tag $env:TAG ($env:TAG_COMMIT) is not on main." }
+
+          "version=$version" >> $env:GITHUB_OUTPUT
+          "tag=$env:TAG" >> $env:GITHUB_OUTPUT
+          "prerelease=$($prerelease.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT
+          Write-Host "Releasing $version (tag $env:TAG, prerelease: $prerelease)"
+
+      - name: Restore pinned tools (vpk)
+        run: dotnet tool restore
+
+      - name: Download the previous release (delta base)
+        continue-on-error: true # the very first release has nothing to download
+        shell: pwsh
+        run: dotnet vpk download github --repoUrl $env:REPO_URL --token $env:GH_TOKEN --pre
+
+      - name: Publish + pack (Velopack)
+        shell: pwsh
+        env:
+          VERSION: ${{ steps.ver.outputs.version }}
+        run: ./scripts/pack.ps1 -Version $env:VERSION
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          # Only what this run built: Releases/ also holds the previous version's full package,
+          # downloaded above just to compute the delta.
+          subject-path: |
+            Releases/*-Setup.exe
+            Releases/*-Portable.zip
+            Releases/OmniDeck-${{ steps.ver.outputs.version }}-*.nupkg
+
+      # Upload as a DRAFT first: publishing is what makes installed copies see the update, so the
+      # release only goes live once every asset (SBOM, checksums) is attached.
+      - name: Create the draft GitHub Release (Velopack)
+        shell: pwsh
+        env:
+          VERSION: ${{ steps.ver.outputs.version }}
+          TAG: ${{ steps.ver.outputs.tag }}
+          PRERELEASE: ${{ steps.ver.outputs.prerelease }}
+        run: |
+          $uploadArgs = @('vpk', 'upload', 'github', '--repoUrl', $env:REPO_URL, '--token', $env:GH_TOKEN,
+            '--releaseName', "OmniDeck $env:VERSION", '--tag', $env:TAG)
+          if ($env:PRERELEASE -eq 'true') { $uploadArgs += '--pre' }
+          dotnet @uploadArgs
+          if ($LASTEXITCODE -ne 0) { throw "vpk upload failed with exit code $LASTEXITCODE." }
+
+      - name: SBOM + SHA-256 checksums
+        shell: pwsh
+        env:
+          TAG: ${{ steps.ver.outputs.tag }}
+        run: |
+          $rel = Join-Path (Get-Location) 'Releases'
+          $sbom = Join-Path $rel 'sbom.spdx.json'
+          gh api "repos/$env:REPOSITORY/dependency-graph/sbom" --jq '.sbom' | Out-File $sbom -Encoding utf8NoBOM
+          $checksums = Join-Path $rel 'checksums.txt'
+          # Hash exactly what the release offers for download: the assets vpk uploaded plus the
+          # SBOM (Releases/ also holds unpublished files, such as the previous full package).
+          $published = @(gh release view $env:TAG --json assets --jq '.assets[].name') + 'sbom.spdx.json'
+          Get-ChildItem -Path $rel -File |
+            Where-Object { $_.Name -ne 'checksums.txt' -and $published -contains $_.Name } |
+            Get-FileHash -Algorithm SHA256 |
+            ForEach-Object { '{0}  {1}' -f $_.Hash.ToLowerInvariant(), (Split-Path $_.Path -Leaf) } |
+            Out-File $checksums -Encoding ascii
+          gh release upload $env:TAG $sbom $checksums --clobber
+          if ($LASTEXITCODE -ne 0) { throw "gh release upload failed with exit code $LASTEXITCODE." }
+
+      # Set before publishing, so the release and its Discord announcement never go out empty.
+      - name: Release notes from CHANGELOG.md
+        shell: pwsh
+        env:
+          VERSION: ${{ steps.ver.outputs.version }}
+          TAG: ${{ steps.ver.outputs.tag }}
+        run: |
+          $changelog = (Get-Content CHANGELOG.md -Raw) -replace "`r`n", "`n"
+          $pattern = "(?ms)^## \[$([regex]::Escape($env:VERSION))\][^\n]*\n(.*?)(?=^## \[|^\[[^\]]+\]: |\z)"
+          $section = [regex]::Match($changelog, $pattern, 'None', [TimeSpan]::FromSeconds(5))
+          if ($section.Success -and $section.Groups[1].Value.Trim()) {
+            $section.Groups[1].Value.Trim() | gh release edit $env:TAG --notes-file -
+          }
+          else {
+            Write-Warning "CHANGELOG.md has no section for $env:VERSION; the release notes stay empty."
+          }
+
+      - name: Publish the release
+        shell: pwsh
+        env:
+          TAG: ${{ steps.ver.outputs.tag }}
+          PRERELEASE: ${{ steps.ver.outputs.prerelease }}
+        run: |
+          # A pre-release is never marked "Latest"; /releases/latest keeps pointing at the last stable.
+          if ($env:PRERELEASE -eq 'true') { gh release edit $env:TAG --draft=false --prerelease }
+          else { gh release edit $env:TAG --draft=false --latest }
+          if ($LASTEXITCODE -ne 0) { throw "gh release edit failed with exit code $LASTEXITCODE." }
+
+  announce:
+    # A release published with GITHUB_TOKEN does not fire the `release` event, so notify.yml's
+    # announcer never sees tag releases: announce from here.
+    needs: release
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Announce on Discord
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.release.outputs.tag }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_RELEASE_WEBHOOK }}
+        run: python3 .github/scripts/discord_notify.py release

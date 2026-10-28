@@ -1,0 +1,124 @@
+name: SonarCloud
+
+# CI-based SonarCloud analysis (project poli0981_OmniDeck): the solution is built between the
+# scanner's begin and end steps and the tests run with OpenCover coverage; the SonarCloud GitHub
+# App reports the quality gate on pull requests. The scanner turns TreatWarningsAsErrors off for
+# its build, so ci.yml stays the warnings-as-errors check. Automatic Analysis must be OFF in the
+# SonarCloud project (Administration → Analysis Method), or this analysis fails.
+# Requires the repository secret SONAR_TOKEN; not a required check (forks/Dependabot skip it).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  token:
+    # Pull requests from forks and from Dependabot get no repository secrets. Checking for the token
+    # skips those runs without trusting actor or repository names from the event.
+    name: Check for SONAR_TOKEN
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    outputs:
+      available: ${{ steps.check.outputs.available }}
+    steps:
+      - name: Check for SONAR_TOKEN
+        id: check
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          if [ -n "$SONAR_TOKEN" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::SONAR_TOKEN is not available to this run (fork or Dependabot pull request); skipping the analysis."
+          fi
+
+  analysis:
+    name: SonarCloud
+    needs: token
+    if: needs.token.outputs.available == 'true'
+    # WPF (net10.0-windows) only builds on Windows.
+    runs-on: windows-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # full history: SonarCloud uses blame to tell new code from old
+          persist-credentials: false
+
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+
+      # Both caches stay outside the workspace: the scanner also analyzes files under the root.
+      - name: Cache NuGet packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.nuget/packages
+          key: nuget-sonar-${{ runner.os }}-${{ hashFiles('global.json', 'Directory.Build.props', '**/*.csproj', '.config/dotnet-tools.json') }}
+          restore-keys: nuget-sonar-${{ runner.os }}-
+
+      - name: Cache SonarCloud analyzers and JRE
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.sonar/cache
+          key: sonar-${{ runner.os }}-${{ hashFiles('.config/dotnet-tools.json') }}
+          restore-keys: sonar-${{ runner.os }}-
+
+      - name: Restore pinned tools (dotnet-sonarscanner)
+        run: dotnet tool restore
+
+      # The project version (Directory.Build.props) drives SonarCloud's "previous version" new-code
+      # period. Roslyn rules already fail the build in ci.yml, so their suggestions aren't imported
+      # as external issues. Coverage skips XAML code-behind and the entry point.
+      - name: Begin analysis
+        shell: pwsh
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          $version = "$(dotnet msbuild src/OmniDeck.Core/OmniDeck.Core.csproj -getProperty:Version | Select-Object -Last 1)".Trim()
+          if ($LASTEXITCODE -ne 0 -or $version -notmatch '^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$') { throw "Unexpected project version '$version'." }
+          $scannerArgs = @(
+            'begin', '/k:poli0981_OmniDeck', '/o:poli0981', "/v:$version",
+            '/d:sonar.host.url=https://sonarcloud.io', "/d:sonar.token=$env:SONAR_TOKEN",
+            '/d:sonar.cs.opencover.reportsPaths=TestResults/**/coverage.opencover.xml',
+            '/d:sonar.cs.vstest.reportsPaths=TestResults/*.trx',
+            '/d:sonar.cs.roslyn.ignoreIssues=true',
+            '/d:sonar.exclusions=**/bin/**,**/obj/**,**/TestResults/**,publish/**,Releases/**',
+            '/d:sonar.coverage.exclusions=**/*.xaml.cs,**/Program.cs,scripts/**,.github/**'
+          )
+          dotnet sonarscanner @scannerArgs
+          if ($LASTEXITCODE -ne 0) { throw "SonarScanner begin failed with exit code $LASTEXITCODE." }
+
+      - name: Build
+        # Real source paths in the PDBs (not the /_/ deterministic ones), so coverage maps to files.
+        run: dotnet build OmniDeck.slnx -c Release --no-incremental -p:ContinuousIntegrationBuild=false
+
+      - name: Test with coverage
+        run: >-
+          dotnet test OmniDeck.slnx -c Release --no-build
+          --collect "XPlat Code Coverage;Format=opencover"
+          --logger "trx;LogFileName=test-results.trx"
+          --results-directory TestResults
+
+      - name: End analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: dotnet sonarscanner end "/d:sonar.token=$env:SONAR_TOKEN"

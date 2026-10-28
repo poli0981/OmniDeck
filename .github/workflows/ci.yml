@@ -1,0 +1,160 @@
+name: CI
+
+# Build, test, package and lint on every pull request and push to main. Every job here is a
+# required status check on main (ruleset "main"): rename a job only after updating the ruleset,
+# and never add `paths:` filters — a workflow that doesn't run leaves its check "Expected" forever.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  build:
+    # WPF (net10.0-windows) only builds on Windows.
+    runs-on: windows-latest
+    timeout-minutes: 20
+    env:
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+
+      - name: Cache NuGet packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ env.NUGET_PACKAGES }}
+          key: nuget-${{ runner.os }}-${{ hashFiles('global.json', 'Directory.Build.props', '**/*.csproj', '.config/dotnet-tools.json') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Restore (NuGet Audit fails on moderate+ advisories)
+        run: dotnet restore OmniDeck.slnx
+
+      - name: Restore pinned tools
+        run: dotnet tool restore
+
+      - name: Verify C# formatting
+        run: dotnet format OmniDeck.slnx --verify-no-changes --no-restore
+
+      - name: Verify XAML formatting (XamlStyler)
+        run: dotnet xstyler -c Settings.XamlStyler -d src -r -p
+
+      - name: Design tokens only in module views
+        shell: pwsh
+        run: |
+          # docs/UI-MODES.md §2: module views consume Od.* tokens, never a literal FontSize.
+          $hits = Get-ChildItem -Path src -Recurse -Filter *.xaml |
+            Where-Object { $_.FullName -match '[\\/]OmniDeck\.Modules[\\/]' } |
+            Select-String -Pattern 'FontSize\s*=\s*"\s*\d'
+          if ($hits) {
+            $hits | ForEach-Object { Write-Host "::error file=$($_.Path),line=$($_.LineNumber)::Literal FontSize in a module view; use an Od.* token." }
+            exit 1
+          }
+          Write-Host 'No literal FontSize in module views.'
+
+      - name: Build (Release, warnings are errors)
+        run: dotnet build OmniDeck.slnx -c Release --no-restore
+
+      - name: Test
+        run: >-
+          dotnet test OmniDeck.slnx -c Release --no-build
+          --logger "trx;LogFileName=test-results.trx"
+          --results-directory TestResults
+
+      - name: Upload test results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: test-results
+          path: TestResults
+          retention-days: 14
+
+  package:
+    # Publishes and packs exactly like release.yml (pre-release version included), so a packaging
+    # regression fails the pull request instead of the tagged release.
+    runs-on: windows-latest
+    timeout-minutes: 30
+    env:
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+
+      - name: Cache NuGet packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ env.NUGET_PACKAGES }}
+          key: nuget-package-${{ runner.os }}-${{ hashFiles('global.json', 'Directory.Build.props', '**/*.csproj', '.config/dotnet-tools.json') }}
+          restore-keys: nuget-package-${{ runner.os }}-
+
+      - name: Publish + pack (Velopack smoke test)
+        shell: pwsh
+        env:
+          RUN_NUMBER: ${{ github.run_number }}
+        run: ./scripts/pack.ps1 -Version "0.0.0-ci.$env:RUN_NUMBER"
+
+      - name: Upload installer preview
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: installer-preview
+          path: Releases/*-Setup.exe
+          retention-days: 7
+
+  catalog:
+    # Installed apps fetch catalog/webapps.json from main once a day: every merge to main is a
+    # production change for all users, so the file is validated on every pull request.
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Validate the web app catalog (schema + semantic rules)
+        shell: pwsh
+        run: ./scripts/validate-catalog.ps1
+
+  lint:
+    # The only check release.yml gets before a tag is pushed, plus local Markdown links/anchors.
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Lint workflows (actionlint 1.7.12)
+        uses: docker://rhysd/actionlint@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667
+        with:
+          args: -color
+
+      # Offline: only repository-relative links and anchors, so the result is deterministic
+      # (external sites such as Discord or Google rate-limit CI runners).
+      - name: Check Markdown links (offline)
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          args: --offline --include-fragments --no-progress './**/*.md'
+          fail: true
