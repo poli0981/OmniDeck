@@ -1,6 +1,6 @@
 # OmniDeck — Disclaimer
 
-Version 1.0 — effective from the first public release (0.0.1-alpha.1).
+Version 1.1 — effective from the first release after 0.0.1-alpha.1. Changes since 1.0: the Stooq stock data service is no longer used, and Messenger is no longer in the web app catalog.
 
 ## Pre-release software
 
@@ -8,7 +8,7 @@ OmniDeck is pre-release (alpha/beta) software provided **as is**, without warran
 
 ## Financial data — not investment advice
 
-The stocks module displays market data obtained from third-party providers (Stooq; optionally Twelve Data). This data may be **delayed, incomplete, or inaccurate**, and end-of-day sources are not suitable for time-sensitive decisions. Nothing displayed by OmniDeck constitutes financial, investment, legal, or tax advice, and no fitness for trading purposes is implied. Any decisions you make based on this data are entirely your own responsibility. Verify figures with your broker or an official exchange source before acting.
+The stocks module displays market data obtained from a third-party provider (Twelve Data, using your own API key). This data may be **delayed, incomplete, or inaccurate**, and it is not suitable for time-sensitive decisions. Nothing displayed by OmniDeck constitutes financial, investment, legal, or tax advice, and no fitness for trading purposes is implied. Any decisions you make based on this data are entirely your own responsibility. Verify figures with your broker or an official exchange source before acting.
 
 ## Weather data
 
@@ -16,7 +16,7 @@ Weather information comes from Open-Meteo and is provided for general planning o
 
 ## Third-party web applications and services
 
-Web apps accessible through OmniDeck (Spotify, Discord, YouTube, Google services, Facebook, Messenger, and others in the catalog) are operated entirely by their respective providers. Their availability, functionality, sign-in behavior, and content may change or cease at any time without notice, and some capabilities differ from those providers' native desktop apps (documented in the README). OmniDeck has no control over, and assumes no responsibility for, those services or their content. Your use of them is subject to their own terms.
+Web apps accessible through OmniDeck (Spotify, Discord, YouTube, Google services, Facebook, and others in the catalog) are operated entirely by their respective providers. Their availability, functionality, sign-in behavior, and content may change or cease at any time without notice, and some capabilities differ from those providers' native desktop apps (documented in the README). OmniDeck has no control over, and assumes no responsibility for, those services or their content. Your use of them is subject to their own terms.
 
 ## Trademarks
 

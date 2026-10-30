@@ -42,13 +42,12 @@ libVLC note: once the media player ships, OmniDeck redistributes libVLC binaries
 | Service | Terms | Use |
 |---|---|---|
 | Open-Meteo | open API; attribution appreciated, non-commercial free tier | weather & geocoding — "Weather data by Open-Meteo.com" shown in the module footer |
-| Stooq | free quotes per stooq.com terms | default EOD stock data |
-| Twelve Data | user's own API key under Twelve Data's terms | optional intraday stock data |
+| Twelve Data | user's own API key under Twelve Data's terms | stock quotes, price history and symbol search (only with the user's key) |
 | GitHub | GitHub Terms of Service | releases, catalog refresh, issues |
 
 ## 5. Third-party web applications
 
-Web apps in the catalog (Spotify, Discord, YouTube, Gmail, Google Calendar, Google Drive, Google Maps, Facebook, Messenger) are loaded from their providers' own servers and are not components of OmniDeck. All associated trademarks belong to their respective owners; see DISCLAIMER.md.
+Web apps in the catalog (Spotify, Discord, YouTube, Gmail, Google Calendar, Google Drive, Google Maps, Facebook) are loaded from their providers' own servers and are not components of OmniDeck. All associated trademarks belong to their respective owners; see DISCLAIMER.md.
 
 ## 6. License texts
 

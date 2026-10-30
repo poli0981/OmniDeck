@@ -1,6 +1,6 @@
 # OmniDeck — Privacy Policy
 
-Version 1.0 — effective from the first public release (0.0.1-alpha.1).
+Version 1.1 — effective from the first release after 0.0.1-alpha.1. Changes since 1.0: the Stooq stock data service is no longer used, and Messenger is no longer in the web app catalog.
 
 **Short version: OmniDeck collects nothing.** There is no telemetry, no analytics, no account, no crash auto-upload, and no server operated by the OmniDeck project that receives your data.
 
@@ -21,7 +21,7 @@ The app itself is installed separately, in `%LocalAppData%\OmniDeck`. Uninstalli
 OmniDeck only talks to the internet for the features you use:
 
 - **Open-Meteo** — weather forecasts and geocoding for your saved locations.
-- **Stooq** and (only if you configure a key) **Twelve Data** — stock quotes for tickers on your watchlist.
+- **Twelve Data**, only after you enter your own API key: stock quotes, price history and symbol search for the stocks module.
 - **GitHub** — update checks/downloads (Velopack) and the daily web-app catalog refresh; opening a pre-filled bug-report issue happens in your browser and only if you choose to.
 - **Microsoft Edge WebView2 Runtime** — the Microsoft component that renders the web apps may contact Microsoft services on its own, for example Microsoft Defender SmartScreen reputation checks for the pages you visit and the runtime's own updates and diagnostic data. That traffic is governed by Microsoft's privacy statement and your Windows diagnostic-data settings; OmniDeck does not enable any additional reporting.
 - **The third-party web apps you open** (Spotify, Discord, Google services, Facebook, etc.) — these connections go directly from your device to those providers. Their handling of your data is governed by **their** privacy policies, not this one. OmniDeck does not inject analytics into, read the contents of, or proxy these sessions.
