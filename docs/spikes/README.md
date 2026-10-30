@@ -21,7 +21,7 @@ P0 runs from 2 to 15 November 2026 ([ROADMAP](../ROADMAP.md#1-phases)). Its job 
 | 4 | CDP console capture | P2: bug-report flow | Pending ([#5](https://github.com/poli0981/OmniDeck/issues/5)) | `04-cdp-console.md` |
 | 5 | Runtime preset swap | **P1**: theme engine | Pending ([#6](https://github.com/poli0981/OmniDeck/issues/6)) | `05-theme-swap.md` |
 | 6 | LibVLCSharp in WPF (airspace, fullscreen) | P2: media player | Pending ([#7](https://github.com/poli0981/OmniDeck/issues/7)) | `06-libvlcsharp.md` |
-| 7 | Stock data providers | P3: stocks | Pending ([#8](https://github.com/poli0981/OmniDeck/issues/8)) | `07-providers.md` |
+| 7 | Stock data providers | P3: stocks | **GO with conditions:** Twelve Data with the user's key is the only provider; Stooq NO-GO | [07-providers.md](07-providers.md) |
 
 The two spikes that block P1 (#3 and #5) go first. A spike that only blocks P2 or P3 may run on into the first weeks of P1, but its note still has to land before the phase it blocks starts.
 
