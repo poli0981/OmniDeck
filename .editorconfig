@@ -51,8 +51,8 @@ dotnet_diagnostic.IDE0005.severity = warning   # unnecessary using
 dotnet_diagnostic.CA1848.severity = none       # LoggerMessage delegates: overkill here
 dotnet_diagnostic.MA0026.severity = suggestion # TODO comments: SonarCloud (S1135) already tracks them
 
-[src/OmniDeck.App/**.cs]
-# UI code must resume on the dispatcher thread, so ConfigureAwait(false) is wrong here.
+[src/{OmniDeck.App,OmniDeck.Modules}/**.cs]
+# UI code (the shell and the modules) must resume on the dispatcher thread, so ConfigureAwait(false) is wrong here.
 dotnet_diagnostic.MA0004.severity = none
 
 [src/OmniDeck.Core/{Modules,Governor}/**.cs]

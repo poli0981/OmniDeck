@@ -80,6 +80,7 @@
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu>
                     <MenuItem Click="OnTrayOpen" Header="{res:OdLoc Tray_Open}" />
+                    <MenuItem Click="OnTrayQuickTimer" Header="{res:OdLoc Tray_QuickTimer}" />
                     <Separator />
                     <MenuItem Click="OnTrayQuit" Header="{res:OdLoc Tray_Quit}" />
                 </ContextMenu>

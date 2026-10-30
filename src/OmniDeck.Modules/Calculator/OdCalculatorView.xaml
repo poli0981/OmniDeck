@@ -1,0 +1,155 @@
+<UserControl x:Class="OmniDeck.Modules.Calculator.OdCalculatorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:calc="clr-namespace:OmniDeck.Modules.Calculator"
+             xmlns:res="clr-namespace:OmniDeck.Core.Localization;assembly=OmniDeck.Core"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             Focusable="True"
+             KeyDown="OnKeyDown"
+             Loaded="OnLoaded"
+             TextInput="OnTextInput">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="Visible" />
+
+        <!--  One template for every keypad key; the keys themselves are data (OdCalculatorViewModel).  -->
+        <DataTemplate x:Key="Key" DataType="{x:Type calc:OdCalcKey}">
+            <ui:Button x:Name="KeyButton"
+                       Margin="2"
+                       HorizontalAlignment="Stretch"
+                       VerticalAlignment="Stretch"
+                       AutomationProperties.Name="{Binding AccessibleName}"
+                       Command="{Binding DataContext.PressCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                       CommandParameter="{Binding}"
+                       Content="{Binding Label}"
+                       FontSize="{DynamicResource Od.Font.H2}"
+                       ToolTip="{Binding Name}" />
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsPrimary}" Value="True">
+                    <Setter TargetName="KeyButton" Property="Appearance" Value="Primary" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+    </UserControl.Resources>
+    <Grid Margin="{DynamicResource Od.Padding.Card}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" MinWidth="320" />
+            <ColumnDefinition Width="280" />
+        </Grid.ColumnDefinitions>
+
+        <DockPanel Grid.Column="0" Margin="{DynamicResource Od.Margin.Tile}">
+            <StackPanel Margin="{DynamicResource Od.Margin.Item}"
+                        DockPanel.Dock="Top"
+                        Orientation="Horizontal">
+                <TextBlock Margin="{DynamicResource Od.Padding.Control}"
+                           VerticalAlignment="Center"
+                           FontSize="{DynamicResource Od.Font.H2}"
+                           FontWeight="SemiBold"
+                           Text="{res:OdLoc Calc_Name}" />
+                <ui:ToggleSwitch Margin="{DynamicResource Od.Padding.Control}"
+                                 Content="{res:OdLoc Calc_Scientific}"
+                                 IsChecked="{Binding IsScientific}" />
+                <ui:ToggleSwitch Margin="{DynamicResource Od.Padding.Control}"
+                                 Content="{res:OdLoc Calc_Degrees}"
+                                 IsChecked="{Binding UseDegrees}"
+                                 Visibility="{Binding IsScientific, Converter={StaticResource Visible}}" />
+            </StackPanel>
+
+            <ui:Card Margin="{DynamicResource Od.Margin.Item}" DockPanel.Dock="Top">
+                <DockPanel>
+                    <ui:Button VerticalAlignment="Bottom"
+                               Appearance="Transparent"
+                               AutomationProperties.Name="{res:OdLoc Calc_Copy}"
+                               Command="{Binding CopyResultCommand}"
+                               DockPanel.Dock="Left"
+                               Icon="{ui:SymbolIcon Copy24}"
+                               ToolTip="{res:OdLoc Calc_Copy}" />
+                    <StackPanel>
+                        <TextBlock MinHeight="{DynamicResource Od.Font.H2}"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                   Text="{Binding Expression}"
+                                   TextAlignment="Right"
+                                   TextWrapping="Wrap" />
+                        <TextBlock AutomationProperties.LiveSetting="Polite"
+                                   FontSize="{DynamicResource Od.Font.H1}"
+                                   FontWeight="SemiBold"
+                                   Text="{Binding Result}"
+                                   TextAlignment="Right"
+                                   TextWrapping="Wrap">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HasError}" Value="True">
+                                            <Setter Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </StackPanel>
+                </DockPanel>
+            </ui:Card>
+
+            <ItemsControl Margin="{DynamicResource Od.Margin.Item}"
+                          DockPanel.Dock="Top"
+                          Focusable="False"
+                          ItemTemplate="{StaticResource Key}"
+                          ItemsSource="{Binding ScientificKeys}"
+                          Visibility="{Binding IsScientific, Converter={StaticResource Visible}}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="5" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+
+            <ItemsControl Focusable="False"
+                          ItemTemplate="{StaticResource Key}"
+                          ItemsSource="{Binding StandardKeys}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="4" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </DockPanel>
+
+        <DockPanel Grid.Column="1">
+            <DockPanel Margin="{DynamicResource Od.Margin.Item}" DockPanel.Dock="Top">
+                <ui:Button Appearance="Transparent"
+                           AutomationProperties.Name="{res:OdLoc Calc_ClearHistory}"
+                           Command="{Binding ClearHistoryCommand}"
+                           DockPanel.Dock="Right"
+                           Icon="{ui:SymbolIcon Delete24}"
+                           ToolTip="{res:OdLoc Calc_ClearHistory}" />
+                <TextBlock VerticalAlignment="Center"
+                           FontSize="{DynamicResource Od.Font.H2}"
+                           FontWeight="SemiBold"
+                           Text="{res:OdLoc Calc_History}" />
+            </DockPanel>
+            <TextBlock DockPanel.Dock="Top"
+                       Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                       Text="{res:OdLoc Calc_HistoryEmpty}"
+                       Visibility="{Binding HistoryIsEmpty, Converter={StaticResource Visible}}" />
+            <ListBox AutomationProperties.Name="{res:OdLoc Calc_History}"
+                     Background="Transparent"
+                     BorderThickness="0"
+                     ItemsSource="{Binding History}"
+                     MouseDoubleClick="OnHistoryDoubleClick"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type calc:OdCalcHistoryEntry}">
+                        <StackPanel>
+                            <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                       Text="{Binding Expression}"
+                                       TextAlignment="Right"
+                                       TextWrapping="Wrap" />
+                            <TextBlock FontWeight="SemiBold"
+                                       Text="{Binding Result}"
+                                       TextAlignment="Right" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+    </Grid>
+</UserControl>

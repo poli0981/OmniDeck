@@ -30,7 +30,7 @@ catalog/
   webapps.schema.json  its JSON Schema (CI validation, editor completion)
 ```
 
-State at kickoff: `OmniDeck.App` (Velopack bootstrap + a placeholder `FluentWindow`), `OmniDeck.Core` (`OdVersionInfo`) and `OmniDeck.Tests` exist. `OmniDeck.Modules` and `OmniDeck.Web` are created when their first real code lands (P1/P2), so the build never carries empty projects.
+State at kickoff: `OmniDeck.App` (Velopack bootstrap + a placeholder `FluentWindow`), `OmniDeck.Core` (`OdVersionInfo`) and `OmniDeck.Tests` exist. `OmniDeck.Modules` and `OmniDeck.Web` are created when their first real code lands (P1/P2), so the build never carries empty projects. `OmniDeck.Modules` arrived in P1 with Clock, Timer and Calculator: it references Core (and WPF-UI for its views) but never the app, registers its modules with `AddOmniDeckModules()`, and keeps its own string table. Durable module state lives outside the views, in a service (`OdTimerService`), a view model the module keeps (the calculator's history), or the module's settings document (the clock's zones), so hibernating a view loses nothing.
 
 Naming: namespace `OmniDeck.*`, public type prefix `Od*` (`OdModuleHost`, `OdRamGovernor`, `OdWebRunner`, `OdCatalogEntry`), interfaces `IOd*`. The WPF application class is `OdApp` (`OdApp.xaml`), started from `Program.Main` after Velopack's hooks; the executable is `OmniDeck.exe`.
 

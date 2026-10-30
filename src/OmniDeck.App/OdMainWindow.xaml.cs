@@ -12,6 +12,7 @@ using OmniDeck.Core.Localization;
 using OmniDeck.Core.Settings;
 using OmniDeck.Core.Storage;
 using OmniDeck.Core.Theming;
+using OmniDeck.Modules.Timer;
 using Wpf.Ui;
 using Wpf.Ui.Abstractions;
 using Wpf.Ui.Controls;
@@ -34,6 +35,7 @@ public partial class OdMainWindow : INavigationViewPageProvider
     private readonly IOdSettingsService _settings;
     private readonly IOdAppLifetime _lifetime;
     private readonly IOdAppMeta _meta;
+    private readonly IOdQuickTimer _quickTimer;
     private readonly OdLibraryPage _library;
     private readonly OdMemoryPage _memory;
     private readonly OdModuleStage _stage;
@@ -49,7 +51,8 @@ public partial class OdMainWindow : INavigationViewPageProvider
         OdTrayNotifier notifier,
         IOdSettingsService settings,
         IOdAppLifetime lifetime,
-        IOdAppMeta meta)
+        IOdAppMeta meta,
+        IOdQuickTimer quickTimer)
     {
         ArgumentNullException.ThrowIfNull(theme);
         ArgumentNullException.ThrowIfNull(snackbars);
@@ -60,6 +63,7 @@ public partial class OdMainWindow : INavigationViewPageProvider
         _settings = settings;
         _lifetime = lifetime;
         _meta = meta;
+        _quickTimer = quickTimer;
         DataContext = shell;
         _library = new OdLibraryPage { DataContext = shell };
         _memory = new OdMemoryPage { DataContext = memory };
@@ -258,4 +262,6 @@ public partial class OdMainWindow : INavigationViewPageProvider
     private void OnTrayOpen(object sender, RoutedEventArgs e) => Present();
 
     private void OnTrayQuit(object sender, RoutedEventArgs e) => _lifetime.Quit();
+
+    private void OnTrayQuickTimer(object sender, RoutedEventArgs e) => _quickTimer.StartQuick(TimeSpan.FromMinutes(5));
 }

@@ -25,6 +25,14 @@ All notable changes to OmniDeck are documented here. The format follows
   it takes, with a notification. The limits default to min(4.5 GB, 35 % of RAM) and min(6 GB, 50 %).
 - Running modules (the sidebar's Memory item): every module's state and last use, memory in use
   against the limits, and Suspend, Hibernate, Close and Keep running controls.
+- Clock: local time and any number of world clocks, in 12- or 24-hour time, with each zone's offset
+  from here. The zones are remembered.
+- Timer: countdowns with presets (1, 5, 10 and 25 minutes) or a custom length and name, and a
+  stopwatch with laps. A finished countdown raises a Windows notification, also from the
+  notification area, and the tray menu starts a 5-minute timer. Timers run only while OmniDeck
+  runs, as the module says.
+- Calculator: standard and scientific keypads (degrees or radians), keyboard input, the session's
+  history, and copying the result.
 
 ### Changed
 - Stocks: Twelve Data with the user's own API key is now the only provider. Stooq was dropped because
