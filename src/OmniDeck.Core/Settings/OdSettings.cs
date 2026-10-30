@@ -39,6 +39,9 @@ public sealed record OdSettings
     /// </summary>
     public IReadOnlyList<string> PinnedModules { get; init; } = [];
 
+    /// <summary>The RAM governor's thresholds and the modules it must keep running.</summary>
+    public OdMemorySettings Memory { get; init; } = new();
+
     internal const string DefaultPreset = "Standard";
 
     internal static readonly string[] KnownPresets = ["Dynamic", "Standard", "Comfort"];
@@ -66,7 +69,10 @@ public sealed record OdSettings
         FontScale = double.IsFinite(FontScale) ? Math.Clamp(FontScale, Theming.OdTokens.MinFontScale, Theming.OdTokens.MaxFontScale) : 1.0,
         AccentColor = IsHexColor(AccentColor) ? AccentColor.ToUpperInvariant() : "",
         PinnedModules = DistinctIds(PinnedModules),
+        Memory = Repair(Memory),
     };
+
+    private static OdMemorySettings Repair(OdMemorySettings? memory) => (memory ?? new OdMemorySettings()).Normalized();
 
     private static bool IsHexColor(string? value) =>
         value is { Length: 7 } && value[0] == '#' && !value.AsSpan(1).ContainsAnyExcept(HexDigits);
@@ -75,7 +81,7 @@ public sealed record OdSettings
     /// Drops blank and repeated ids. A list that needs no repair comes back as the same instance, so
     /// record equality (and with it "no change, no save") keeps working.
     /// </summary>
-    private static IReadOnlyList<string> DistinctIds(IReadOnlyList<string>? ids)
+    internal static IReadOnlyList<string> DistinctIds(IReadOnlyList<string>? ids)
     {
         if (ids is null)
         {

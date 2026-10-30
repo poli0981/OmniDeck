@@ -48,13 +48,15 @@ The caps, the toasts and the task-manager panel all use it. The panel may show t
 - **> SoftCap:** hibernate the least-recently-used unpinned module, since Suspended frees almost no memory. Repeat on the next tick if still above.
 - **> HardCap:** force-hibernate LRU unpinned modules until below, then raise one toast summarizing what was hibernated. If the shared WebView2 processes alone keep the total above the cap (the GPU process grows with video), the toast says so instead of hibernating apps that would free nothing.
 
-Ordering hint: `RamClass.Heavy` modules (web apps, media, stocks charts) are preferred victims over `Light` ones at equal recency.
+Ordering hint: `RamClass.Heavy` modules (web apps, media, stocks charts) are preferred victims over `Light` ones at equal recency. Recency counts in poll intervals, so modules hidden within the same interval are equally recent.
 
 Honesty note: for in-process native modules the real win comes from modules *actually releasing* resources in `SuspendAsync`/`HibernateAsync`. The governor performs a `GC.Collect` + LOH compaction after demotions, and deliberately does **not** call `EmptyWorkingSet` tricks — those only shuffle pages to standby and fake the numbers.
 
 ## 5. Task-manager panel
 
 Settings → Memory → "Running modules": live table of every module with state, memory estimate (the governor metric), last-used time, pin toggle, and Suspend / Hibernate / Close buttons. This is both a user feature and the primary debugging tool for the governor itself; the panel reads and writes the same scheduler, no side channel.
+
+As built in P1, the sidebar footer's **Memory** item opens the panel until the settings pages exist. Native modules share the shell process, so the panel shows OmniDeck's total against both caps rather than a per-module figure; web apps get their own figures with the web runner (P2). The pin toggle is labelled "Keep running", so it is not confused with pinning a module to the sidebar, and it is stored in `settings.json` (`memory.keepRunning`) next to the thresholds.
 
 ## 6. Testing
 

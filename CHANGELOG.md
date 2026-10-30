@@ -20,6 +20,11 @@ All notable changes to OmniDeck are documented here. The format follows
   and a command palette (Ctrl+K, or the search box in the title bar) that finds modules and commands.
 - Closing the window keeps OmniDeck running in the notification area; its icon's menu opens or quits
   it. Modules can raise Windows notifications from there.
+- The RAM governor: modules hidden for 5 minutes are suspended and after 30 minutes hibernated.
+  Above a soft memory limit the least recently used one is hibernated; above a hard limit as many as
+  it takes, with a notification. The limits default to min(4.5 GB, 35 % of RAM) and min(6 GB, 50 %).
+- Running modules (the sidebar's Memory item): every module's state and last use, memory in use
+  against the limits, and Suspend, Hibernate, Close and Keep running controls.
 
 ### Changed
 - Stocks: Twelve Data with the user's own API key is now the only provider. Stooq was dropped because

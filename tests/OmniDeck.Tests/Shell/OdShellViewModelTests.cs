@@ -155,14 +155,17 @@ public sealed class OdShellViewModelTests : IDisposable
 
         var entries = shell.PaletteEntries();
 
-        Assert.Equal(new[] { "Module_clock", "Module_timer", "Module_calc", "Module library", "Quit OmniDeck" }, entries.Select(e => e.Title), StringComparer.Ordinal);
+        Assert.Equal(new[] { "Module_clock", "Module_timer", "Module_calc", "Module library", "Running modules", "Quit OmniDeck" }, entries.Select(e => e.Title), StringComparer.Ordinal);
         Assert.Equal("Command", entries[^1].Detail);
         await entries[1].RunAsync();
         Assert.Equal("timer", shell.CurrentTarget);
+        await entries[4].RunAsync();
+        Assert.Equal(OdShellViewModel.MemoryTarget, shell.CurrentTarget);
+        Assert.Null(host.Current);
         await entries[3].RunAsync();
         Assert.Equal(OdShellViewModel.LibraryTarget, shell.CurrentTarget);
         Assert.False(_lifetime.IsQuitting);
-        await entries[4].RunAsync();
+        await entries[5].RunAsync();
         Assert.True(_lifetime.IsQuitting);
     });
 

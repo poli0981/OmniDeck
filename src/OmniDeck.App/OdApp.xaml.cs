@@ -6,6 +6,7 @@ using OmniDeck.App.Resources;
 using OmniDeck.App.Shell;
 using OmniDeck.App.Theming;
 using OmniDeck.Core;
+using OmniDeck.Core.Governor;
 using OmniDeck.Core.Localization;
 using OmniDeck.Core.Runtime;
 using OmniDeck.Core.Settings;
@@ -78,6 +79,7 @@ public partial class OdApp
         _services.GetRequiredService<OdThemeEngine>().Start(this);
         _guard.StartListening(() => _ = Dispatcher.InvokeAsync(ShowMainWindow));
         ShowMainWindow();
+        _services.GetRequiredService<OdRamGovernor>().Start();
     }
 
     private void ShowMainWindow()

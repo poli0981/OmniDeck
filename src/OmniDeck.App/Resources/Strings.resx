@@ -76,6 +76,75 @@ Support code: {0}
 
 {0}</value>
   </data>
+  <data name="Memory_Nav" xml:space="preserve">
+    <value>Memory</value>
+  </data>
+  <data name="Memory_Title" xml:space="preserve">
+    <value>Running modules</value>
+  </data>
+  <data name="Memory_Intro" xml:space="preserve">
+    <value>Hidden modules step down over time to save memory: idle, then suspended, then hibernated. Keep a module running to exempt it.</value>
+  </data>
+  <data name="Memory_InUse" xml:space="preserve">
+    <value>In use: {0}</value>
+  </data>
+  <data name="Memory_Limits" xml:space="preserve">
+    <value>Soft limit {0} · hard limit {1}</value>
+  </data>
+  <data name="Memory_SharedNote" xml:space="preserve">
+    <value>Measured for OmniDeck as a whole: built-in modules share its process, so they have no figure of their own.</value>
+  </data>
+  <data name="Memory_KeepRunning" xml:space="preserve">
+    <value>Keep running</value>
+  </data>
+  <data name="Memory_Suspend" xml:space="preserve">
+    <value>Suspend</value>
+  </data>
+  <data name="Memory_Hibernate" xml:space="preserve">
+    <value>Hibernate</value>
+  </data>
+  <data name="Memory_UsedNow" xml:space="preserve">
+    <value>On screen</value>
+  </data>
+  <data name="Memory_UsedJustNow" xml:space="preserve">
+    <value>Used just now</value>
+  </data>
+  <data name="Memory_UsedMinutesAgo" xml:space="preserve">
+    <value>Used {0} min ago</value>
+  </data>
+  <data name="Memory_UsedHoursAgo" xml:space="preserve">
+    <value>Used {0} h ago</value>
+  </data>
+  <data name="State_Created" xml:space="preserve">
+    <value>Not started</value>
+  </data>
+  <data name="State_Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="State_Idle" xml:space="preserve">
+    <value>Idle</value>
+  </data>
+  <data name="State_Suspended" xml:space="preserve">
+    <value>Suspended</value>
+  </data>
+  <data name="State_Hibernated" xml:space="preserve">
+    <value>Hibernated</value>
+  </data>
+  <data name="State_Closed" xml:space="preserve">
+    <value>Closed</value>
+  </data>
+  <data name="Governor_HardCapTitle" xml:space="preserve">
+    <value>OmniDeck is using a lot of memory</value>
+  </data>
+  <data name="Governor_HardCapHibernatedOne" xml:space="preserve">
+    <value>It hibernated a module to stay under its {0} limit.</value>
+  </data>
+  <data name="Governor_HardCapHibernated" xml:space="preserve">
+    <value>It hibernated {0} modules to stay under its {1} limit.</value>
+  </data>
+  <data name="Governor_HardCapKept" xml:space="preserve">
+    <value>It is above its {0} limit, and nothing more can be hibernated: the open modules are in use or kept running.</value>
+  </data>
   <data name="Dialog_OK" xml:space="preserve">
     <value>OK</value>
   </data>
