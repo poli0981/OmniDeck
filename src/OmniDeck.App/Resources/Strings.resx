@@ -52,6 +52,9 @@
   <data name="Tray_Open" xml:space="preserve">
     <value>Open OmniDeck</value>
   </data>
+  <data name="Tray_QuickTimer" xml:space="preserve">
+    <value>Start a 5-minute timer</value>
+  </data>
   <data name="Tray_Quit" xml:space="preserve">
     <value>Quit</value>
   </data>

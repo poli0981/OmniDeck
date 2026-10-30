@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OmniDeck.Core\OmniDeck.Core.csproj" />
+    <ProjectReference Include="..\OmniDeck.Modules\OmniDeck.Modules.csproj" />
   </ItemGroup>
 
   <ItemGroup>

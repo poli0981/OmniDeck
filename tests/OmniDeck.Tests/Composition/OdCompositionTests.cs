@@ -7,6 +7,7 @@ using OmniDeck.App.Shell;
 using OmniDeck.Core;
 using OmniDeck.Core.Modules;
 using OmniDeck.Core.Storage;
+using OmniDeck.Modules;
 using OmniDeck.Tests.TestSupport;
 using Serilog.Core;
 
@@ -20,12 +21,14 @@ public sealed class OdCompositionTests
         using var temp = new OdTempDirectory();
         var services = new ServiceCollection()
             .AddOmniDeckCore(new OdDataRoot(temp.Path), Logger.None)
+            .AddOmniDeckModules()
             .AddOmniDeckApp();
 
         using var provider = services.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
 
         Assert.NotNull(provider.GetRequiredService<OdCrashHandler>());
         Assert.Same(provider.GetRequiredService<OdTrayNotifier>(), provider.GetRequiredService<IOdNotifier>());
+        Assert.Equal(new[] { "clock", "timer", "calculator" }, provider.GetRequiredService<OdModuleHost>().Modules.Select(m => m.Info.Id), StringComparer.Ordinal);
     }
 
     [Fact]
@@ -36,6 +39,17 @@ public sealed class OdCompositionTests
         Assert.DoesNotContain(typeof(OdApp).Assembly.GetName().Name, references, StringComparer.Ordinal);
         Assert.DoesNotContain("Velopack", references, StringComparer.Ordinal);
         Assert.DoesNotContain("Wpf.Ui", references, StringComparer.Ordinal);
+        Assert.DoesNotContain(typeof(OdModulesServiceCollectionExtensions).Assembly.GetName().Name, references, StringComparer.Ordinal);
+    }
+
+    [Fact]
+    public void Modules_DependOnCoreButNeverOnTheShell()
+    {
+        var references = typeof(OdModulesServiceCollectionExtensions).Assembly.GetReferencedAssemblies().Select(a => a.Name).ToList();
+
+        Assert.Contains(typeof(OdDataRoot).Assembly.GetName().Name, references, StringComparer.Ordinal);
+        Assert.DoesNotContain(typeof(OdApp).Assembly.GetName().Name, references, StringComparer.Ordinal);
+        Assert.DoesNotContain("Velopack", references, StringComparer.Ordinal);
     }
 
     [Fact]

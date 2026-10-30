@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- The built-in modules' UI strings, English (neutral). Vietnamese and Japanese satellites arrive in P3. -->
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Category_Time" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="Category_Tools" xml:space="preserve">
+    <value>Tools</value>
+  </data>
+  <data name="Clock_Name" xml:space="preserve">
+    <value>Clock</value>
+  </data>
+  <data name="Clock_Local" xml:space="preserve">
+    <value>Local time</value>
+  </data>
+  <data name="Clock_24Hour" xml:space="preserve">
+    <value>24-hour clock</value>
+  </data>
+  <data name="Clock_AddZone" xml:space="preserve">
+    <value>Time zone to add</value>
+  </data>
+  <data name="Clock_Add" xml:space="preserve">
+    <value>Add clock</value>
+  </data>
+  <data name="Clock_Remove" xml:space="preserve">
+    <value>Remove this clock</value>
+  </data>
+  <data name="Clock_SameTime" xml:space="preserve">
+    <value>Same time as here</value>
+  </data>
+  <data name="Clock_Hours" xml:space="preserve">
+    <value>{0} h</value>
+  </data>
+  <data name="Clock_HoursMinutes" xml:space="preserve">
+    <value>{0} h {1} min</value>
+  </data>
+  <data name="Clock_Ahead" xml:space="preserve">
+    <value>{0} ahead</value>
+  </data>
+  <data name="Clock_Behind" xml:space="preserve">
+    <value>{0} behind</value>
+  </data>
+  <data name="Timer_Name" xml:space="preserve">
+    <value>Timer</value>
+  </data>
+  <data name="Timer_RunningNote" xml:space="preserve">
+    <value>Timers run only while OmniDeck is running. Closing its window keeps it running in the notification area.</value>
+  </data>
+  <data name="Timer_Minutes" xml:space="preserve">
+    <value>Minutes</value>
+  </data>
+  <data name="Timer_Seconds" xml:space="preserve">
+    <value>Seconds</value>
+  </data>
+  <data name="Timer_NameHint" xml:space="preserve">
+    <value>Name (optional)</value>
+  </data>
+  <data name="Timer_Add" xml:space="preserve">
+    <value>Start timer</value>
+  </data>
+  <data name="Timer_PresetMinutes" xml:space="preserve">
+    <value>{0} min</value>
+  </data>
+  <data name="Timer_Countdowns" xml:space="preserve">
+    <value>Countdowns</value>
+  </data>
+  <data name="Timer_NoCountdowns" xml:space="preserve">
+    <value>No timers yet: pick a preset or set your own.</value>
+  </data>
+  <data name="Timer_Start" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="Timer_Pause" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="Timer_Reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="Timer_Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Timer_Finished" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="Timer_Stopwatch" xml:space="preserve">
+    <value>Stopwatch</value>
+  </data>
+  <data name="Timer_Stop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="Timer_Lap" xml:space="preserve">
+    <value>Lap</value>
+  </data>
+  <data name="Timer_LapNumber" xml:space="preserve">
+    <value>Lap {0}</value>
+  </data>
+  <data name="Timer_DoneTitle" xml:space="preserve">
+    <value>Timer finished</value>
+  </data>
+  <data name="Timer_DoneMessage" xml:space="preserve">
+    <value>{0} is done.</value>
+  </data>
+  <data name="Timer_DefaultName" xml:space="preserve">
+    <value>{0} timer</value>
+  </data>
+  <data name="Timer_QuickName" xml:space="preserve">
+    <value>Quick timer</value>
+  </data>
+  <data name="Calc_Name" xml:space="preserve">
+    <value>Calculator</value>
+  </data>
+  <data name="Calc_Scientific" xml:space="preserve">
+    <value>Scientific</value>
+  </data>
+  <data name="Calc_Degrees" xml:space="preserve">
+    <value>Degrees</value>
+  </data>
+  <data name="Calc_Copy" xml:space="preserve">
+    <value>Copy result</value>
+  </data>
+  <data name="Calc_Clear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="Calc_Backspace" xml:space="preserve">
+    <value>Delete the last character</value>
+  </data>
+  <data name="Calc_Negate" xml:space="preserve">
+    <value>Change sign</value>
+  </data>
+  <data name="Calc_History" xml:space="preserve">
+    <value>History</value>
+  </data>
+  <data name="Calc_HistoryEmpty" xml:space="preserve">
+    <value>No calculations yet.</value>
+  </data>
+  <data name="Calc_ClearHistory" xml:space="preserve">
+    <value>Clear history</value>
+  </data>
+  <data name="Calc_Error" xml:space="preserve">
+    <value>Can't calculate that</value>
+  </data>
+  <data name="Calc_DivideByZero" xml:space="preserve">
+    <value>Can't divide by zero</value>
+  </data>
+</root>

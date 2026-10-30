@@ -1,0 +1,178 @@
+﻿<UserControl x:Class="OmniDeck.Modules.Timer.OdTimerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:res="clr-namespace:OmniDeck.Core.Localization;assembly=OmniDeck.Core"
+             xmlns:timer="clr-namespace:OmniDeck.Modules.Timer"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             Loaded="OnLoaded"
+             Unloaded="OnUnloaded">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="Visible" />
+    </UserControl.Resources>
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="{DynamicResource Od.Padding.Card}">
+            <TextBlock FontSize="{DynamicResource Od.Font.H1}"
+                       FontWeight="SemiBold"
+                       Text="{res:OdLoc Timer_Name}" />
+            <TextBlock Margin="{DynamicResource Od.Margin.Item}"
+                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                       Text="{res:OdLoc Timer_RunningNote}"
+                       TextWrapping="Wrap" />
+
+            <!--  A new countdown: minutes, seconds and an optional name, or a one-click preset.  -->
+            <ui:Card Margin="{DynamicResource Od.Margin.Item}">
+                <WrapPanel>
+                    <ui:NumberBox Width="140"
+                                  Margin="{DynamicResource Od.Padding.Control}"
+                                  AutomationProperties.Name="{res:OdLoc Timer_Minutes}"
+                                  MaxDecimalPlaces="0"
+                                  Maximum="1440"
+                                  Minimum="0"
+                                  PlaceholderText="{res:OdLoc Timer_Minutes}"
+                                  ToolTip="{res:OdLoc Timer_Minutes}"
+                                  Value="{Binding NewMinutes, UpdateSourceTrigger=PropertyChanged}" />
+                    <ui:NumberBox Width="140"
+                                  Margin="{DynamicResource Od.Padding.Control}"
+                                  AutomationProperties.Name="{res:OdLoc Timer_Seconds}"
+                                  MaxDecimalPlaces="0"
+                                  Maximum="59"
+                                  Minimum="0"
+                                  PlaceholderText="{res:OdLoc Timer_Seconds}"
+                                  ToolTip="{res:OdLoc Timer_Seconds}"
+                                  Value="{Binding NewSeconds, UpdateSourceTrigger=PropertyChanged}" />
+                    <ui:TextBox Width="200"
+                                Margin="{DynamicResource Od.Padding.Control}"
+                                AutomationProperties.Name="{res:OdLoc Timer_NameHint}"
+                                PlaceholderText="{res:OdLoc Timer_NameHint}"
+                                Text="{Binding NewName, UpdateSourceTrigger=PropertyChanged}" />
+                    <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                               Appearance="Primary"
+                               Command="{Binding AddCountdownCommand}"
+                               Content="{res:OdLoc Timer_Add}" />
+                    <ItemsControl VerticalAlignment="Center"
+                                  Focusable="False"
+                                  ItemsSource="{Binding Presets}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type timer:OdTimerPreset}">
+                                <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                           Command="{Binding DataContext.AddPresetCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                           CommandParameter="{Binding Minutes}"
+                                           Content="{Binding Label}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </WrapPanel>
+            </ui:Card>
+
+            <TextBlock Margin="{DynamicResource Od.Margin.Item}"
+                       FontSize="{DynamicResource Od.Font.H2}"
+                       FontWeight="SemiBold"
+                       Text="{res:OdLoc Timer_Countdowns}" />
+            <TextBlock Margin="{DynamicResource Od.Margin.Item}"
+                       Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                       Text="{res:OdLoc Timer_NoCountdowns}"
+                       Visibility="{Binding HasNoCountdowns, Converter={StaticResource Visible}}" />
+            <ItemsControl Focusable="False" ItemsSource="{Binding Countdowns}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type timer:OdCountdownViewModel}">
+                        <ui:Card Width="300" Margin="{DynamicResource Od.Margin.Tile}">
+                            <StackPanel>
+                                <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                           Text="{Binding Name}"
+                                           TextTrimming="CharacterEllipsis" />
+                                <TextBlock FontSize="{DynamicResource Od.Font.H1}"
+                                           FontWeight="SemiBold"
+                                           Text="{Binding RemainingText}" />
+                                <TextBlock FontWeight="SemiBold"
+                                           Foreground="{DynamicResource SystemFillColorSuccessBrush}"
+                                           Text="{res:OdLoc Timer_Finished}"
+                                           Visibility="{Binding IsFinished, Converter={StaticResource Visible}}" />
+                                <ProgressBar Margin="{DynamicResource Od.Margin.Item}"
+                                             Maximum="1"
+                                             Value="{Binding Progress, Mode=OneWay}" />
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                               Appearance="Primary"
+                                               Command="{Binding DataContext.ToggleCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                               CommandParameter="{Binding}"
+                                               Content="{Binding ToggleText}" />
+                                    <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                               Command="{Binding DataContext.ResetCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                               CommandParameter="{Binding}"
+                                               Content="{res:OdLoc Timer_Reset}" />
+                                    <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                               Appearance="Transparent"
+                                               AutomationProperties.Name="{res:OdLoc Timer_Delete}"
+                                               Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                               CommandParameter="{Binding}"
+                                               Icon="{ui:SymbolIcon Delete24}"
+                                               ToolTip="{res:OdLoc Timer_Delete}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </ui:Card>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <TextBlock Margin="{DynamicResource Od.Margin.Item}"
+                       FontSize="{DynamicResource Od.Font.H2}"
+                       FontWeight="SemiBold"
+                       Text="{res:OdLoc Timer_Stopwatch}" />
+            <ui:Card Margin="{DynamicResource Od.Margin.Item}">
+                <StackPanel>
+                    <TextBlock FontSize="{DynamicResource Od.Font.H1}"
+                               FontWeight="SemiBold"
+                               Text="{Binding StopwatchText}" />
+                    <StackPanel Orientation="Horizontal">
+                        <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                   Appearance="Primary"
+                                   Command="{Binding ToggleStopwatchCommand}"
+                                   Content="{Binding StopwatchToggleText}" />
+                        <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                   Command="{Binding LapCommand}"
+                                   Content="{res:OdLoc Timer_Lap}"
+                                   IsEnabled="{Binding StopwatchRunning}" />
+                        <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                   Command="{Binding ResetStopwatchCommand}"
+                                   Content="{res:OdLoc Timer_Reset}" />
+                    </StackPanel>
+                    <ItemsControl Focusable="False"
+                                  Grid.IsSharedSizeScope="True"
+                                  ItemsSource="{Binding Laps}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type timer:OdLapViewModel}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="LapNumber" />
+                                        <ColumnDefinition Width="Auto" SharedSizeGroup="LapLength" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0"
+                                               Margin="{DynamicResource Od.Padding.Control}"
+                                               Text="{Binding Title}" />
+                                    <TextBlock Grid.Column="1"
+                                               Margin="{DynamicResource Od.Padding.Control}"
+                                               FontWeight="SemiBold"
+                                               Text="{Binding LapText}" />
+                                    <TextBlock Grid.Column="2"
+                                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                               Text="{Binding TotalText}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ui:Card>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

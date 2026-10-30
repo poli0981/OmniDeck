@@ -11,6 +11,8 @@ using OmniDeck.Core.Localization;
 using OmniDeck.Core.Runtime;
 using OmniDeck.Core.Settings;
 using OmniDeck.Core.Storage;
+using OmniDeck.Modules;
+using OmniDeck.Modules.Resources;
 using Serilog;
 
 namespace OmniDeck.App;
@@ -35,6 +37,7 @@ public partial class OdApp
         base.OnStartup(e);
         ShutdownMode = ShutdownMode.OnExplicitShutdown;
         OdLocalization.Instance.Register(OdAppStrings.Resources);
+        OdLocalization.Instance.Register(OdModuleStrings.Resources);
         try
         {
             Start();
@@ -65,6 +68,7 @@ public partial class OdApp
 
         _services = new ServiceCollection()
             .AddOmniDeckCore(dataRoot, Log.Logger)
+            .AddOmniDeckModules()
             .AddOmniDeckApp()
             .BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
         _services.GetRequiredService<OdCrashHandler>().Hook(this);

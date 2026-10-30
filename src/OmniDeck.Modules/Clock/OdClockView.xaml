@@ -1,0 +1,80 @@
+<UserControl x:Class="OmniDeck.Modules.Clock.OdClockView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:clock="clr-namespace:OmniDeck.Modules.Clock"
+             xmlns:res="clr-namespace:OmniDeck.Core.Localization;assembly=OmniDeck.Core"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             Loaded="OnLoaded"
+             Unloaded="OnUnloaded">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="Visible" />
+    </UserControl.Resources>
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="{DynamicResource Od.Padding.Card}">
+            <DockPanel Margin="{DynamicResource Od.Margin.Item}">
+                <ui:ToggleSwitch VerticalAlignment="Center"
+                                 Content="{res:OdLoc Clock_24Hour}"
+                                 DockPanel.Dock="Right"
+                                 IsChecked="{Binding Use24Hour}" />
+                <TextBlock FontSize="{DynamicResource Od.Font.H1}"
+                           FontWeight="SemiBold"
+                           Text="{res:OdLoc Clock_Name}" />
+            </DockPanel>
+            <ItemsControl Focusable="False" ItemsSource="{Binding Clocks}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type clock:OdWorldClockViewModel}">
+                        <ui:Card Width="320" Margin="{DynamicResource Od.Margin.Tile}">
+                            <StackPanel>
+                                <DockPanel>
+                                    <ui:Button Appearance="Transparent"
+                                               AutomationProperties.Name="{res:OdLoc Clock_Remove}"
+                                               Command="{Binding DataContext.RemoveZoneCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                               CommandParameter="{Binding}"
+                                               DockPanel.Dock="Right"
+                                               Icon="{ui:SymbolIcon Dismiss24}"
+                                               ToolTip="{res:OdLoc Clock_Remove}"
+                                               Visibility="{Binding CanRemove, Converter={StaticResource Visible}}" />
+                                    <TextBlock VerticalAlignment="Center"
+                                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                               Text="{Binding Title}"
+                                               TextTrimming="CharacterEllipsis"
+                                               ToolTip="{Binding Title}" />
+                                </DockPanel>
+                                <TextBlock FontSize="{DynamicResource Od.Font.H1}"
+                                           FontWeight="SemiBold"
+                                           Text="{Binding TimeText}" />
+                                <TextBlock Text="{Binding DateText}" TextTrimming="CharacterEllipsis" />
+                                <TextBlock FontSize="{DynamicResource Od.Font.Caption}"
+                                           Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                           Text="{Binding OffsetText}" />
+                            </StackPanel>
+                        </ui:Card>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <TextBlock Margin="{DynamicResource Od.Padding.Control}"
+                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                       Text="{res:OdLoc Clock_AddZone}" />
+            <DockPanel Margin="{DynamicResource Od.Margin.Item}">
+                <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                           Appearance="Primary"
+                           Command="{Binding AddZoneCommand}"
+                           Content="{res:OdLoc Clock_Add}"
+                           DockPanel.Dock="Right" />
+                <ComboBox AutomationProperties.Name="{res:OdLoc Clock_AddZone}"
+                          DisplayMemberPath="DisplayName"
+                          IsEditable="True"
+                          IsTextSearchEnabled="True"
+                          ItemsSource="{Binding AvailableZones}"
+                          SelectedItem="{Binding SelectedZone}"
+                          TextSearch.TextPath="DisplayName"
+                          ToolTip="{res:OdLoc Clock_AddZone}" />
+            </DockPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
