@@ -22,7 +22,7 @@ De-risk everything that could invalidate the design, on real hardware:
 6. **LibVLCSharp WPF:** airspace behavior — overlay controls + fullscreen toggle over `VideoView`. If blocked, evaluate FlyleafLib as the fallback engine.
 7. **Providers:** hit Stooq CSV and Twelve Data free endpoints; freeze response models.
 
-**Exit:** written go/no-go note per spike committed to `docs/spikes/`.
+**Exit:** a written go/no-go note per spike in [`docs/spikes/`](spikes/README.md). The proof-of-concept code stays on the unmerged `spike/p0` branch, so spike-only packages never reach `main`'s dependency graph or the release SBOM.
 
 ### P1 — Shell & skeleton (16 Nov 2026 – 10 Jan 2027)
 
@@ -51,7 +51,8 @@ Stocks module (Stooq default + Twelve Data BYO key, watchlist, candlesticks); Dy
 | Milestone | Version |
 |---|---|
 | Kickoff build | `0.0.1-alpha.1` |
-| Interim builds during phase N | `0.N.0-alpha.M` |
+| P0 — spikes | no build: the app does not change |
+| Interim builds during phase N (P1–P3) | `0.N.0-alpha.M` |
 | P1 exit — first installable shell | `0.1.0` |
 | P2 exit | `0.2.0` |
 | P3 exit — feature-complete | `0.3.0` |
@@ -67,7 +68,7 @@ Every version below 1.0.0 is published as a GitHub **pre-release**; 1.0.0 is the
 | Widevine unavailable in WebView2 on target machines | Spotify won't play | P0 spike gates the catalog entry; fallback: ship Spotify entry disabled with an explanatory note, YouTube covers music for many users |
 | Google blocks sign-in in WebView2 | Google group unusable | P0 spike; fallback: session import guidance / treat as upstream limitation, documented |
 | LibVLCSharp airspace friction in WPF | Media UX degraded | P0 spike; fallback engine FlyleafLib |
-| Free API tiers change (Twelve Data/Stooq) | Stocks degraded | provider abstraction; BYO-key model isolates OmniDeck from quota policy |
+| Free API tiers change (Twelve Data/Stooq) | Stocks degraded | **Materialized for Stooq** (checked 2026-10-30): the CSV endpoint now answers scripted clients with a JavaScript browser check, and community reports say downloads need a per-user API key obtained through a captcha — P0 spike #7 decides the replacement. Provider abstraction; BYO-key model isolates OmniDeck from quota policy; Stocks is first in the cut order (§4) |
 | User data stored in Velopack's install folder | Uninstall or reinstall wipes data and sign-ins | data root `%LocalAppData%\OmniDeck.Data`, never `%LocalAppData%\OmniDeck` ([ARCHITECTURE](ARCHITECTURE.md) §5) |
 | Solo bandwidth vs. other projects | Schedule slip | cut order below; phases sized with buffer |
 
