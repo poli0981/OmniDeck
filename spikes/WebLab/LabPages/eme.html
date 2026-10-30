@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WebLab · EME probe (spike #1)</title>
+<style>
+  body { font: 14px/1.5 "Segoe UI", sans-serif; margin: 24px; }
+  table { border-collapse: collapse; } td, th { border: 1px solid #8884; padding: 4px 10px; text-align: left; }
+  .yes { color: #0a7d32; font-weight: 600; } .no { color: #b3261e; font-weight: 600; }
+  pre { background: #8881; padding: 8px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<h1>EME probe</h1>
+<p>Spike #1 (issue #2): which key systems this WebView2 exposes. Results are also posted to the host log.</p>
+<table id="results"><tr><th>Key system</th><th>Robustness</th><th>Available</th><th>Detail</th></tr></table>
+<h2>User agent</h2>
+<pre id="ua"></pre>
+<script>
+const video = [{ contentType: 'video/mp4; codecs="avc1.42E01E"' }];
+const audio = [{ contentType: 'audio/mp4; codecs="mp4a.40.2"' }];
+const probes = [
+  ['com.widevine.alpha', ''], ['com.widevine.alpha', 'SW_SECURE_CRYPTO'], ['com.widevine.alpha', 'HW_SECURE_ALL'],
+  ['com.microsoft.playready.recommendation', ''], ['com.microsoft.playready.recommendation', '3000'],
+  ['com.microsoft.playready', ''], ['org.w3.clearkey', ''],
+];
+async function probe([keySystem, robustness]) {
+  const withRobustness = caps => caps.map(c => robustness ? { ...c, robustness } : c);
+  const config = [{ initDataTypes: ['cenc'], videoCapabilities: withRobustness(video), audioCapabilities: withRobustness(audio) }];
+  try {
+    const access = await navigator.requestMediaKeySystemAccess(keySystem, config);
+    const keys = await access.createMediaKeys();
+    return { keySystem, robustness, available: true, detail: `createMediaKeys ok (${keys.constructor.name})` };
+  } catch (e) {
+    return { keySystem, robustness, available: false, detail: `${e.name}: ${e.message}` };
+  }
+}
+(async () => {
+  const results = [];
+  for (const p of probes) {
+    const r = await probe(p);
+    results.push(r);
+    const row = document.getElementById('results').insertRow();
+    row.insertCell().textContent = r.keySystem;
+    row.insertCell().textContent = r.robustness || '(none)';
+    const cell = row.insertCell(); cell.textContent = r.available ? 'yes' : 'no'; cell.className = r.available ? 'yes' : 'no';
+    row.insertCell().textContent = r.detail;
+  }
+  let brands = null, high = null;
+  if (navigator.userAgentData) {
+    brands = navigator.userAgentData.brands;
+    try { high = await navigator.userAgentData.getHighEntropyValues(['fullVersionList', 'platformVersion']); } catch {}
+  }
+  const ua = { userAgent: navigator.userAgent, brands, fullVersionList: high?.fullVersionList, platformVersion: high?.platformVersion };
+  document.getElementById('ua').textContent = JSON.stringify(ua, null, 2);
+  window.chrome?.webview?.postMessage({ probe: 'eme', results, ua });
+})();
+</script>
+</body>
+</html>

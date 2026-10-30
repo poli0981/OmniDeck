@@ -1,0 +1,71 @@
+<Window
+    x:Class="WebLab.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="WebLab — spikes #1–#4 (WebView2)"
+    Width="1560"
+    Height="960"
+    WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="210" />
+        </Grid.RowDefinitions>
+
+        <WrapPanel Grid.Row="0" Margin="6">
+            <ComboBox x:Name="Targets" Width="280" Margin="0,0,6,0" DisplayMemberPath="Label" />
+            <Button Margin="0,0,12,0" Padding="10,2" Click="OnOpen" Content="Open" />
+            <CheckBox x:Name="EnforcePolicy" Margin="0,4,12,0" Content="Enforce navAllow / popupAllow" IsChecked="True" />
+            <CheckBox x:Name="DevToolsEnabled" Margin="0,4,12,0" Content="DevTools UI enabled (new slots)" />
+            <TextBlock Margin="0,4,4,0" Text="Ladder phase (s):" />
+            <TextBox x:Name="PhaseSeconds" Width="40" Margin="0,0,12,0" Text="60" />
+            <Button x:Name="RecordButton" Margin="0,0,6,0" Padding="10,2" Click="OnRecord" Content="Start CSV" />
+            <TextBox x:Name="MarkText" Width="160" Margin="0,0,4,0" />
+            <Button Margin="0,0,12,0" Padding="10,2" Click="OnMark" Content="Mark phase" />
+            <TextBlock x:Name="EnvInfo" Margin="0,4,0,0" />
+        </WrapPanel>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="280" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="470" />
+            </Grid.ColumnDefinitions>
+
+            <DockPanel Grid.Column="0" Margin="6,0,6,0">
+                <UniformGrid DockPanel.Dock="Bottom" Columns="2">
+                    <Button Margin="2" Click="OnShow" Content="Show" />
+                    <Button Margin="2" Click="OnHide" Content="Hide" />
+                    <Button Margin="2" Click="OnSuspend" Content="Suspend (+Low)" />
+                    <Button Margin="2" Click="OnResume" Content="Resume" />
+                    <Button Margin="2" Click="OnHibernate" Content="Dispose (hibernate)" />
+                    <Button Margin="2" Click="OnReopen" Content="Reopen" />
+                    <Button Margin="2" Click="OnCaptureFull" Content="Console: Runtime+Log" />
+                    <Button Margin="2" Click="OnCaptureLogOnly" Content="Console: Log only" />
+                    <Button Margin="2" Click="OnCaptureOff" Content="Console off" />
+                    <Button Margin="2" Click="OnCloseSlot" Content="Close slot" />
+                    <Button Margin="2" Click="OnLadder" Content="Run ladder" />
+                    <Button Margin="2" Click="OnHibernateAll" Content="Dispose all" />
+                </UniformGrid>
+                <ListBox x:Name="SlotList" SelectionChanged="OnSlotSelected" />
+            </DockPanel>
+
+            <Grid x:Name="Host" Grid.Column="1" />
+
+            <DockPanel Grid.Column="2" Margin="6,0,6,0">
+                <TextBlock x:Name="Totals" Margin="0,0,0,4" DockPanel.Dock="Top" TextWrapping="Wrap" />
+                <DataGrid x:Name="MemGrid" AutoGenerateColumns="True" HeadersVisibility="Column" IsReadOnly="True" />
+            </DockPanel>
+        </Grid>
+
+        <Grid Grid.Row="2" Margin="6">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="LogBox" Grid.Column="0" Margin="0,0,6,0" FontFamily="Cascadia Mono, Consolas" HorizontalScrollBarVisibility="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Auto" />
+            <TextBox x:Name="ConsoleBox" Grid.Column="1" FontFamily="Cascadia Mono, Consolas" HorizontalScrollBarVisibility="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Auto" />
+        </Grid>
+    </Grid>
+</Window>

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WebLab · CDP detection (spike #4)</title>
+<style>body { font: 14px/1.5 "Segoe UI", sans-serif; margin: 24px; } .big { font-size: 28px; font-weight: 600; }</style>
+</head>
+<body>
+<h1>Can this page tell that the DevTools Protocol Runtime domain is on?</h1>
+<p>The widely used check: log an Error whose <code>stack</code> getter has a side effect. Only a
+DevTools client that serializes console arguments (Runtime.enable) reads it. Spike #4 (issue #5).</p>
+<p class="big" id="verdict">checking…</p>
+<button onclick="check()">Check again</button>
+<p>Console traffic for the ring buffer:
+  <button onclick="console.log('log', {a: 1}, [1, 2])">console.log</button>
+  <button onclick="console.warn('warn message')">console.warn</button>
+  <button onclick="console.error(new Error('error object'))">console.error</button>
+  <button onclick="setTimeout(() => { throw new Error('uncaught exception'); })">throw</button>
+  <button onclick="fetch('https://weblab.example/missing.json').catch(() => {})">404 fetch</button>
+</p>
+<script>
+function check() {
+  let read = false;
+  const e = new Error('probe');
+  Object.defineProperty(e, 'stack', { get() { read = true; return ''; } });
+  console.debug(e);
+  setTimeout(() => {
+    document.getElementById('verdict').textContent = read ? 'DETECTED: Runtime domain is enabled' : 'not detected';
+    window.chrome?.webview?.postMessage({ probe: 'cdp-detect', detected: read });
+  }, 200);
+}
+check();
+</script>
+</body>
+</html>

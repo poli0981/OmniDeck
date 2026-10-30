@@ -14,3 +14,9 @@ of this branch that it measured.
 |---|---|---|
 | `ProviderProbe` | #7 providers | `dotnet run --project spikes/ProviderProbe -- stooq` · `-- twelvedata` (needs `OD_TWELVEDATA_KEY`) |
 | `ThemeLab` | #5 preset swap | `dotnet run --project spikes/ThemeLab` (interactive) · `-- --auto` (measurements → `theme\*.log`) |
+| `WebLab` | #1 DRM · #2 sign-in · #3 memory · #4 CDP | `dotnet run --project spikes/WebLab` (interactive) · `-- --auto` (EME, CDP and a short ladder) · `-- --wv2-args=...` (browser arguments) |
+
+WebLab keeps WebView2 profiles in `%LocalAppData%\OmniDeck.Spikes\WebView2` (one profile per catalog
+`profile` group, so sign-ins persist across runs), memory samples in `memory\*.csv` (one row per process
+per 2 s sample, with the current phase) and its log in `weblab\*.log`. Sign-ins are done by hand in its
+window; the lab never touches the user agent.
