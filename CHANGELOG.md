@@ -6,6 +6,10 @@ All notable changes to OmniDeck are documented here. The format follows
 
 ## [Unreleased]
 
+### Removed
+- Messenger from the web app catalog: Meta closed messenger.com on 15 April 2026 and sends web
+  users to `facebook.com/messages`, which the Facebook entry already covers.
+
 ## [0.0.1-alpha.1] — 2026-10-28
 
 Kickoff build. It proves the build, packaging, and release pipeline end to end and has no

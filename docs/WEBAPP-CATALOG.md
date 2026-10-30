@@ -56,8 +56,7 @@ Top-level file fields: `$schema` (optional editor hint), `schemaVersion` (int), 
 | gcalendar | google | no | |
 | gdrive | google | no | |
 | gmaps | google | no | replaces a native map mini-app entirely |
-| facebook | meta | no | |
-| messenger | meta | no | shares `meta` profile with Facebook for one sign-in |
+| facebook | meta | no | also Meta's web messaging (`facebook.com/messages`) since messenger.com closed in April 2026; the Messenger entry was removed |
 
 ## 4. Known-good candidates for post-v1 PRs
 
