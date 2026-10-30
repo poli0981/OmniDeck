@@ -1,11 +1,17 @@
 ﻿<ui:FluentWindow x:Class="OmniDeck.App.OdMainWindow"
                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:res="clr-namespace:OmniDeck.Core.Localization;assembly=OmniDeck.Core"
+                 xmlns:tb="clr-namespace:H.NotifyIcon;assembly=H.NotifyIcon.Wpf"
                  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-                 Title="OmniDeck"
-                 Width="960"
-                 Height="600"
+                 Title="{res:OdLoc App_Name}"
+                 Width="1100"
+                 Height="720"
+                 MinWidth="640"
+                 MinHeight="420"
+                 Closing="OnClosing"
                  ExtendsContentIntoTitleBar="True"
+                 PreviewKeyDown="OnPreviewKeyDown"
                  WindowBackdropType="Mica"
                  WindowStartupLocation="CenterScreen">
     <Grid>
@@ -13,18 +19,71 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <ui:TitleBar Title="OmniDeck" Grid.Row="0" />
-        <!--  Kickoff placeholder: the real shell (navigation, module host) arrives in P1.  -->
-        <StackPanel Grid.Row="1"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center">
-            <ui:TextBlock HorizontalAlignment="Center"
-                          FontTypography="Title"
-                          Text="OmniDeck" />
-            <ui:TextBlock x:Name="VersionText"
-                          Margin="0,8,0,0"
-                          HorizontalAlignment="Center"
-                          Appearance="Secondary" />
-        </StackPanel>
+
+        <ui:TitleBar x:Name="AppTitleBar"
+                     Title="{res:OdLoc App_Name}"
+                     Grid.Row="0">
+            <!--  Looks like a search box; opens the command palette, as Ctrl+K does.  -->
+            <ui:TitleBar.CenterContent>
+                <ui:Button Width="360"
+                           Margin="16,0,0,0"
+                           HorizontalContentAlignment="Left"
+                           AutomationProperties.Name="{res:OdLoc Shell_Search}"
+                           Click="OnSearchClick"
+                           ToolTip="Ctrl+K">
+                    <DockPanel>
+                        <ui:SymbolIcon Margin="0,0,8,0"
+                                       DockPanel.Dock="Left"
+                                       Symbol="Search24" />
+                        <TextBlock VerticalAlignment="Center"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                   Text="{res:OdLoc Shell_Search}"
+                                   TextTrimming="CharacterEllipsis" />
+                    </DockPanel>
+                </ui:Button>
+            </ui:TitleBar.CenterContent>
+        </ui:TitleBar>
+
+        <!--  Chrome only: items are built in code from OdShellViewModel.Sidebar and every navigation goes through it.  -->
+        <ui:NavigationView x:Name="RootNavigation"
+                           Grid.Row="1"
+                           FrameMargin="0"
+                           IsBackButtonVisible="Collapsed"
+                           IsPaneToggleVisible="True"
+                           OpenPaneLength="240"
+                           PaneDisplayMode="Left"
+                           TitleBar="{Binding ElementName=AppTitleBar, Mode=OneWay}">
+            <ui:NavigationView.ContentOverlay>
+                <Grid>
+                    <ui:SnackbarPresenter x:Name="RootSnackbar" VerticalAlignment="Bottom" />
+                </Grid>
+            </ui:NavigationView.ContentOverlay>
+        </ui:NavigationView>
+
+        <!--  In-window dialogs cover the whole window, title bar included.  -->
+        <ui:ContentDialogHost x:Name="RootDialogHost"
+                              Grid.Row="0"
+                              Grid.RowSpan="2" />
+
+        <!--  The tray icon lives as long as this window, which closing only hides (docs/SPEC.md §2).  -->
+        <tb:TaskbarIcon x:Name="TrayIcon"
+                        Grid.Row="0"
+                        NoLeftClickDelay="True"
+                        ToolTipText="{res:OdLoc App_Name}"
+                        TrayLeftMouseUp="OnTrayOpen">
+            <tb:TaskbarIcon.IconSource>
+                <tb:GeneratedIconSource Background="{DynamicResource AccentFillColorDefaultBrush}"
+                                        FontWeight="Bold"
+                                        Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
+                                        Text="O" />
+            </tb:TaskbarIcon.IconSource>
+            <tb:TaskbarIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Click="OnTrayOpen" Header="{res:OdLoc Tray_Open}" />
+                    <Separator />
+                    <MenuItem Click="OnTrayQuit" Header="{res:OdLoc Tray_Quit}" />
+                </ContextMenu>
+            </tb:TaskbarIcon.ContextMenu>
+        </tb:TaskbarIcon>
     </Grid>
 </ui:FluentWindow>

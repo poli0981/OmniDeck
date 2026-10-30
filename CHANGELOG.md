@@ -15,6 +15,11 @@ All notable changes to OmniDeck are documented here. The format follows
 - Uninstalling removes `%LocalAppData%\OmniDeck.Data`, as the privacy policy promises.
 - A local database, `%LocalAppData%\OmniDeck.Data\omnideck.db`, with a versioned schema that
   upgrades itself at startup.
+- The window follows Windows: light or dark mode, the accent color, High Contrast and the text size.
+- The shell: a sidebar with pinned and open modules, a module library to open and pin them from,
+  and a command palette (Ctrl+K, or the search box in the title bar) that finds modules and commands.
+- Closing the window keeps OmniDeck running in the notification area; its icon's menu opens or quits
+  it. Modules can raise Windows notifications from there.
 
 ### Changed
 - Stocks: Twelve Data with the user's own API key is now the only provider. Stooq was dropped because

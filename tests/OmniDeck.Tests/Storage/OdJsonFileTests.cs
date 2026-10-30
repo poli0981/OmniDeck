@@ -17,7 +17,7 @@ public sealed class OdJsonFileTests
         var read = OdJsonFile.Read(path, OdSettingsJsonContext.Default.OdSettings, out var status);
 
         Assert.Equal(OdJsonReadStatus.Loaded, status);
-        Assert.Equal(settings, read);
+        Assert.Equivalent(settings, read, strict: true);
         Assert.Equal("settings.json", Path.GetFileName(Assert.Single(Directory.GetFiles(temp.Path))));
     }
 

@@ -15,6 +15,7 @@ public sealed class OdThemeResourcesTests
         Assert.Equal(19.0, resources[OdTokenKeys.FontBase]);
         Assert.Equal(new Thickness(20, 10, 20, 10), resources[OdTokenKeys.PaddingControl]);
         Assert.Equal(new Thickness(30), resources[OdTokenKeys.PaddingCard]);
+        Assert.Equal(new Thickness(0, 0, 20, 20), resources[OdTokenKeys.MarginTile]);
         Assert.Equal(new CornerRadius(6), resources[OdTokenKeys.CornerRadius]);
         Assert.Equal(new Duration(TimeSpan.Zero), resources[OdTokenKeys.MotionDuration]);
         Assert.Equal(6, resources[OdTokenKeys.NavMaxVisibleItems]);

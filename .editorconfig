@@ -54,3 +54,11 @@ dotnet_diagnostic.MA0026.severity = suggestion # TODO comments: SonarCloud (S113
 [src/OmniDeck.App/**.cs]
 # UI code must resume on the dispatcher thread, so ConfigureAwait(false) is wrong here.
 dotnet_diagnostic.MA0004.severity = none
+
+[src/OmniDeck.Core/Modules/**.cs]
+# The module host drives module views from the dispatcher thread as well.
+dotnet_diagnostic.MA0004.severity = none
+
+[tests/**.cs]
+# Tests await on the STA dispatcher (OdSta) or in xUnit's own context; xUnit1030 forbids ConfigureAwait(false) there.
+dotnet_diagnostic.MA0004.severity = none

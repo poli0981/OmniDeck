@@ -19,6 +19,7 @@ public sealed class OdThemeEngine : IDisposable
     private readonly IOdSettingsService _settings;
     private readonly ILogger _log;
     private Application? _app;
+    private OdSettings? _applied;
     private double _textScale = 1.0;
 
     public OdThemeEngine(IOdSettingsService settings, ILogger log)
@@ -36,6 +37,7 @@ public sealed class OdThemeEngine : IDisposable
     {
         ArgumentNullException.ThrowIfNull(app);
         _app = app;
+        _applied = _settings.Current;
         _textScale = OdTextScale.Read();
         ApplyTheme();
         ApplyTokens();
@@ -98,12 +100,21 @@ public sealed class OdThemeEngine : IDisposable
         }
     }
 
-    private void OnSettingsChanged(object? sender, OdSettingsChangedEventArgs e) =>
+    private void OnSettingsChanged(object? sender, OdSettingsChangedEventArgs e)
+    {
+        // Pins, the language and other settings leave the look alone; re-applying it would re-style every window.
+        if (_applied?.LooksLike(e.Settings) == true)
+        {
+            return;
+        }
+
+        _applied = e.Settings;
         _app?.Dispatcher.Invoke(() =>
         {
             ApplyTheme();
             ApplyTokens();
         });
+    }
 
     private void OnUserPreferenceChanged(object? sender, UserPreferenceChangedEventArgs e)
     {

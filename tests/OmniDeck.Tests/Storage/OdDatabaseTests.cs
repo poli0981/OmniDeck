@@ -1,3 +1,4 @@
+using System.Globalization;
 using Dapper;
 using Microsoft.Data.Sqlite;
 using OmniDeck.Core.Storage;
@@ -7,7 +8,7 @@ namespace OmniDeck.Tests.Storage;
 
 public sealed class OdDatabaseTests
 {
-    private static readonly OdMigration Notes = new(2, "notes", "CREATE TABLE notes (id INTEGER PRIMARY KEY, text TEXT NOT NULL);");
+    private static readonly OdMigration Notes = new(OdCoreMigrations.All.Count + 1, "notes", "CREATE TABLE notes (id INTEGER PRIMARY KEY, text TEXT NOT NULL);");
 
     [Fact]
     public void EmptyDatabase_IsVersionZero()
@@ -23,7 +24,7 @@ public sealed class OdDatabaseTests
         var versions = OdCoreMigrations.All.Select(m => m.Version).ToList();
 
         Assert.Equal(Enumerable.Range(1, versions.Count), versions);
-        Assert.Equal("app_meta", OdCoreMigrations.All[0].Name);
+        Assert.Equal(new[] { "app_meta", "module_settings" }, OdCoreMigrations.All.Select(m => m.Name), StringComparer.Ordinal);
     }
 
     [Fact]
@@ -33,9 +34,9 @@ public sealed class OdDatabaseTests
         var database = NewDatabase(temp);
         OdMigration[] migrations = [.. OdCoreMigrations.All, Notes];
 
-        Assert.Equal(2, database.Migrate(migrations));
+        Assert.Equal(migrations.Length, database.Migrate(migrations));
         Assert.Equal(0, database.Migrate(migrations));
-        Assert.Equal(2, database.SchemaVersion());
+        Assert.Equal(Notes.Version, database.SchemaVersion());
     }
 
     [Fact]
@@ -44,11 +45,11 @@ public sealed class OdDatabaseTests
         using var temp = new OdTempDirectory();
         var database = NewDatabase(temp);
         database.Migrate([.. OdCoreMigrations.All, Notes]);
-        var broken = new OdMigration(3, "broken", "CREATE TABLE half (id INTEGER); INSERT INTO nowhere VALUES (1);");
+        var broken = new OdMigration(Notes.Version + 1, "broken", "CREATE TABLE half (id INTEGER); INSERT INTO nowhere VALUES (1);");
 
         Assert.Throws<SqliteException>(() => database.Migrate([.. OdCoreMigrations.All, Notes, broken]));
 
-        Assert.Equal(2, database.SchemaVersion());
+        Assert.Equal(Notes.Version, database.SchemaVersion());
         using var connection = database.Open();
         Assert.Equal(0, connection.ExecuteScalar<long>("SELECT COUNT(*) FROM sqlite_master WHERE name = 'half'"));
     }
@@ -74,7 +75,7 @@ public sealed class OdDatabaseTests
         meta.Set(OdAppMetaKeys.LegalAcknowledgedVersion, "1.1");
 
         Assert.Equal("1.1", meta.Get(OdAppMetaKeys.LegalAcknowledgedVersion));
-        Assert.Equal("1", meta.Get(OdAppMetaKeys.SchemaVersion));
+        Assert.Equal(OdCoreMigrations.All.Count.ToString(CultureInfo.InvariantCulture), meta.Get(OdAppMetaKeys.SchemaVersion));
     }
 
     private static OdDatabase NewDatabase(OdTempDirectory temp) => new(temp.Combine("omnideck.db"), pooling: false);

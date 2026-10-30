@@ -51,6 +51,12 @@ jobs:
       - name: Restore pinned tools
         run: dotnet tool restore
 
+      # dotnet format loads the app with the XAML markup compiler, which needs OmniDeck.Core.dll on
+      # disk to resolve {res:OdLoc ...}; without it the window classes lose their generated half and
+      # the analyzers report phantom findings.
+      - name: Build Core for the XAML compiler
+        run: dotnet build src/OmniDeck.Core/OmniDeck.Core.csproj --no-restore
+
       - name: Verify C# formatting
         run: dotnet format OmniDeck.slnx --verify-no-changes --no-restore
 

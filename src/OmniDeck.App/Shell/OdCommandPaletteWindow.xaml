@@ -1,0 +1,69 @@
+<ui:FluentWindow x:Class="OmniDeck.App.Shell.OdCommandPaletteWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:res="clr-namespace:OmniDeck.Core.Localization;assembly=OmniDeck.Core"
+                 xmlns:shell="clr-namespace:OmniDeck.App.Shell"
+                 xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                 Title="{res:OdLoc Shell_Search}"
+                 Width="600"
+                 ExtendsContentIntoTitleBar="True"
+                 PreviewKeyDown="OnPreviewKeyDown"
+                 ResizeMode="NoResize"
+                 ShowInTaskbar="False"
+                 SizeToContent="Height"
+                 WindowBackdropType="Acrylic"
+                 WindowCornerPreference="Round"
+                 WindowStartupLocation="Manual">
+    <!--  A borderless overlay without a title bar: type, arrow keys, Enter; Esc or clicking away closes it.  -->
+    <ui:FluentWindow.Resources>
+        <shell:OdSymbolConverter x:Key="Symbol" />
+    </ui:FluentWindow.Resources>
+    <DockPanel Margin="{DynamicResource Od.Padding.Card}">
+        <ui:TextBox x:Name="SearchBox"
+                    AutomationProperties.Name="{res:OdLoc Shell_Search}"
+                    ClearButtonEnabled="True"
+                    DockPanel.Dock="Top"
+                    FontSize="{DynamicResource Od.Font.H2}"
+                    PlaceholderText="{res:OdLoc Shell_Search}"
+                    Text="{Binding Query, UpdateSourceTrigger=PropertyChanged}">
+            <ui:TextBox.Icon>
+                <ui:SymbolIcon Symbol="Search24" />
+            </ui:TextBox.Icon>
+        </ui:TextBox>
+        <ListBox x:Name="ResultsList"
+                 MaxHeight="420"
+                 Margin="{DynamicResource Od.Margin.Item}"
+                 HorizontalContentAlignment="Stretch"
+                 AutomationProperties.Name="{res:OdLoc Shell_Search}"
+                 Background="Transparent"
+                 BorderThickness="0"
+                 ItemsSource="{Binding Results}"
+                 MouseDoubleClick="OnResultDoubleClick"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 SelectedItem="{Binding Selected}">
+            <ListBox.ItemContainerStyle>
+                <Style BasedOn="{StaticResource {x:Type ListBoxItem}}" TargetType="ListBoxItem">
+                    <Setter Property="AutomationProperties.Name" Value="{Binding Title}" />
+                </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type shell:OdPaletteEntry}">
+                    <DockPanel>
+                        <ui:SymbolIcon Margin="{DynamicResource Od.Padding.Control}"
+                                       VerticalAlignment="Center"
+                                       DockPanel.Dock="Left"
+                                       FontSize="{DynamicResource Od.Font.H2}"
+                                       Symbol="{Binding Icon, Converter={StaticResource Symbol}}" />
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
+                            <TextBlock FontSize="{DynamicResource Od.Font.Caption}"
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                       Text="{Binding Detail}"
+                                       TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
+                    </DockPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </DockPanel>
+</ui:FluentWindow>

@@ -44,7 +44,7 @@ public enum OdModuleState { Created, Active, Idle, Suspended, Hibernated, Closed
 
 public interface IOdModule
 {
-    OdModuleInfo Info { get; }                   // Id, Name, Icon, Category, RamClass
+    OdModuleInfo Info { get; }                   // Id, NameKey, Icon, CategoryKey, RamClass
     FrameworkElement CreateView();               // called on Activate after hibernation
     Task InitializeAsync(IOdModuleContext ctx);  // once per process lifetime
     Task ActivateAsync();                        // became visible
@@ -55,9 +55,11 @@ public interface IOdModule
 }
 ```
 
-`IOdModuleContext` gives modules storage (scoped SQLite access + settings section), the toast service, logger, and the HTTP client factory — modules never construct these themselves.
+`IOdModuleContext` gives modules their own settings document (one JSON row per module in the `module_settings` table), the notifier (tray balloons, which Windows 11 shows as toasts), a logger and the clock; the HTTP client factory joins it with the first module that goes online (P2). Modules never construct these themselves.
 
-`CreateView()` returns a WPF `FrameworkElement`, so wherever `IOdModule` lives must reference WPF. P1 decides between letting `OmniDeck.Core` take that dependency (it already targets `net10.0-windows`) and moving the contract into a small WPF-aware abstractions project.
+`CreateView()` returns a WPF `FrameworkElement`, so wherever `IOdModule` lives must reference WPF. P1 decided to let `OmniDeck.Core` take that dependency (`UseWPF`) rather than add an abstractions project. Core holds the contract, `OdModuleHost` and the localization layer (`OdLocalization`, `{res:OdLoc Key}`), so modules depend on Core alone; Core still never references the app, Velopack or WPF-UI (an architecture test checks it), which is why `OdModuleInfo.Icon` is a `SymbolRegular` name rather than a symbol.
+
+`OdModuleHost` runs the contract. It initializes a module on first open, builds its view when it has none (first open, or after hibernation), keeps the view of the visible module, and moves hidden ones down the ladder when the shell or the governor asks; it refuses to suspend or hibernate a module whose `CanSuspendAsync` returns false. Calls run one at a time on the UI thread. The shell's navigation view is chrome only: every module item navigates to one shared stage page, whose content is the view the host hands back, so the control never creates or caches module views.
 
 Native modules run in-process. True RAM release for them means honoring `SuspendAsync`/`HibernateAsync`: dispose charts, bitmaps, timers, caches; the governor follows up with a GC. Web modules get real process-level release for free because WebView2 is out-of-process by design.
 
