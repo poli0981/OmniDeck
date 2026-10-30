@@ -65,8 +65,30 @@ switch (args.FirstOrDefault())
 
         break;
 
+    case "verify-models":
+        // Deserializes the newest saved Twelve Data responses with the frozen models.
+        string Latest(string name) => Directory.GetFiles(outDir, $"*-td-{name}.json").Max()!;
+        T Read<T>(string name) => JsonSerializer.Deserialize<T>(File.ReadAllText(Latest(name)), TwelveData.Json)!;
+        var quote = Read<TdQuote>("quote-aapl");
+        Console.WriteLine($"quote: {quote.Symbol} {quote.Close} {quote.Currency} ({quote.PercentChange:+0.00;-0.00}%), 52w {quote.FiftyTwoWeek?.Low}-{quote.FiftyTwoWeek?.High}, market open {quote.IsMarketOpen}");
+        var batch = Read<Dictionary<string, TdQuote>>("quote-batch3");
+        Console.WriteLine($"batch: {string.Join(", ", batch.Select(kv => $"{kv.Key} {kv.Value.Close}"))}");
+        foreach (var range in new[] { "ts-1m-daily", "ts-6m-daily", "ts-1y-daily", "ts-5y-weekly" })
+        {
+            var series = Read<TdTimeSeries>(range);
+            Console.WriteLine($"{range}: {series.Values.Count} bars {series.Meta.Interval}, {series.Values[^1].Datetime} -> {series.Values[0].Datetime}, last close {series.Values[0].Close}, tz {series.Meta.ExchangeTimezone}");
+        }
+
+        var search = Read<TdSymbolSearch>("search-sap-showplan");
+        Console.WriteLine($"search: {string.Join("; ", search.Data.Take(4).Select(l => $"{l.Symbol}@{l.MicCode} {l.InstrumentType} needs {l.Access?.Plan}"))}");
+        var usage = Read<TdApiUsage>("api-usage");
+        Console.WriteLine($"usage: {usage.DailyUsage}/{usage.PlanDailyLimit} today, {usage.CurrentUsage}/{usage.PlanLimit} this minute, plan {usage.PlanCategory}");
+        var error = Read<TdError>("quote-sap-xetr");
+        Console.WriteLine($"error: {error.Code} {error.Message[..60]}...");
+        return 0;
+
     default:
-        Console.Error.WriteLine("usage: ProviderProbe stooq | twelvedata");
+        Console.Error.WriteLine("usage: ProviderProbe stooq | twelvedata | verify-models");
         return 1;
 }
 

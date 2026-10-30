@@ -12,7 +12,7 @@ of this branch that it measured.
 
 | Harness | Spikes | Run |
 |---|---|---|
-| `ProviderProbe` | #7 providers | `dotnet run --project spikes/ProviderProbe -- stooq` · `-- twelvedata` (needs `OD_TWELVEDATA_KEY`) |
+| `ProviderProbe` | #7 providers | `dotnet run --project spikes/ProviderProbe -- stooq` · `-- twelvedata` (needs `OD_TWELVEDATA_KEY`) · `-- verify-models` (frozen models vs. saved responses) |
 | `ThemeLab` | #5 preset swap | `dotnet run --project spikes/ThemeLab` (interactive) · `-- --auto` (measurements → `theme\*.log`) |
 | `WebLab` | #1 DRM · #2 sign-in · #3 memory · #4 CDP | `dotnet run --project spikes/WebLab` (interactive) · `-- --auto` (EME, CDP and a short ladder) · `-- --wv2-args=...` (browser arguments) |
 
