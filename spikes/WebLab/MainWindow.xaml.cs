@@ -61,6 +61,14 @@ public partial class MainWindow
         {
             Loaded += async (_, _) => await RunCookieProbeAsync();
         }
+        else if (Environment.GetCommandLineArgs().Contains("--check-signed-in"))
+        {
+            Loaded += async (_, _) => await RunSignedInCheckAsync();
+        }
+        else if (Arg("--ladder") is { } ladderApps)
+        {
+            Loaded += async (_, _) => await RunLaddersOnlyAsync(ladderApps);
+        }
     }
 
     private Slot? Selected => SlotList.SelectedItem as Slot;
