@@ -25,5 +25,9 @@ bugreport-*.zip
 *.DotSettings.user
 .nuget/
 
+# Python bytecode (CI helper scripts under .github/scripts)
+__pycache__/
+*.py[cod]
+
 # Personal Claude Code settings (.claude/settings.json is shared and committed)
 .claude/settings.local.json
