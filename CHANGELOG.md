@@ -6,6 +6,12 @@ All notable changes to OmniDeck are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.0-alpha.1] — 2026-10-30
+
+First alpha, for trying OmniDeck out: the shell, the RAM governor and three built-in modules. Web
+apps, weather, calendar, stocks and media arrive in P2–P3, and the settings pages, legal gate and
+onboarding in the next alpha.
+
 ### Added
 - One OmniDeck per Windows session: starting it again brings the running window to the front.
 - Settings stored in `%LocalAppData%\OmniDeck.Data\settings.json`, written atomically. A damaged
@@ -69,5 +75,6 @@ user-facing features yet: the window only shows the version.
 - Supported platform narrowed to Windows 11 (24H2 or later), x64.
 - App data moves to `%LocalAppData%\OmniDeck.Data`, outside Velopack's install folder.
 
-[Unreleased]: https://github.com/poli0981/OmniDeck/compare/v0.0.1-alpha.1...HEAD
+[Unreleased]: https://github.com/poli0981/OmniDeck/compare/v0.1.0-alpha.1...HEAD
+[0.1.0-alpha.1]: https://github.com/poli0981/OmniDeck/compare/v0.0.1-alpha.1...v0.1.0-alpha.1
 [0.0.1-alpha.1]: https://github.com/poli0981/OmniDeck/releases/tag/v0.0.1-alpha.1
