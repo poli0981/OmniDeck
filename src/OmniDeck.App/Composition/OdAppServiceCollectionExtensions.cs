@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using OmniDeck.App.Diagnostics;
+using OmniDeck.App.Theming;
 
 namespace OmniDeck.App.Composition;
 
@@ -10,6 +11,7 @@ internal static class OdAppServiceCollectionExtensions
     {
         services.AddSingleton<IOdErrorPresenter, OdMessageBoxErrorPresenter>();
         services.AddSingleton<OdCrashHandler>();
+        services.AddSingleton<OdThemeEngine>();
         services.AddSingleton<OdMainWindow>();
         return services;
     }

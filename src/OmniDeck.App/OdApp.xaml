@@ -5,9 +5,10 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <!--  WPF-UI dictionaries first; the Od.* preset layer goes on top in P1 (docs/UI-MODES.md).  -->
+                <!--  WPF-UI dictionaries first, then our implicit styles; OdThemeEngine adds the Od.* preset layer last (docs/UI-MODES.md).  -->
                 <ui:ThemesDictionary Theme="Dark" />
                 <ui:ControlsDictionary />
+                <ResourceDictionary Source="Theming/OdStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

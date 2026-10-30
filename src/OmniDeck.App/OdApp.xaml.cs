@@ -2,6 +2,7 @@ using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using OmniDeck.App.Composition;
 using OmniDeck.App.Diagnostics;
+using OmniDeck.App.Theming;
 using OmniDeck.Core;
 using OmniDeck.Core.Runtime;
 using OmniDeck.Core.Storage;
@@ -63,6 +64,7 @@ public partial class OdApp
         _services.GetRequiredService<OdCrashHandler>().Hook(this);
         var applied = _services.GetRequiredService<OdDatabase>().Migrate(OdCoreMigrations.All);
         Log.ForContext<OdApp>().Information("Database ready ({Applied} migrations applied)", applied);
+        _services.GetRequiredService<OdThemeEngine>().Start(this);
         _guard.StartListening(() => _ = Dispatcher.InvokeAsync(ShowMainWindow));
         ShowMainWindow();
     }
