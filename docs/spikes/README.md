@@ -19,7 +19,7 @@ P0 runs from 2 to 15 November 2026 ([ROADMAP](../ROADMAP.md#1-phases)). Its job 
 | 2 | Google sign-in and SSO popups | P2: `google` profile group, Spotify sign-in | Pending ([#3](https://github.com/poli0981/OmniDeck/issues/3)) | `02-google-sign-in.md` |
 | 3 | Memory reality check and governor metric | **P1**: RAM governor ([§4](../RAM-GOVERNOR.md#4-cap-enforcement)) | Pending ([#4](https://github.com/poli0981/OmniDeck/issues/4)) | `03-memory.md` |
 | 4 | CDP console capture | P2: bug-report flow | Pending ([#5](https://github.com/poli0981/OmniDeck/issues/5)) | `04-cdp-console.md` |
-| 5 | Runtime preset swap | **P1**: theme engine | Pending ([#6](https://github.com/poli0981/OmniDeck/issues/6)) | `05-theme-swap.md` |
+| 5 | Runtime preset swap | **P1**: theme engine | **GO with conditions:** `Od` styles for WPF-UI's static keys, motion driven from code, text size from the registry | [05-theme-swap.md](05-theme-swap.md) |
 | 6 | LibVLCSharp in WPF (airspace, fullscreen) | P2: media player | Pending ([#7](https://github.com/poli0981/OmniDeck/issues/7)) | `06-libvlcsharp.md` |
 | 7 | Stock data providers | P3: stocks | **GO with conditions:** Twelve Data with the user's key is the only provider; Stooq NO-GO | [07-providers.md](07-providers.md) |
 
