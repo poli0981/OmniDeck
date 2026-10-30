@@ -2,7 +2,7 @@
 
 **Question:** what do web apps really cost in each governor state, and which memory metric do the caps use?
 **Decision:** GO. The governor measures **private commit** (`Process.PrivateMemorySize64`), summed over the shell and every WebView2 process. Suspension mostly trims the working set rather than freeing memory, so a working-set metric would reward exactly that trimming. The ladder's real memory saving comes from hibernation.
-**Measured:** 2026-10-30 on `spike/p0` at `ec79454`: the `WebLab --measure` run (60 s phases, a sample every 2 s) plus the maintainer's own interactive session. Issue [#4](https://github.com/poli0981/OmniDeck/issues/4).
+**Measured:** 2026-10-30 on `spike/p0`: the `WebLab --measure` run at `ec79454` (60 s phases, a sample every 2 s), the signed-in Gmail ladder at `3eae21e`, and the maintainer's own interactive session. Issue [#4](https://github.com/poli0981/OmniDeck/issues/4).
 
 ## Environment
 
@@ -51,9 +51,20 @@
 | Disposed | 0 | 0 | 0 | 0 | 0 |
 | Reopened | 180 | 164 | 263 | 123 | 3.1 |
 
+**Gmail, signed in** (measured after the sign-in re-test in spike #2; still signed in after the reopen)
+
+| State | App commit | App private WS | Shared commit | Shared private WS | CPU (ms/s) |
+|---|---|---|---|---|---|
+| Active | 253 | 234 | 269 | 130 | 19.4 |
+| Hidden | 214 | 198 | 248 | 119 | 1.3 |
+| Suspended + Low | 196 | 65 | 248 | 58 | 0.3 |
+| Resumed | 221 | 148 | 261 | 39 | 17.6 |
+| Disposed | 0 | 0 | 0 | 0 | 0 |
+| Reopened | 255 | 236 | 254 | 122 | 25.7 |
+
 - **Shell:** the WPF window itself used 93–130 MB of private commit throughout.
 - **Suspend and resume:** `TrySuspendAsync` returned `true` in 0–4 ms, and resuming took 1–5 ms.
-- **Reopen after dispose:** 155–165 ms until the controller was ready, and 590–900 ms until the first `NavigationCompleted`.
+- **Reopen after dispose:** 155–176 ms until the controller was ready, and 590–900 ms until the first `NavigationCompleted` (2.5 s for signed-in Gmail).
 - **One stall:** creating a controller while the previous browser process was still shutting down took 5.2 s once.
 
 ### Everything at once (MB)
@@ -73,7 +84,7 @@ In the maintainer's session:
 
 ## Analysis
 
-- **Hiding** a web app already releases 18–31 % of its committed memory, because Chromium drops caches for hidden pages.
+- **Hiding** a web app already releases 15–31 % of its committed memory, because Chromium drops caches for hidden pages.
 - **Suspend + Low** cuts the private working set by 65–70 % but committed memory by only 5–15 %. The pages move to the standby list or the page file; they are not released. After resume the working set stays low until those pages are touched again.
 
   A working-set metric would therefore read low exactly when nothing has been freed. That is the page shuffling [RAM-GOVERNOR](../RAM-GOVERNOR.md#4-cap-enforcement) §4 rejects.
@@ -91,7 +102,7 @@ In the maintainer's session:
 
 ## Open items
 
-- **Gmail:** Gmail signed in was not measured, because the profile had lost its session (spike #2). It will be measured after the persistence check. This does not affect the metric decision.
+- ~~**Gmail:** Gmail signed in was not measured, because the profile had lost its session (spike #2).~~ Done after the sign-in re-test; see the Gmail table above. The same pattern holds: hiding −15 % commit, suspend + Low −8 % more commit but −67 % private working set.
 - **8 GB machines:** every number here comes from a 32 GB machine. Re-measure on a GA build of Windows 11 with 8 GB of RAM during P2 dogfooding.
 
 ## Reproduce
