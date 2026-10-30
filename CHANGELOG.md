@@ -6,6 +6,19 @@ All notable changes to OmniDeck are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+- First run: the license agreement, disclaimer, privacy policy and third-party notices, shown from the
+  app's `legal` folder, to acknowledge before OmniDeck opens (again after each legal update). Then a
+  short setup picks the language and the layout preset.
+- Settings: General (language, keep running in the notification area, start with Windows), Appearance
+  (theme, layout preset, text size, animations, accent color), Memory (the governor's thresholds and
+  the running modules), Data (open the data folder, export and import settings) and About (version,
+  update check, links, the legal documents).
+- Starting with Windows opens OmniDeck straight to the notification area.
+
+### Changed
+- Running modules moved from the sidebar into Settings → Memory; the command palette opens it too.
+
 ## [0.1.0-alpha.1] — 2026-10-30
 
 First alpha, for trying OmniDeck out: the shell, the RAM governor and three built-in modules. Web

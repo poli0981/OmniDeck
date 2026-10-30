@@ -6,8 +6,11 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Interop;
 using H.NotifyIcon.Core;
+using OmniDeck.App.Legal;
+using OmniDeck.App.Settings;
 using OmniDeck.App.Shell;
 using OmniDeck.App.Theming;
+using OmniDeck.Core.Legal;
 using OmniDeck.Core.Localization;
 using OmniDeck.Core.Settings;
 using OmniDeck.Core.Storage;
@@ -37,7 +40,7 @@ public partial class OdMainWindow : INavigationViewPageProvider
     private readonly IOdAppMeta _meta;
     private readonly IOdQuickTimer _quickTimer;
     private readonly OdLibraryPage _library;
-    private readonly OdMemoryPage _memory;
+    private readonly OdSettingsPage _settingsPage;
     private readonly OdModuleStage _stage;
     private readonly Dictionary<string, NavigationViewItem> _moduleItems = new(StringComparer.Ordinal);
     private readonly NavigationViewItemSeparator _pinnedSeparator = new();
@@ -45,7 +48,8 @@ public partial class OdMainWindow : INavigationViewPageProvider
     public OdMainWindow(
         OdThemeEngine theme,
         OdShellViewModel shell,
-        OdMemoryViewModel memory,
+        OdSettingsViewModel settingsPage,
+        OdLegalGate legalGate,
         OdDialogs dialogs,
         ISnackbarService snackbars,
         OdTrayNotifier notifier,
@@ -55,6 +59,7 @@ public partial class OdMainWindow : INavigationViewPageProvider
         IOdQuickTimer quickTimer)
     {
         ArgumentNullException.ThrowIfNull(theme);
+        ArgumentNullException.ThrowIfNull(settingsPage);
         ArgumentNullException.ThrowIfNull(snackbars);
         InitializeComponent();
         _shell = shell;
@@ -66,7 +71,10 @@ public partial class OdMainWindow : INavigationViewPageProvider
         _quickTimer = quickTimer;
         DataContext = shell;
         _library = new OdLibraryPage { DataContext = shell };
-        _memory = new OdMemoryPage { DataContext = memory };
+        _settingsPage = new OdSettingsPage { DataContext = settingsPage };
+        shell.SettingsSectionRequested += (_, e) => settingsPage.ShowSection(e.Section);
+        settingsPage.About.LegalRequested += (_, _) =>
+            new OdLegalWindow(new OdLegalViewModel(legalGate, OdApp.LegalFolder, readOnly: true)) { Owner = this }.Show();
         _stage = new OdModuleStage { DataContext = shell };
 
         dialogs.SetHost(RootDialogHost);
@@ -79,7 +87,7 @@ public partial class OdMainWindow : INavigationViewPageProvider
         Closed += (_, _) => TrayIcon.Dispose();
 
         RootNavigation.SetPageProviderService(this);
-        RootNavigation.FooterMenuItems.Add(ShellItem(OdShellViewModel.MemoryTarget, Localized("Memory_Nav"), SymbolRegular.DataUsage24, typeof(OdMemoryPage)));
+        RootNavigation.FooterMenuItems.Add(ShellItem(OdShellViewModel.SettingsTarget, Localized("Settings_Nav"), SymbolRegular.Settings24, typeof(OdSettingsPage)));
         RootNavigation.FooterMenuItems.Add(ShellItem(OdShellViewModel.LibraryTarget, Localized("Shell_Library"), SymbolRegular.Apps24, typeof(OdLibraryPage)));
         SyncSidebar();
         shell.Sidebar.CollectionChanged += (_, _) => SyncSidebar();
@@ -125,9 +133,9 @@ public partial class OdMainWindow : INavigationViewPageProvider
             return _library;
         }
 
-        if (pageType == typeof(OdMemoryPage))
+        if (pageType == typeof(OdSettingsPage))
         {
-            return _memory;
+            return _settingsPage;
         }
 
         return pageType == typeof(OdModuleStage) ? _stage : null;

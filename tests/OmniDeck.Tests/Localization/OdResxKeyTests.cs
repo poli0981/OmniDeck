@@ -3,7 +3,9 @@ using System.Globalization;
 using System.Resources;
 using System.Text.RegularExpressions;
 using OmniDeck.App.Resources;
+using OmniDeck.Core.Legal;
 using OmniDeck.Core.Modules;
+using OmniDeck.Core.Theming;
 using OmniDeck.Modules.Calculator;
 using OmniDeck.Modules.Clock;
 using OmniDeck.Modules.Resources;
@@ -75,8 +77,11 @@ public sealed partial class OdResxKeyTests
 
         if (IsShell(table))
         {
-            // Built at run time from the state ladder (OdMemoryRowViewModel): every state needs a name.
+            // Built at run time: state names (OdMemoryRowViewModel), preset cards (OdPresetOption)
+            // and the legal documents' titles (OdLegal).
             keys.UnionWith(Enum.GetNames<OdModuleState>().Select(state => "State_" + state));
+            keys.UnionWith(OdPreset.All.SelectMany(preset => new[] { "Preset_" + preset.Name, "Preset_" + preset.Name + "Hint" }));
+            keys.UnionWith(OdLegal.Documents.Select(document => document.TitleKey));
         }
         else
         {

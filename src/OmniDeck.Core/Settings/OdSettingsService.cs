@@ -1,3 +1,4 @@
+using System.Text.Json;
 using OmniDeck.Core.Storage;
 using Serilog;
 
@@ -47,5 +48,29 @@ public sealed class OdSettingsService : IOdSettingsService
         }
 
         Changed?.Invoke(this, new OdSettingsChangedEventArgs(next));
+    }
+
+    public void Export(string path) => File.WriteAllText(path, JsonSerializer.Serialize(Current, OdSettingsJsonContext.Default.OdSettings));
+
+    public bool Import(string path)
+    {
+        // Unlike settings.json at startup, a file the user picked is never moved aside: it is only read.
+        OdSettings? imported;
+        try
+        {
+            imported = JsonSerializer.Deserialize(File.ReadAllText(path), OdSettingsJsonContext.Default.OdSettings);
+        }
+        catch (JsonException)
+        {
+            return false;
+        }
+
+        if (imported is null)
+        {
+            return false;
+        }
+
+        Update(_ => imported);
+        return true;
     }
 }

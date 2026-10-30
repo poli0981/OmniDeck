@@ -1,12 +1,16 @@
+using System.IO;
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using OmniDeck.App.Composition;
 using OmniDeck.App.Diagnostics;
+using OmniDeck.App.Legal;
 using OmniDeck.App.Resources;
+using OmniDeck.App.Settings;
 using OmniDeck.App.Shell;
 using OmniDeck.App.Theming;
 using OmniDeck.Core;
 using OmniDeck.Core.Governor;
+using OmniDeck.Core.Legal;
 using OmniDeck.Core.Localization;
 using OmniDeck.Core.Runtime;
 using OmniDeck.Core.Settings;
@@ -32,6 +36,9 @@ public partial class OdApp
         _guard = guard;
     }
 
+    /// <summary>The legal documents that ship next to the executable.</summary>
+    public static string LegalFolder => Path.Combine(AppContext.BaseDirectory, "legal");
+
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
@@ -40,7 +47,7 @@ public partial class OdApp
         OdLocalization.Instance.Register(OdModuleStrings.Resources);
         try
         {
-            Start();
+            Start(startMinimized: e.Args.Contains(OdRunKeyStartup.MinimizedArgument, StringComparer.OrdinalIgnoreCase));
         }
         catch (Exception ex)
         {
@@ -59,7 +66,7 @@ public partial class OdApp
         base.OnExit(e);
     }
 
-    private void Start()
+    private void Start(bool startMinimized)
     {
         var dataRoot = OdDataRoot.Default;
         dataRoot.EnsureCreated();
@@ -81,12 +88,35 @@ public partial class OdApp
         settings.Changed += (_, e) => Dispatcher.Invoke(() => OdLocalization.Instance.SetCulture(OdLocalization.Instance.ResolveCulture(e.Settings.Language)));
 
         _services.GetRequiredService<OdThemeEngine>().Start(this);
-        _guard.StartListening(() => _ = Dispatcher.InvokeAsync(ShowMainWindow));
-        ShowMainWindow();
+
+        // The legal gate comes first, on the first run and after each legal update; Quit ends here.
+        var legal = _services.GetRequiredService<OdLegalGate>();
+        if (!legal.IsAcknowledged && !new OdLegalWindow(new OdLegalViewModel(legal, LegalFolder)).ShowGate())
+        {
+            Log.ForContext<OdApp>().Information("Legal documents not acknowledged; quitting");
+            Shutdown(0);
+            return;
+        }
+
+        var meta = _services.GetRequiredService<IOdAppMeta>();
+        if (OdOnboardingViewModel.IsNeeded(meta))
+        {
+            new OdOnboardingWindow(new OdOnboardingViewModel(settings, meta)).ShowDialog();
+        }
+
+        // Only now may a second launch bring the window up: never past the gate.
+        _guard.StartListening(() => _ = Dispatcher.InvokeAsync(() => MainShell().Present()));
+        var window = MainShell();
+        if (!startMinimized)
+        {
+            window.Present();
+        }
+
         _services.GetRequiredService<OdRamGovernor>().Start();
     }
 
-    private void ShowMainWindow()
+    /// <summary>The main window, created once. It owns the tray icon, so it exists even while hidden.</summary>
+    private OdMainWindow MainShell()
     {
         if (MainWindow is not OdMainWindow window)
         {
@@ -104,6 +134,6 @@ public partial class OdApp
             };
         }
 
-        window.Present();
+        return window;
     }
 }

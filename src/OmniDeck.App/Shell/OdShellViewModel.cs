@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using OmniDeck.App.Settings;
 using OmniDeck.Core.Localization;
 using OmniDeck.Core.Modules;
 using OmniDeck.Core.Settings;
@@ -19,10 +20,10 @@ public sealed partial class OdShellViewModel : ObservableObject, IDisposable
     /// <summary>The navigation target of the library page; module ids are the other targets.</summary>
     public const string LibraryTarget = "library";
 
-    /// <summary>The navigation target of the task-manager panel.</summary>
-    public const string MemoryTarget = "memory";
+    /// <summary>The navigation target of the settings page, whose Memory tab holds the running modules.</summary>
+    public const string SettingsTarget = "settings";
 
-    private static readonly string[] ShellPages = [LibraryTarget, MemoryTarget];
+    private static readonly string[] ShellPages = [LibraryTarget, SettingsTarget];
 
     private readonly OdModuleHost _host;
     private readonly IOdSettingsService _settings;
@@ -52,6 +53,9 @@ public sealed partial class OdShellViewModel : ObservableObject, IDisposable
         settings.Changed += OnSettingsChanged;
         OdLocalization.Instance.CultureChanged += OnCultureChanged;
     }
+
+    /// <summary>Raised when a settings tab should come to the front, such as the palette's "Running modules".</summary>
+    public event EventHandler<OdSettingsSectionEventArgs>? SettingsSectionRequested;
 
     /// <summary>Every module, in registration order: the library page.</summary>
     public IReadOnlyList<OdModuleItemViewModel> Library { get; }
@@ -89,7 +93,8 @@ public sealed partial class OdShellViewModel : ObservableObject, IDisposable
         [
             .. Library.Select(item => new OdPaletteEntry(item.Title, item.Category, item.Info.Icon, () => NavigateAsync(item.Id))),
             new(OdLocalization.Get("Shell_LibraryTitle"), command, "Apps24", () => NavigateAsync(LibraryTarget)),
-            new(OdLocalization.Get("Memory_Title"), command, "DataUsage24", () => NavigateAsync(MemoryTarget)),
+            new(OdLocalization.Get("Settings_Title"), command, "Settings24", () => NavigateAsync(SettingsTarget)),
+            new(OdLocalization.Get("Memory_Title"), command, "DataUsage24", () => ShowSettingsAsync(OdSettingsSection.Memory)),
             new(OdLocalization.Get("Shell_Quit"), command, "Power24", QuitAsync),
         ];
     }
@@ -114,6 +119,12 @@ public sealed partial class OdShellViewModel : ObservableObject, IDisposable
             ? [.. s.PinnedModules.Where(id => !string.Equals(id, item.Id, StringComparison.Ordinal))]
             : [.. s.PinnedModules, item.Id],
     });
+
+    private Task ShowSettingsAsync(OdSettingsSection section)
+    {
+        SettingsSectionRequested?.Invoke(this, new OdSettingsSectionEventArgs(section));
+        return NavigateAsync(SettingsTarget);
+    }
 
     private Task QuitAsync()
     {
