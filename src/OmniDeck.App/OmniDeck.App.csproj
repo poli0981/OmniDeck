@@ -14,18 +14,21 @@
     <SatelliteResourceLanguages>en;vi;ja</SatelliteResourceLanguages>
   </PropertyGroup>
 
-  <ItemGroup>
-    <!-- The application class is OdApp, not App: types carry the Od prefix, and Meziantou MA0049
-         rejects a type named like its namespace. -->
-    <Page Remove="OdApp.xaml" />
-    <ApplicationDefinition Include="OdApp.xaml" />
-  </ItemGroup>
+  <!-- The application class is OdApp, not App: types carry the Od prefix, and Meziantou MA0049
+       rejects a type named like its namespace. OdApp.xaml stays a plain Page (no ApplicationDefinition),
+       so WPF generates no Main of its own: Program.Main creates OdApp with the single-instance guard. -->
 
   <ItemGroup>
     <ProjectReference Include="..\OmniDeck.Core\OmniDeck.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="OmniDeck.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.14" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="Velopack" Version="1.2.161" />
     <PackageReference Include="WPF-UI" Version="4.3.0" />
   </ItemGroup>

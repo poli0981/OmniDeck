@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\OmniDeck.App\OmniDeck.App.csproj" />
     <ProjectReference Include="..\..\src\OmniDeck.Core\OmniDeck.Core.csproj" />
   </ItemGroup>
 

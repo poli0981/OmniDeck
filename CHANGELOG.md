@@ -6,6 +6,14 @@ All notable changes to OmniDeck are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+- One OmniDeck per Windows session: starting it again brings the running window to the front.
+- Settings stored in `%LocalAppData%\OmniDeck.Data\settings.json`, written atomically. A damaged
+  file is set aside and defaults take over.
+- Local log files in `%LocalAppData%\OmniDeck.Data\logs`, kept for seven days, plus crash handling
+  that shows a support code and keeps OmniDeck running.
+- Uninstalling removes `%LocalAppData%\OmniDeck.Data`, as the privacy policy promises.
+
 ### Changed
 - Stocks: Twelve Data with the user's own API key is now the only provider. Stooq was dropped because
   its download endpoints now block scripted clients (P0 spike #7). The free Twelve Data plan covers US
