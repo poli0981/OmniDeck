@@ -35,6 +35,7 @@ public partial class OdMainWindow : INavigationViewPageProvider
     private readonly IOdAppLifetime _lifetime;
     private readonly IOdAppMeta _meta;
     private readonly OdLibraryPage _library;
+    private readonly OdMemoryPage _memory;
     private readonly OdModuleStage _stage;
     private readonly Dictionary<string, NavigationViewItem> _moduleItems = new(StringComparer.Ordinal);
     private readonly NavigationViewItemSeparator _pinnedSeparator = new();
@@ -42,6 +43,7 @@ public partial class OdMainWindow : INavigationViewPageProvider
     public OdMainWindow(
         OdThemeEngine theme,
         OdShellViewModel shell,
+        OdMemoryViewModel memory,
         OdDialogs dialogs,
         ISnackbarService snackbars,
         OdTrayNotifier notifier,
@@ -60,6 +62,7 @@ public partial class OdMainWindow : INavigationViewPageProvider
         _meta = meta;
         DataContext = shell;
         _library = new OdLibraryPage { DataContext = shell };
+        _memory = new OdMemoryPage { DataContext = memory };
         _stage = new OdModuleStage { DataContext = shell };
 
         dialogs.SetHost(RootDialogHost);
@@ -72,7 +75,8 @@ public partial class OdMainWindow : INavigationViewPageProvider
         Closed += (_, _) => TrayIcon.Dispose();
 
         RootNavigation.SetPageProviderService(this);
-        RootNavigation.FooterMenuItems.Add(LibraryItem());
+        RootNavigation.FooterMenuItems.Add(ShellItem(OdShellViewModel.MemoryTarget, Localized("Memory_Nav"), SymbolRegular.DataUsage24, typeof(OdMemoryPage)));
+        RootNavigation.FooterMenuItems.Add(ShellItem(OdShellViewModel.LibraryTarget, Localized("Shell_Library"), SymbolRegular.Apps24, typeof(OdLibraryPage)));
         SyncSidebar();
         shell.Sidebar.CollectionChanged += (_, _) => SyncSidebar();
         shell.PropertyChanged += OnShellPropertyChanged;
@@ -117,21 +121,26 @@ public partial class OdMainWindow : INavigationViewPageProvider
             return _library;
         }
 
+        if (pageType == typeof(OdMemoryPage))
+        {
+            return _memory;
+        }
+
         return pageType == typeof(OdModuleStage) ? _stage : null;
     }
 
     private static Binding Localized(string key) => new($"[{key}]") { Source = OdLocalization.Instance, Mode = BindingMode.OneWay };
 
-    private static NavigationViewItem LibraryItem()
+    private static NavigationViewItem ShellItem(string target, Binding title, SymbolRegular icon, Type pageType)
     {
         var item = new NavigationViewItem
         {
-            Icon = new SymbolIcon { Symbol = SymbolRegular.Apps24 },
-            TargetPageTag = OdShellViewModel.LibraryTarget,
-            TargetPageType = typeof(OdLibraryPage),
+            Icon = new SymbolIcon { Symbol = icon },
+            TargetPageTag = target,
+            TargetPageType = pageType,
         };
-        item.SetBinding(ContentControl.ContentProperty, Localized("Shell_Library"));
-        item.SetBinding(AutomationProperties.NameProperty, Localized("Shell_Library"));
+        item.SetBinding(ContentControl.ContentProperty, title);
+        item.SetBinding(AutomationProperties.NameProperty, title);
         return item;
     }
 

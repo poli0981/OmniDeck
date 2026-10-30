@@ -16,6 +16,9 @@ public sealed class OdFakeModule(string id, OdRamClass ramClass = OdRamClass.Lig
 
     public IOdModuleContext? Context { get; private set; }
 
+    /// <summary>Makes <see cref="HibernateAsync"/> fail, like a module with a bug.</summary>
+    public bool ThrowOnHibernate { get; set; }
+
     public Task InitializeAsync(IOdModuleContext context)
     {
         Context = context;
@@ -46,6 +49,11 @@ public sealed class OdFakeModule(string id, OdRamClass ramClass = OdRamClass.Lig
 
     public Task HibernateAsync()
     {
+        if (ThrowOnHibernate)
+        {
+            throw new InvalidOperationException("hibernate failed");
+        }
+
         Calls.Add("hibernate");
         return Task.CompletedTask;
     }

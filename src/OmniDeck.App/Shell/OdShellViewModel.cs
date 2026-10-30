@@ -19,6 +19,11 @@ public sealed partial class OdShellViewModel : ObservableObject, IDisposable
     /// <summary>The navigation target of the library page; module ids are the other targets.</summary>
     public const string LibraryTarget = "library";
 
+    /// <summary>The navigation target of the task-manager panel.</summary>
+    public const string MemoryTarget = "memory";
+
+    private static readonly string[] ShellPages = [LibraryTarget, MemoryTarget];
+
     private readonly OdModuleHost _host;
     private readonly IOdSettingsService _settings;
     private readonly IOdAppLifetime _lifetime;
@@ -59,15 +64,15 @@ public sealed partial class OdShellViewModel : ObservableObject, IDisposable
     /// </summary>
     public ObservableCollection<OdModuleItemViewModel> Sidebar { get; } = [];
 
-    /// <summary>Shows <paramref name="target"/>, a module id or <see cref="LibraryTarget"/>; other targets are ignored.</summary>
+    /// <summary>Shows <paramref name="target"/>: a module id, or one of the shell's own pages. Other targets are ignored.</summary>
     public async Task NavigateAsync(string target)
     {
         ArgumentNullException.ThrowIfNull(target);
-        if (string.Equals(target, LibraryTarget, StringComparison.Ordinal))
+        if (ShellPages.Contains(target, StringComparer.Ordinal))
         {
             await _host.HideAsync();
             CurrentView = null;
-            CurrentTarget = LibraryTarget;
+            CurrentTarget = target;
         }
         else if (_items.ContainsKey(target))
         {
@@ -84,6 +89,7 @@ public sealed partial class OdShellViewModel : ObservableObject, IDisposable
         [
             .. Library.Select(item => new OdPaletteEntry(item.Title, item.Category, item.Info.Icon, () => NavigateAsync(item.Id))),
             new(OdLocalization.Get("Shell_LibraryTitle"), command, "Apps24", () => NavigateAsync(LibraryTarget)),
+            new(OdLocalization.Get("Memory_Title"), command, "DataUsage24", () => NavigateAsync(MemoryTarget)),
             new(OdLocalization.Get("Shell_Quit"), command, "Power24", QuitAsync),
         ];
     }

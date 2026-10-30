@@ -1,0 +1,92 @@
+﻿<UserControl x:Class="OmniDeck.App.Shell.OdMemoryPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:res="clr-namespace:OmniDeck.Core.Localization;assembly=OmniDeck.Core"
+             xmlns:shell="clr-namespace:OmniDeck.App.Shell"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             Foreground="{DynamicResource TextFillColorPrimaryBrush}">
+    <UserControl.Resources>
+        <shell:OdSymbolConverter x:Key="Symbol" />
+    </UserControl.Resources>
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="{DynamicResource Od.Padding.Card}">
+            <TextBlock FontSize="{DynamicResource Od.Font.H1}"
+                       FontWeight="SemiBold"
+                       Text="{res:OdLoc Memory_Title}" />
+            <TextBlock Margin="{DynamicResource Od.Margin.Item}"
+                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                       Text="{res:OdLoc Memory_Intro}"
+                       TextWrapping="Wrap" />
+            <ui:Card Margin="{DynamicResource Od.Margin.Item}">
+                <StackPanel>
+                    <TextBlock FontSize="{DynamicResource Od.Font.H2}"
+                               FontWeight="SemiBold"
+                               Text="{Binding InUseText}" />
+                    <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}" Text="{Binding LimitsText}" />
+                    <TextBlock FontSize="{DynamicResource Od.Font.Caption}"
+                               Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                               Text="{res:OdLoc Memory_SharedNote}"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+            </ui:Card>
+            <ItemsControl Focusable="False"
+                          Grid.IsSharedSizeScope="True"
+                          ItemsSource="{Binding Rows}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type shell:OdMemoryRowViewModel}">
+                        <ui:Card Margin="{DynamicResource Od.Margin.Item}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="Keep" />
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="Actions" />
+                                </Grid.ColumnDefinitions>
+                                <DockPanel Grid.Column="0" VerticalAlignment="Center">
+                                    <ui:SymbolIcon Margin="{DynamicResource Od.Padding.Control}"
+                                                   DockPanel.Dock="Left"
+                                                   FontSize="{DynamicResource Od.Font.H2}"
+                                                   Symbol="{Binding Info.Icon, Converter={StaticResource Symbol}}" />
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock FontWeight="SemiBold"
+                                                   Text="{Binding Title}"
+                                                   TextTrimming="CharacterEllipsis" />
+                                        <WrapPanel>
+                                            <TextBlock Margin="0,0,12,0" Text="{Binding StateText}" />
+                                            <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}" Text="{Binding LastUsedText}" />
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </DockPanel>
+                                <ui:ToggleSwitch Grid.Column="1"
+                                                 Margin="{DynamicResource Od.Padding.Control}"
+                                                 VerticalAlignment="Center"
+                                                 Command="{Binding DataContext.ToggleKeepRunningCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                 CommandParameter="{Binding}"
+                                                 Content="{res:OdLoc Memory_KeepRunning}"
+                                                 IsChecked="{Binding KeepRunning, Mode=OneWay}" />
+                                <StackPanel Grid.Column="2"
+                                            VerticalAlignment="Center"
+                                            Orientation="Horizontal">
+                                    <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                               Command="{Binding DataContext.SuspendCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                               CommandParameter="{Binding}"
+                                               Content="{res:OdLoc Memory_Suspend}"
+                                               IsEnabled="{Binding CanSuspend}" />
+                                    <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                               Command="{Binding DataContext.HibernateCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                               CommandParameter="{Binding}"
+                                               Content="{res:OdLoc Memory_Hibernate}"
+                                               IsEnabled="{Binding CanHibernate}" />
+                                    <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                               Command="{Binding DataContext.CloseCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                               CommandParameter="{Binding}"
+                                               Content="{res:OdLoc Shell_Close}"
+                                               IsEnabled="{Binding CanClose}" />
+                                </StackPanel>
+                            </Grid>
+                        </ui:Card>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

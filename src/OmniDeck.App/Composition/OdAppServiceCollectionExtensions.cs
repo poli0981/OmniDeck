@@ -26,6 +26,7 @@ internal static class OdAppServiceCollectionExtensions
         services.AddSingleton<IOdNotifier>(provider => provider.GetRequiredService<OdTrayNotifier>());
         services.AddSingleton<IOdAppLifetime, OdAppLifetime>();
         services.AddSingleton<OdShellViewModel>();
+        services.AddSingleton<OdMemoryViewModel>();
         services.AddSingleton<OdMainWindow>();
         return services;
     }

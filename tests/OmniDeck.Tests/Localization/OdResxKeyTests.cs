@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Resources;
 using System.Text.RegularExpressions;
 using OmniDeck.App.Resources;
+using OmniDeck.Core.Modules;
 using OmniDeck.Tests.TestSupport;
 
 namespace OmniDeck.Tests.Localization;
@@ -57,6 +58,8 @@ public sealed partial class OdResxKeyTests
             keys.Add(match.Groups["key"].Value);
         }
 
+        // Built at run time from the state ladder (OdMemoryRowViewModel): every state needs a name.
+        keys.UnionWith(Enum.GetNames<OdModuleState>().Select(state => "State_" + state));
         return keys;
     }
 

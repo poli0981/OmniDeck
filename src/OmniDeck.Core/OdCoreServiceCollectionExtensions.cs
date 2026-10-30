@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using OmniDeck.Core.Governor;
 using OmniDeck.Core.Modules;
 using OmniDeck.Core.Settings;
 using OmniDeck.Core.Storage;
@@ -20,6 +21,8 @@ public static class OdCoreServiceCollectionExtensions
 
         // Modules register as IOdModule; the app supplies IOdNotifier (the tray).
         services.AddSingleton<OdModuleHost>();
+        services.AddSingleton<IOdMemory, OdProcessMemory>();
+        services.AddSingleton<OdRamGovernor>();
         return services;
     }
 }
