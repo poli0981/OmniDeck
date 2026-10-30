@@ -1,7 +1,7 @@
 {
   "$schema": "./webapps.schema.json",
   "schemaVersion": 1,
-  "updated": "2026-07-17",
+  "updated": "2026-10-30",
   "apps": [
     {
       "id": "spotify",
@@ -80,16 +80,6 @@
       "profile": "meta",
       "navAllow": ["facebook.com", "fbcdn.net", "fbsbx.com"],
       "popupAllow": ["facebook.com"],
-      "notifications": true,
-      "audioPin": false
-    },
-    {
-      "id": "messenger",
-      "name": "Messenger",
-      "startUrl": "https://www.messenger.com/",
-      "profile": "meta",
-      "navAllow": ["messenger.com", "facebook.com", "fbcdn.net", "fbsbx.com"],
-      "popupAllow": ["facebook.com", "messenger.com"],
       "notifications": true,
       "audioPin": false
     }

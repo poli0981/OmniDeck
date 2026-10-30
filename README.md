@@ -9,7 +9,7 @@
 [![CI](https://github.com/poli0981/OmniDeck/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/poli0981/OmniDeck/actions/workflows/ci.yml)
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=poli0981_OmniDeck&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=poli0981_OmniDeck)
 
-OmniDeck combines a set of lightweight native mini-apps (weather, calculator, stocks, media player, clock, timer, calendar) with a curated runner for popular web apps (Spotify, Discord, YouTube, Gmail, Google Calendar, Google Drive, Google Maps, Facebook, Messenger) — no separate installs, one window, one tray icon.
+OmniDeck combines a set of lightweight native mini-apps (weather, calculator, stocks, media player, clock, timer, calendar) with a curated runner for popular web apps (Spotify, Discord, YouTube, Gmail, Google Calendar, Google Drive, Google Maps, Facebook) — no separate installs, one window, one tray icon.
 
 It is built on WPF (.NET 10 LTS) and **WebView2**, which reuses the Edge runtime that ships with Windows 11 instead of bundling a browser engine. That is what keeps the installer small while still running full web apps.
 
