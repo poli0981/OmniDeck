@@ -1,0 +1,17 @@
+<Project>
+
+  <!--
+    Spike projects only. The spike/p0 branch is pushed but never merged (docs/spikes/README.md on
+    main). This file deliberately does not import the repository's Directory.Build.props: throwaway
+    proof-of-concept code skips the analyzer set and warnings-as-errors, but keeps NuGet Audit.
+  -->
+  <PropertyGroup>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <NuGetAudit>true</NuGetAudit>
+    <NuGetAuditMode>all</NuGetAuditMode>
+    <Product>OmniDeck spikes</Product>
+  </PropertyGroup>
+
+</Project>
