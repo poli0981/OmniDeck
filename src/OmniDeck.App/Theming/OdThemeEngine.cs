@@ -32,6 +32,9 @@ public sealed class OdThemeEngine : IDisposable
     /// <summary>The tokens in effect.</summary>
     public OdTokens Current { get; private set; }
 
+    /// <summary>Raised on the UI thread once the preset layer is rebuilt, for chrome that reads tokens in code.</summary>
+    public event EventHandler? Applied;
+
     /// <summary>Applies the theme and the preset layer to <paramref name="app"/> and starts following changes.</summary>
     public void Start(Application app)
     {
@@ -77,24 +80,27 @@ public sealed class OdThemeEngine : IDisposable
             settings.MotionEnabled && SystemParameters.ClientAreaAnimation);
         OdThemeResources.Apply(_app.Resources, OdThemeResources.Build(Current));
         _log.Debug("Preset {Preset} applied (text scale {TextScale}, font scale {FontScale})", Current.PresetName, _textScale, settings.FontScale);
+        Applied?.Invoke(this, EventArgs.Empty);
     }
 
     private void ApplyTheme()
     {
         var settings = _settings.Current;
-        var useAccent = settings.AccentColor.Length == 0;
-        if (settings.Theme == OdThemeMode.System || SystemParameters.HighContrast)
+
+        // High Contrast: palette tokens, the user's accent included, defer to the system entirely (docs/UI-MODES.md §4).
+        var highContrast = SystemParameters.HighContrast;
+        var systemAccent = settings.AccentColor.Length == 0 || highContrast;
+        if (settings.Theme == OdThemeMode.System || highContrast)
         {
-            // High Contrast: palette tokens defer to the system entirely (docs/UI-MODES.md §4).
-            ApplicationThemeManager.ApplySystemTheme(updateAccent: useAccent);
+            ApplicationThemeManager.ApplySystemTheme(updateAccent: systemAccent);
         }
         else
         {
             var theme = settings.Theme == OdThemeMode.Light ? ApplicationTheme.Light : ApplicationTheme.Dark;
-            ApplicationThemeManager.Apply(theme, WindowBackdropType.Mica, updateAccent: useAccent);
+            ApplicationThemeManager.Apply(theme, WindowBackdropType.Mica, updateAccent: systemAccent);
         }
 
-        if (!useAccent && ColorConverter.ConvertFromString(settings.AccentColor) is Color accent)
+        if (!systemAccent && ColorConverter.ConvertFromString(settings.AccentColor) is Color accent)
         {
             ApplicationAccentColorManager.Apply(accent, ApplicationThemeManager.GetAppTheme());
         }

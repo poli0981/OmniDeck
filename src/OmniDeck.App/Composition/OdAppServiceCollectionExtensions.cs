@@ -32,6 +32,7 @@ internal static class OdAppServiceCollectionExtensions
         services.AddSingleton<OdShellViewModel>();
         services.AddSingleton<OdMemoryViewModel>();
         services.AddSingleton<IOdUpdateService, OdVelopackUpdateService>();
+        services.AddSingleton<OdUpdateWatcher>();
         services.AddSingleton<IOdStartupRegistration>(_ => new OdRunKeyStartup());
         services.AddSingleton(provider => new OdAboutViewModel(provider.GetRequiredService<IOdUpdateService>(), OdExternal.Open));
         services.AddSingleton(provider => new OdSettingsViewModel(

@@ -26,6 +26,10 @@ internal static class OdMarkdownRenderer
     private static readonly MarkdownPipeline Pipeline = new MarkdownPipelineBuilder().UsePipeTables().Build();
     private static readonly FontFamily Monospace = new("Cascadia Mono, Consolas, Courier New");
 
+    // Theme brushes rather than fixed colors, so lines follow light, dark and High Contrast.
+    private const string DividerBrush = "DividerStrokeColorDefaultBrush";
+    private const string QuoteBrush = "ControlStrongStrokeColorDefaultBrush";
+
     public static FlowDocument Render(string markdown, Action<Uri> openLink)
     {
         ArgumentNullException.ThrowIfNull(markdown);
@@ -58,7 +62,7 @@ internal static class OdMarkdownRenderer
         MdTable table => Table(table, openLink),
         QuoteBlock quote => Quote(quote, openLink),
         CodeBlock code => Code(code),
-        ThematicBreakBlock => new Paragraph { BorderThickness = new Thickness(0, 0, 0, 1), BorderBrush = Brushes.Gray },
+        ThematicBreakBlock => Bordered(new Paragraph(), new Thickness(0, 0, 0, 1), DividerBrush),
         _ => null,
     };
 
@@ -119,7 +123,8 @@ internal static class OdMarkdownRenderer
             var renderedRow = new TableRow();
             foreach (var cell in row.OfType<MdTableCell>())
             {
-                var renderedCell = new TableCell { BorderBrush = Brushes.Gray, BorderThickness = new Thickness(0, 0, 0, 1), Padding = new Thickness(4, 2, 8, 2) };
+                var renderedCell = new TableCell { BorderThickness = new Thickness(0, 0, 0, 1), Padding = new Thickness(4, 2, 8, 2) };
+                renderedCell.SetResourceReference(TableCell.BorderBrushProperty, DividerBrush);
                 foreach (var block in cell)
                 {
                     if (RenderBlock(block, openLink) is { } content)
@@ -144,9 +149,17 @@ internal static class OdMarkdownRenderer
         return rendered;
     }
 
+    private static T Bordered<T>(T block, Thickness thickness, string brushKey)
+        where T : WpfBlock
+    {
+        block.BorderThickness = thickness;
+        block.SetResourceReference(WpfBlock.BorderBrushProperty, brushKey);
+        return block;
+    }
+
     private static Section Quote(QuoteBlock quote, Action<Uri> openLink)
     {
-        var section = new Section { BorderBrush = Brushes.Gray, BorderThickness = new Thickness(3, 0, 0, 0), Padding = new Thickness(8, 0, 0, 0) };
+        var section = Bordered(new Section { Padding = new Thickness(8, 0, 0, 0) }, new Thickness(3, 0, 0, 0), QuoteBrush);
         foreach (var child in quote)
         {
             if (RenderBlock(child, openLink) is { } block)

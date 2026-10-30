@@ -30,6 +30,9 @@ public sealed partial class OdAboutViewModel(IOdUpdateService updates, Action<Ur
     /// <summary>Raised when the user asks to read the legal documents again.</summary>
     public event EventHandler? LegalRequested;
 
+    /// <summary>Opening About checks for updates (docs/ARCHITECTURE.md §7), unless a check already ran.</summary>
+    public Task CheckOnOpenAsync() => State == OdUpdateState.Idle ? CheckCommand.ExecuteAsync(null) : Task.CompletedTask;
+
     [RelayCommand]
     private async Task CheckAsync()
     {

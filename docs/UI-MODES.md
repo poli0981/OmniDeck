@@ -28,6 +28,8 @@ Presets are named by their character, never by age, both in the UI and in code:
 
 Rules for module authors: never hardcode a font size, padding, radius, or animation duration — consume tokens. CI includes a XAML lint pass (XamlStyler + a grep rule) that flags literal `FontSize=` in module views.
 
+As built in P1, the font, density, hit-target, corner-radius and motion tokens and both `Od.Nav.*` tokens drive the shell. Dynamic closes the sidebar to icons, with each name in a tooltip; Comfort shows at most six modules, always including the one on screen, and the rest stay in the library and the palette. `Od.Contrast.Target` and `Od.Accent.Saturation` are not tokens yet: every preset uses WPF-UI's palette, which meets AA. Comfort's AAA body text and Dynamic's gradient accents come with the P3 preset work, and `Od.Chart.LineWeight` with the first chart (Stocks, P3).
+
 ## 3. User overrides
 
 Appearance settings expose the presets as three cards plus granular overrides on top: font-size slider (0.85–1.4× of preset base), motion on/off, accent color. Overrides persist independently of preset choice, so switching presets keeps the user's font preference.

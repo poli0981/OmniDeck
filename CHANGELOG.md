@@ -6,6 +6,23 @@ All notable changes to OmniDeck are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+- Keyboard shortcuts: Ctrl+1 to Ctrl+9 open the modules in the sidebar, in order, and Ctrl+, opens
+  Settings; Ctrl+K still opens the command palette.
+- Installed copies check for updates a few minutes after starting and then once a day, and say so in
+  a notification when a new version is out. Opening Settings → About checks too. Nothing downloads
+  until you choose to.
+
+### Changed
+- The sidebar follows the layout preset as you switch: Dynamic shows icons only, with each name in a
+  tooltip, and Comfort shows at most six modules, always including the one on screen.
+
+### Fixed
+- The command palette shrinks to fit a short list of results.
+- With High Contrast on, Windows' colors win over a custom accent color.
+- Lines and borders in the legal documents follow the theme, High Contrast included.
+- Screen readers announce the layout presets and settings choices by their names.
+
 ## [0.1.0-alpha.2] — 2026-10-30
 
 Second alpha: the settings pages, the legal gate and onboarding. It is also the first build that can

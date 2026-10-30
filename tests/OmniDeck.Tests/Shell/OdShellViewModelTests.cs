@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Windows.Input;
 using Microsoft.Extensions.Time.Testing;
 using OmniDeck.App.Settings;
 using OmniDeck.App.Shell;
@@ -61,6 +62,38 @@ public sealed class OdShellViewModelTests : IDisposable
         Assert.Null(shell.CurrentView);
         Assert.Null(host.Current);
         Assert.Equal(2, shell.Sidebar.Count);
+    });
+
+    [Fact]
+    public void ACappedSidebar_KeepsTheModuleOnScreenInView() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        using var shell = NewShell(host);
+        await shell.NavigateAsync("clock");
+        await shell.NavigateAsync("timer");
+        await shell.NavigateAsync("calc");
+
+        Assert.Equal(new[] { "clock", "timer", "calc" }, shell.VisibleSidebar(0).Select(item => item.Id), StringComparer.Ordinal);
+        Assert.Equal(new[] { "clock", "calc" }, shell.VisibleSidebar(2).Select(item => item.Id), StringComparer.Ordinal);
+
+        await shell.NavigateAsync(OdShellViewModel.LibraryTarget);
+        Assert.Equal(new[] { "clock", "timer" }, shell.VisibleSidebar(2).Select(item => item.Id), StringComparer.Ordinal);
+    });
+
+    [Fact]
+    public void Shortcuts_OpenSidebarModulesAndSettings() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        using var shell = NewShell(host);
+        await shell.NavigateAsync("timer");
+        await shell.NavigateAsync("calc");
+
+        Assert.Equal("timer", shell.ShortcutTarget(Key.D1, 0));
+        Assert.Equal("calc", shell.ShortcutTarget(Key.NumPad2, 0));
+        Assert.Null(shell.ShortcutTarget(Key.D3, 0));
+        Assert.Equal(OdShellViewModel.SettingsTarget, shell.ShortcutTarget(Key.OemComma, 0));
+        Assert.Null(shell.ShortcutTarget(Key.A, 0));
+        Assert.Equal("calc", shell.ShortcutTarget(Key.D1, 1));
     });
 
     [Fact]

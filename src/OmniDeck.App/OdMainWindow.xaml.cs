@@ -44,6 +44,8 @@ public partial class OdMainWindow : INavigationViewPageProvider
     private readonly OdModuleStage _stage;
     private readonly Dictionary<string, NavigationViewItem> _moduleItems = new(StringComparer.Ordinal);
     private readonly NavigationViewItemSeparator _pinnedSeparator = new();
+    private bool? _navLabels;
+    private int _navMax = -1;
 
     public OdMainWindow(
         OdThemeEngine theme,
@@ -86,19 +88,7 @@ public partial class OdMainWindow : INavigationViewPageProvider
         notifier.Attach((title, message) => _ = Dispatcher.InvokeAsync(() => TrayIcon.ShowNotification(title, message, NotificationIcon.Info)));
         Closed += (_, _) => TrayIcon.Dispose();
 
-        RootNavigation.SetPageProviderService(this);
-        RootNavigation.FooterMenuItems.Add(ShellItem(OdShellViewModel.SettingsTarget, Localized("Settings_Nav"), SymbolRegular.Settings24, typeof(OdSettingsPage)));
-        RootNavigation.FooterMenuItems.Add(ShellItem(OdShellViewModel.LibraryTarget, Localized("Shell_Library"), SymbolRegular.Apps24, typeof(OdLibraryPage)));
-        SyncSidebar();
-        shell.Sidebar.CollectionChanged += (_, _) => SyncSidebar();
-        shell.PropertyChanged += OnShellPropertyChanged;
-        RootNavigation.SelectionChanged += OnNavigationSelectionChanged;
-        RootNavigation.Navigating += (_, _) => RootNavigation.TransitionDuration = (int)OdMotion.DurationFor(this).TotalMilliseconds;
-        Loaded += (_, _) =>
-        {
-            RootNavigation.IsPaneOpen = TryFindResource(OdTokenKeys.NavShowLabels) is not false;
-            RootNavigation.Navigate(shell.CurrentTarget);
-        };
+        SetUpNavigation(theme);
 
         // WPF ignores the Windows text size; re-read it when it may have changed (docs/UI-MODES.md §4).
         Activated += (_, _) => theme.RefreshTextScale();
@@ -141,6 +131,28 @@ public partial class OdMainWindow : INavigationViewPageProvider
         return pageType == typeof(OdModuleStage) ? _stage : null;
     }
 
+    private void SetUpNavigation(OdThemeEngine theme)
+    {
+        RootNavigation.SetPageProviderService(this);
+        RootNavigation.FooterMenuItems.Add(ShellItem(OdShellViewModel.SettingsTarget, Localized("Settings_Nav"), SymbolRegular.Settings24, typeof(OdSettingsPage)));
+        RootNavigation.FooterMenuItems.Add(ShellItem(OdShellViewModel.LibraryTarget, Localized("Shell_Library"), SymbolRegular.Apps24, typeof(OdLibraryPage)));
+        SyncSidebar();
+        _shell.Sidebar.CollectionChanged += (_, _) => SyncSidebar();
+        _shell.PropertyChanged += OnShellPropertyChanged;
+        RootNavigation.SelectionChanged += OnNavigationSelectionChanged;
+        RootNavigation.Navigating += (_, _) => RootNavigation.TransitionDuration = (int)OdMotion.DurationFor(this).TotalMilliseconds;
+        RootNavigation.PaneOpened += (_, _) => UpdateToolTips();
+        RootNavigation.PaneClosed += (_, _) => UpdateToolTips();
+        theme.Applied += OnThemeApplied;
+        Closed += (_, _) => theme.Applied -= OnThemeApplied;
+        Loaded += (_, _) =>
+        {
+            ApplyNavTokens();
+            UpdateToolTips();
+            RootNavigation.Navigate(_shell.CurrentTarget);
+        };
+    }
+
     private static Binding Localized(string key) => new($"[{key}]") { Source = OdLocalization.Instance, Mode = BindingMode.OneWay };
 
     private static NavigationViewItem ShellItem(string target, Binding title, SymbolRegular icon, Type pageType)
@@ -153,6 +165,7 @@ public partial class OdMainWindow : INavigationViewPageProvider
         };
         item.SetBinding(ContentControl.ContentProperty, title);
         item.SetBinding(AutomationProperties.NameProperty, title);
+        item.SetBinding(ToolTipProperty, title);
         return item;
     }
 
@@ -165,7 +178,7 @@ public partial class OdMainWindow : INavigationViewPageProvider
     {
         RootNavigation.MenuItems.Clear();
         var previousPinned = false;
-        foreach (var module in _shell.Sidebar)
+        foreach (var module in _shell.VisibleSidebar(NavMaxVisibleItems))
         {
             if (previousPinned && !module.IsPinned)
             {
@@ -180,6 +193,43 @@ public partial class OdMainWindow : INavigationViewPageProvider
 
             RootNavigation.MenuItems.Add(item);
             previousPinned = module.IsPinned;
+        }
+
+        UpdateToolTips();
+    }
+
+    private int NavMaxVisibleItems => TryFindResource(OdTokenKeys.NavMaxVisibleItems) is int max ? max : 0;
+
+    private void OnThemeApplied(object? sender, EventArgs e) => ApplyNavTokens();
+
+    /// <summary>
+    /// Follows the preset's sidebar tokens (docs/UI-MODES.md §2): labels or icons only, and how many modules
+    /// it shows. Only a change of preset opens or closes the pane; otherwise the user's own toggle stands.
+    /// </summary>
+    private void ApplyNavTokens()
+    {
+        var labels = TryFindResource(OdTokenKeys.NavShowLabels) is not false;
+        if (_navLabels != labels)
+        {
+            _navLabels = labels;
+            RootNavigation.IsPaneOpen = labels;
+        }
+
+        var max = NavMaxVisibleItems;
+        if (_navMax != max)
+        {
+            _navMax = max;
+            SyncSidebar();
+        }
+    }
+
+    /// <summary>With the pane closed the sidebar shows icons only, so each item's label moves into its tooltip.</summary>
+    private void UpdateToolTips()
+    {
+        var show = !RootNavigation.IsPaneOpen;
+        foreach (var item in RootNavigation.MenuItems.OfType<NavigationViewItem>().Concat(RootNavigation.FooterMenuItems.OfType<NavigationViewItem>()))
+        {
+            ToolTipService.SetIsEnabled(item, show);
         }
     }
 
@@ -200,6 +250,7 @@ public partial class OdMainWindow : INavigationViewPageProvider
         };
         item.SetBinding(ContentControl.ContentProperty, new Binding(nameof(OdModuleItemViewModel.Title)) { Source = module });
         item.SetBinding(AutomationProperties.NameProperty, new Binding(nameof(OdModuleItemViewModel.Title)) { Source = module });
+        item.SetBinding(ToolTipProperty, new Binding(nameof(OdModuleItemViewModel.Title)) { Source = module });
         return item;
     }
 
@@ -218,6 +269,13 @@ public partial class OdMainWindow : INavigationViewPageProvider
             return;
         }
 
+        // A capped sidebar must make room for the module now on screen before it can be selected.
+        var max = NavMaxVisibleItems;
+        if (max > 0 && _shell.Sidebar.Count > max)
+        {
+            SyncSidebar();
+        }
+
         var selected = (RootNavigation.SelectedItem as NavigationViewItem)?.TargetPageTag;
         if (!string.Equals(selected, _shell.CurrentTarget, StringComparison.Ordinal))
         {
@@ -227,14 +285,22 @@ public partial class OdMainWindow : INavigationViewPageProvider
 
     private async void OnPreviewKeyDown(object sender, KeyEventArgs e)
     {
-        // Exactly Ctrl: AltGr arrives as Ctrl+Alt, and must type its character rather than open the palette.
-        if (e.Key != Key.K || Keyboard.Modifiers != ModifierKeys.Control || _dialogs.IsOpen)
+        // Exactly Ctrl: AltGr arrives as Ctrl+Alt, and must type its character rather than run a shortcut.
+        if (Keyboard.Modifiers != ModifierKeys.Control || _dialogs.IsOpen)
         {
             return;
         }
 
-        e.Handled = true;
-        await OpenPaletteAsync();
+        if (e.Key == Key.K)
+        {
+            e.Handled = true;
+            await OpenPaletteAsync();
+        }
+        else if (_shell.ShortcutTarget(e.Key, NavMaxVisibleItems) is { } target)
+        {
+            e.Handled = true;
+            await _shell.NavigateAsync(target);
+        }
     }
 
     private async void OnSearchClick(object sender, RoutedEventArgs e) => await OpenPaletteAsync();
