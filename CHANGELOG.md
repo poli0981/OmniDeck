@@ -6,6 +6,13 @@ All notable changes to OmniDeck are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.0-alpha.2] — 2026-10-30
+
+Second alpha: the settings pages, the legal gate and onboarding. It is also the first build that can
+update itself. 0.1.0-alpha.1 cannot, so install this one over it with its `Setup.exe` and choose to
+overwrite; your settings and data stay. From here on, Settings → About → Check for updates finds new
+releases.
+
 ### Added
 - First run: the license agreement, disclaimer, privacy policy and third-party notices, shown from the
   app's `legal` folder, to acknowledge before OmniDeck opens (again after each legal update). Then a
@@ -88,6 +95,7 @@ user-facing features yet: the window only shows the version.
 - Supported platform narrowed to Windows 11 (24H2 or later), x64.
 - App data moves to `%LocalAppData%\OmniDeck.Data`, outside Velopack's install folder.
 
-[Unreleased]: https://github.com/poli0981/OmniDeck/compare/v0.1.0-alpha.1...HEAD
+[Unreleased]: https://github.com/poli0981/OmniDeck/compare/v0.1.0-alpha.2...HEAD
+[0.1.0-alpha.2]: https://github.com/poli0981/OmniDeck/compare/v0.1.0-alpha.1...v0.1.0-alpha.2
 [0.1.0-alpha.1]: https://github.com/poli0981/OmniDeck/compare/v0.0.1-alpha.1...v0.1.0-alpha.1
 [0.0.1-alpha.1]: https://github.com/poli0981/OmniDeck/releases/tag/v0.0.1-alpha.1
