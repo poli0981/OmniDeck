@@ -3,7 +3,9 @@ using Microsoft.Extensions.DependencyInjection;
 using OmniDeck.App;
 using OmniDeck.App.Composition;
 using OmniDeck.App.Diagnostics;
+using OmniDeck.App.Shell;
 using OmniDeck.Core;
+using OmniDeck.Core.Modules;
 using OmniDeck.Core.Storage;
 using OmniDeck.Tests.TestSupport;
 using Serilog.Core;
@@ -23,6 +25,7 @@ public sealed class OdCompositionTests
         using var provider = services.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
 
         Assert.NotNull(provider.GetRequiredService<OdCrashHandler>());
+        Assert.Same(provider.GetRequiredService<OdTrayNotifier>(), provider.GetRequiredService<IOdNotifier>());
     }
 
     [Fact]

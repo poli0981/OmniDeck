@@ -3,12 +3,16 @@
   <PropertyGroup>
     <!-- Windows-only from the start: DPAPI, toasts and the update service land here in P1. -->
     <TargetFramework>net10.0-windows</TargetFramework>
+    <!-- IOdModule.CreateView returns a FrameworkElement (docs/ARCHITECTURE.md §2). -->
+    <UseWPF>true</UseWPF>
     <!-- Only for source-generated P/Invoke ([LibraryImport]); no hand-written unsafe code. -->
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="OmniDeck.Tests" />
+    <!-- UseWPF drops System.IO from the implicit usings (Shapes.Path clash); Core draws no shapes. -->
+    <Using Include="System.IO" />
   </ItemGroup>
 
   <ItemGroup>

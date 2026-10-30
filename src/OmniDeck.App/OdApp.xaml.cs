@@ -2,9 +2,13 @@ using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using OmniDeck.App.Composition;
 using OmniDeck.App.Diagnostics;
+using OmniDeck.App.Resources;
+using OmniDeck.App.Shell;
 using OmniDeck.App.Theming;
 using OmniDeck.Core;
+using OmniDeck.Core.Localization;
 using OmniDeck.Core.Runtime;
+using OmniDeck.Core.Settings;
 using OmniDeck.Core.Storage;
 using Serilog;
 
@@ -29,6 +33,7 @@ public partial class OdApp
     {
         base.OnStartup(e);
         ShutdownMode = ShutdownMode.OnExplicitShutdown;
+        OdLocalization.Instance.Register(OdAppStrings.Resources);
         try
         {
             Start();
@@ -36,7 +41,7 @@ public partial class OdApp
         catch (Exception ex)
         {
             Log.ForContext<OdApp>().Fatal(ex, "OmniDeck could not start");
-            MessageBox.Show($"OmniDeck could not start.\n\n{ex.Message}", "OmniDeck", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(OdLocalization.Format("Error_StartFailed", ex.Message), OdLocalization.Get("App_Name"), MessageBoxButton.OK, MessageBoxImage.Error);
             Shutdown(1);
         }
     }
@@ -64,6 +69,12 @@ public partial class OdApp
         _services.GetRequiredService<OdCrashHandler>().Hook(this);
         var applied = _services.GetRequiredService<OdDatabase>().Migrate(OdCoreMigrations.All);
         Log.ForContext<OdApp>().Information("Database ready ({Applied} migrations applied)", applied);
+
+        var settings = _services.GetRequiredService<IOdSettingsService>();
+        OdLocalization.Instance.SetCulture(OdLocalization.Instance.ResolveCulture(settings.Current.Language));
+        OdLocalization.Instance.TrackWindowLanguage();
+        settings.Changed += (_, e) => Dispatcher.Invoke(() => OdLocalization.Instance.SetCulture(OdLocalization.Instance.ResolveCulture(e.Settings.Language)));
+
         _services.GetRequiredService<OdThemeEngine>().Start(this);
         _guard.StartListening(() => _ = Dispatcher.InvokeAsync(ShowMainWindow));
         ShowMainWindow();
@@ -76,16 +87,17 @@ public partial class OdApp
             window = _services!.GetRequiredService<OdMainWindow>();
             MainWindow = window;
 
-            // Until the tray arrives (P1 WP4), closing the window ends the app.
-            window.Closed += (_, _) => Shutdown();
+            // A real close (tray off, or Quit) ends the app; otherwise closing only hides the window.
+            var lifetime = _services!.GetRequiredService<IOdAppLifetime>();
+            window.Closed += (_, _) =>
+            {
+                if (!lifetime.IsQuitting)
+                {
+                    lifetime.Quit();
+                }
+            };
         }
 
-        window.Show();
-        if (window.WindowState == WindowState.Minimized)
-        {
-            window.WindowState = WindowState.Normal;
-        }
-
-        window.Activate();
+        window.Present();
     }
 }

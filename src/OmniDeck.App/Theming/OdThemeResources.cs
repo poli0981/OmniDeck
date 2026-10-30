@@ -26,6 +26,7 @@ internal static class OdThemeResources
             [OdTokenKeys.PaddingControl] = controlPadding,
             [OdTokenKeys.PaddingCard] = new Thickness(d * 3),
             [OdTokenKeys.MarginItem] = new Thickness(0, 0, 0, d * 2),
+            [OdTokenKeys.MarginTile] = new Thickness(0, 0, d * 2, d * 2),
             [OdTokenKeys.HitTargetMin] = tokens.HitTargetMin,
             [OdTokenKeys.CornerRadius] = new CornerRadius(tokens.CornerRadius),
             [OdTokenKeys.MotionDuration] = new Duration(TimeSpan.FromMilliseconds(tokens.MotionMilliseconds)),

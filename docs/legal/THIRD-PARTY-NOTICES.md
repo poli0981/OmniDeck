@@ -14,6 +14,8 @@ OmniDeck is licensed under GPL-3.0. This file lists the third-party components O
 | Fluent UI System Icons (inside WPF-UI) | — | MIT | icon font |
 | Velopack | 1.2.161 | MIT | installer & updates |
 | Microsoft.Extensions.DependencyInjection (+ .Abstractions) | 10.0.14 | MIT | dependency injection |
+| CommunityToolkit.Mvvm | 8.4.2 | MIT | MVVM infrastructure |
+| H.NotifyIcon.Wpf + H.NotifyIcon + H.GeneratedIcons.System.Drawing | 2.4.1 | MIT | tray icon and notifications |
 | Serilog + Serilog.Sinks.File | 4.4.0 / 7.0.0 | Apache-2.0 | logging to local files |
 | Dapper | 2.1.89 | Apache-2.0 | data access |
 | Microsoft.Data.Sqlite (+ .Core) | 10.0.14 | MIT | SQLite provider |
@@ -24,8 +26,6 @@ OmniDeck is licensed under GPL-3.0. This file lists the third-party components O
 
 | Component | License | Role | Phase |
 |---|---|---|---|
-| CommunityToolkit.Mvvm | MIT | MVVM infrastructure | P1 |
-| H.NotifyIcon.Wpf | MIT | tray icon | P1 |
 | Microsoft.Web.WebView2 (SDK) | BSD-3-Clause (Microsoft) | web app engine bindings | P2 |
 | Ical.Net (+ NodaTime) | MIT (+ Apache-2.0) | iCalendar import/export | P2 |
 | LibVLCSharp.WPF | LGPL-2.1-or-later | media bindings | P2 |
@@ -63,6 +63,8 @@ Applies to the MIT-licensed components in §1, with these copyright notices:
 - Velopack: Copyright © 2021 Caelan Sayler; Copyright © 2024 Velopack Ltd.
 - Microsoft.Extensions.DependencyInjection and .Abstractions: Copyright (c) .NET Foundation and Contributors
 - Microsoft.Data.Sqlite and Microsoft.Data.Sqlite.Core: Copyright (c) .NET Foundation and Contributors
+- CommunityToolkit.Mvvm: Copyright © .NET Foundation and Contributors
+- H.NotifyIcon, H.NotifyIcon.Wpf and H.GeneratedIcons.System.Drawing: Copyright (c) 2020 havendv; they continue Hardcodet NotifyIcon for WPF, Copyright (c) Philipp Sumi (MIT)
 
 ```
 Permission is hereby granted, free of charge, to any person obtaining a copy

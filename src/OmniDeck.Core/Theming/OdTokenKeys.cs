@@ -14,6 +14,10 @@ public static class OdTokenKeys
     public const string PaddingControl = "Od.Padding.Control";
     public const string PaddingCard = "Od.Padding.Card";
     public const string MarginItem = "Od.Margin.Item";
+
+    /// <summary>The gap after a tile in a wrapping grid, such as the module library.</summary>
+    public const string MarginTile = "Od.Margin.Tile";
+
     public const string HitTargetMin = "Od.HitTarget.Min";
     public const string CornerRadius = "Od.Corner.Radius";
     public const string MotionDuration = "Od.Motion.Duration";

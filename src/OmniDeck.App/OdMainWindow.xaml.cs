@@ -1,19 +1,88 @@
+using System.ComponentModel;
+using System.Windows;
+using System.Windows.Automation;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Interop;
+using H.NotifyIcon.Core;
+using OmniDeck.App.Shell;
 using OmniDeck.App.Theming;
-using OmniDeck.Core;
+using OmniDeck.Core.Localization;
+using OmniDeck.Core.Settings;
+using OmniDeck.Core.Storage;
+using OmniDeck.Core.Theming;
+using Wpf.Ui;
+using Wpf.Ui.Abstractions;
+using Wpf.Ui.Controls;
+using MenuItem = System.Windows.Controls.MenuItem;
 
 namespace OmniDeck.App;
 
-/// <summary>Placeholder shell window of the kickoff build; the real shell arrives in P1 WP4.</summary>
-public partial class OdMainWindow
+/// <summary>
+/// The shell window: the title bar with the palette button, the navigation view as sidebar chrome,
+/// the module stage, in-window dialogs and snackbars, and the tray icon. Closing hides it into the
+/// tray unless the user turned that off or is quitting.
+/// </summary>
+public partial class OdMainWindow : INavigationViewPageProvider
 {
     private const int WmSettingChange = 0x001A;
 
-    public OdMainWindow(OdThemeEngine theme)
+    private readonly OdShellViewModel _shell;
+    private readonly OdDialogs _dialogs;
+    private readonly OdTrayNotifier _notifier;
+    private readonly IOdSettingsService _settings;
+    private readonly IOdAppLifetime _lifetime;
+    private readonly IOdAppMeta _meta;
+    private readonly OdLibraryPage _library;
+    private readonly OdModuleStage _stage;
+    private readonly Dictionary<string, NavigationViewItem> _moduleItems = new(StringComparer.Ordinal);
+    private readonly NavigationViewItemSeparator _pinnedSeparator = new();
+
+    public OdMainWindow(
+        OdThemeEngine theme,
+        OdShellViewModel shell,
+        OdDialogs dialogs,
+        ISnackbarService snackbars,
+        OdTrayNotifier notifier,
+        IOdSettingsService settings,
+        IOdAppLifetime lifetime,
+        IOdAppMeta meta)
     {
         ArgumentNullException.ThrowIfNull(theme);
+        ArgumentNullException.ThrowIfNull(snackbars);
         InitializeComponent();
-        VersionText.Text = OdVersionInfo.FromAssembly(typeof(OdMainWindow).Assembly).DisplayText;
+        _shell = shell;
+        _dialogs = dialogs;
+        _notifier = notifier;
+        _settings = settings;
+        _lifetime = lifetime;
+        _meta = meta;
+        DataContext = shell;
+        _library = new OdLibraryPage { DataContext = shell };
+        _stage = new OdModuleStage { DataContext = shell };
+
+        dialogs.SetHost(RootDialogHost);
+        snackbars.SetSnackbarPresenter(RootSnackbar);
+
+        // Created now, so the icon exists even if the window never shows; no Efficiency Mode, which
+        // would throttle the whole process while timers run in the background.
+        TrayIcon.ForceCreate(enablesEfficiencyMode: false);
+        notifier.Attach((title, message) => _ = Dispatcher.InvokeAsync(() => TrayIcon.ShowNotification(title, message, NotificationIcon.Info)));
+        Closed += (_, _) => TrayIcon.Dispose();
+
+        RootNavigation.SetPageProviderService(this);
+        RootNavigation.FooterMenuItems.Add(LibraryItem());
+        SyncSidebar();
+        shell.Sidebar.CollectionChanged += (_, _) => SyncSidebar();
+        shell.PropertyChanged += OnShellPropertyChanged;
+        RootNavigation.SelectionChanged += OnNavigationSelectionChanged;
+        RootNavigation.Navigating += (_, _) => RootNavigation.TransitionDuration = (int)OdMotion.DurationFor(this).TotalMilliseconds;
+        Loaded += (_, _) =>
+        {
+            RootNavigation.IsPaneOpen = TryFindResource(OdTokenKeys.NavShowLabels) is not false;
+            RootNavigation.Navigate(shell.CurrentTarget);
+        };
 
         // WPF ignores the Windows text size; re-read it when it may have changed (docs/UI-MODES.md §4).
         Activated += (_, _) => theme.RefreshTextScale();
@@ -28,4 +97,156 @@ public partial class OdMainWindow
                 return IntPtr.Zero;
             });
     }
+
+    /// <summary>Shows the window from the tray or the taskbar, restored and in front.</summary>
+    public void Present()
+    {
+        Show();
+        if (WindowState == WindowState.Minimized)
+        {
+            WindowState = WindowState.Normal;
+        }
+
+        Activate();
+    }
+
+    object? INavigationViewPageProvider.GetPage(Type pageType)
+    {
+        if (pageType == typeof(OdLibraryPage))
+        {
+            return _library;
+        }
+
+        return pageType == typeof(OdModuleStage) ? _stage : null;
+    }
+
+    private static Binding Localized(string key) => new($"[{key}]") { Source = OdLocalization.Instance, Mode = BindingMode.OneWay };
+
+    private static NavigationViewItem LibraryItem()
+    {
+        var item = new NavigationViewItem
+        {
+            Icon = new SymbolIcon { Symbol = SymbolRegular.Apps24 },
+            TargetPageTag = OdShellViewModel.LibraryTarget,
+            TargetPageType = typeof(OdLibraryPage),
+        };
+        item.SetBinding(ContentControl.ContentProperty, Localized("Shell_Library"));
+        item.SetBinding(AutomationProperties.NameProperty, Localized("Shell_Library"));
+        return item;
+    }
+
+    /// <summary>
+    /// Mirrors the sidebar, with a separator between pinned and merely open modules. Each module keeps
+    /// one item for the window's lifetime: the navigation view never forgets an item's tag, so a
+    /// re-added module must come back as the same item.
+    /// </summary>
+    private void SyncSidebar()
+    {
+        RootNavigation.MenuItems.Clear();
+        var previousPinned = false;
+        foreach (var module in _shell.Sidebar)
+        {
+            if (previousPinned && !module.IsPinned)
+            {
+                RootNavigation.MenuItems.Add(_pinnedSeparator);
+            }
+
+            if (!_moduleItems.TryGetValue(module.Id, out var item))
+            {
+                item = ModuleItem(module);
+                _moduleItems[module.Id] = item;
+            }
+
+            RootNavigation.MenuItems.Add(item);
+            previousPinned = module.IsPinned;
+        }
+    }
+
+    private NavigationViewItem ModuleItem(OdModuleItemViewModel module)
+    {
+        var pin = new MenuItem { Command = _shell.TogglePinCommand, CommandParameter = module };
+        var close = new MenuItem { Command = _shell.CloseCommand, CommandParameter = module };
+        close.SetBinding(HeaderedItemsControl.HeaderProperty, Localized("Shell_Close"));
+        var menu = new ContextMenu { Items = { pin, close } };
+        menu.Opened += (_, _) => pin.Header = OdLocalization.Get(module.IsPinned ? "Shell_Unpin" : "Shell_Pin");
+
+        var item = new NavigationViewItem
+        {
+            Icon = new SymbolIcon { Symbol = OdSymbolConverter.Parse(module.Info.Icon) },
+            TargetPageTag = module.Id,
+            TargetPageType = typeof(OdModuleStage),
+            ContextMenu = menu,
+        };
+        item.SetBinding(ContentControl.ContentProperty, new Binding(nameof(OdModuleItemViewModel.Title)) { Source = module });
+        item.SetBinding(AutomationProperties.NameProperty, new Binding(nameof(OdModuleItemViewModel.Title)) { Source = module });
+        return item;
+    }
+
+    private async void OnNavigationSelectionChanged(NavigationView sender, RoutedEventArgs args)
+    {
+        if (sender.SelectedItem is NavigationViewItem { TargetPageTag: { Length: > 0 } target })
+        {
+            await _shell.NavigateAsync(target);
+        }
+    }
+
+    private void OnShellPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (!string.Equals(e.PropertyName, nameof(OdShellViewModel.CurrentTarget), StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        var selected = (RootNavigation.SelectedItem as NavigationViewItem)?.TargetPageTag;
+        if (!string.Equals(selected, _shell.CurrentTarget, StringComparison.Ordinal))
+        {
+            RootNavigation.Navigate(_shell.CurrentTarget);
+        }
+    }
+
+    private async void OnPreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        // Exactly Ctrl: AltGr arrives as Ctrl+Alt, and must type its character rather than open the palette.
+        if (e.Key != Key.K || Keyboard.Modifiers != ModifierKeys.Control || _dialogs.IsOpen)
+        {
+            return;
+        }
+
+        e.Handled = true;
+        await OpenPaletteAsync();
+    }
+
+    private async void OnSearchClick(object sender, RoutedEventArgs e) => await OpenPaletteAsync();
+
+    private async Task OpenPaletteAsync()
+    {
+        var palette = new OdCommandPaletteViewModel(_shell.PaletteEntries());
+        new OdCommandPaletteWindow(palette, this).ShowDialog();
+        if (palette.Chosen is { } chosen)
+        {
+            await chosen.RunAsync();
+        }
+    }
+
+    private void OnClosing(object? sender, CancelEventArgs e)
+    {
+        if (_lifetime.IsQuitting || !_settings.Current.CloseToTray)
+        {
+            return;
+        }
+
+        e.Cancel = true;
+        Hide();
+
+        // Say once, ever, where the window went.
+        if (_meta.Get(OdAppMetaKeys.TrayHintShown) is null)
+        {
+            _meta.Set(OdAppMetaKeys.TrayHintShown, "1");
+            _notifier.Notify(OdLocalization.Get("Tray_StillRunningTitle"), OdLocalization.Get("Tray_StillRunningMessage"));
+        }
+    }
+
+    private void OnTrayOpen(object sender, RoutedEventArgs e) => Present();
+
+    private void OnTrayQuit(object sender, RoutedEventArgs e) => _lifetime.Quit();
 }

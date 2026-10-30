@@ -10,4 +10,7 @@ public static class OdAppMetaKeys
 
     /// <summary>When it was acknowledged, as an ISO 8601 UTC timestamp.</summary>
     public const string LegalAcknowledgedAt = "legal.acknowledged_at";
+
+    /// <summary>Set once the user was told that closing the window keeps OmniDeck in the tray.</summary>
+    public const string TrayHintShown = "shell.tray_hint_shown";
 }

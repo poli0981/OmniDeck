@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Windows;
+using OmniDeck.Core.Localization;
 using Serilog;
 
 namespace OmniDeck.App.Diagnostics;
@@ -64,7 +65,7 @@ internal sealed class OdCrashHandler
         {
             try
             {
-                _presenter.Show($"Something went wrong, but OmniDeck is still running.\n\nSupport code: {code}\n\n{exception.Message}");
+                _presenter.Show(OdLocalization.Format("Error_UiMessage", code, exception.Message));
             }
             finally
             {

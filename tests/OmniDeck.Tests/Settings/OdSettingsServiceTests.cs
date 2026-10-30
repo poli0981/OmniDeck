@@ -80,4 +80,41 @@ public sealed class OdSettingsServiceTests
         Assert.Equal(OdThemeMode.System, repaired.Theme);
         Assert.Equal("", repaired.Language);
     }
+
+    [Fact]
+    public void LooksLike_IgnoresEverythingButTheAppearance()
+    {
+        var settings = new OdSettings();
+
+        Assert.True(settings.LooksLike(settings with { PinnedModules = ["clock"], Language = "vi", CloseToTray = false }));
+        Assert.False(settings.LooksLike(settings with { Theme = OdThemeMode.Dark }));
+        Assert.False(settings.LooksLike(settings with { Preset = "Comfort" }));
+        Assert.False(settings.LooksLike(settings with { FontScale = 1.2 }));
+        Assert.False(settings.LooksLike(settings with { MotionEnabled = false }));
+        Assert.False(settings.LooksLike(settings with { AccentColor = "#FF8800" }));
+    }
+
+    [Fact]
+    public void Normalized_DropsBlankAndRepeatedPins_AndKeepsACleanListAsIs()
+    {
+        IReadOnlyList<string> clean = ["clock", "timer"];
+
+        var repaired = new OdSettings { PinnedModules = ["clock", " timer ", "", "clock"] }.Normalized();
+
+        Assert.Equal(new[] { "clock", "timer" }, repaired.PinnedModules);
+        Assert.Same(clean, new OdSettings { PinnedModules = clean }.Normalized().PinnedModules);
+    }
+
+    [Fact]
+    public void PinnedModules_KeepTheirOrder_AndANullListReadsAsEmpty()
+    {
+        using var temp = new OdTempDirectory();
+        var root = new OdDataRoot(temp.Path);
+
+        new OdSettingsService(root, Logger.None).Update(s => s with { PinnedModules = ["timer", "clock"] });
+        Assert.Equal(new[] { "timer", "clock" }, new OdSettingsService(root, Logger.None).Current.PinnedModules);
+
+        File.WriteAllText(root.SettingsFile, """{ "pinnedModules": null }""");
+        Assert.Empty(new OdSettingsService(root, Logger.None).Current.PinnedModules);
+    }
 }

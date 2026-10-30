@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- The shell's UI strings, English (neutral). Vietnamese and Japanese satellites arrive in P3. -->
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="App_Name" xml:space="preserve">
+    <value>OmniDeck</value>
+  </data>
+  <data name="Shell_Search" xml:space="preserve">
+    <value>Search modules and commands</value>
+  </data>
+  <data name="Shell_Library" xml:space="preserve">
+    <value>Library</value>
+  </data>
+  <data name="Shell_LibraryTitle" xml:space="preserve">
+    <value>Module library</value>
+  </data>
+  <data name="Shell_LibraryIntro" xml:space="preserve">
+    <value>Open a module, or pin it to keep it in the sidebar.</value>
+  </data>
+  <data name="Shell_LibraryEmpty" xml:space="preserve">
+    <value>No modules are available yet.</value>
+  </data>
+  <data name="Shell_Open" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="Shell_Pin" xml:space="preserve">
+    <value>Pin to sidebar</value>
+  </data>
+  <data name="Shell_Unpin" xml:space="preserve">
+    <value>Unpin from sidebar</value>
+  </data>
+  <data name="Shell_Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Shell_PaletteCommand" xml:space="preserve">
+    <value>Command</value>
+  </data>
+  <data name="Shell_Quit" xml:space="preserve">
+    <value>Quit OmniDeck</value>
+  </data>
+  <data name="Tray_Open" xml:space="preserve">
+    <value>Open OmniDeck</value>
+  </data>
+  <data name="Tray_Quit" xml:space="preserve">
+    <value>Quit</value>
+  </data>
+  <data name="Tray_StillRunningTitle" xml:space="preserve">
+    <value>OmniDeck is still running</value>
+  </data>
+  <data name="Tray_StillRunningMessage" xml:space="preserve">
+    <value>It keeps running in the notification area. To exit, choose Quit from its icon's menu.</value>
+  </data>
+  <data name="Error_Title" xml:space="preserve">
+    <value>Something went wrong</value>
+  </data>
+  <data name="Error_UiMessage" xml:space="preserve">
+    <value>Something went wrong, but OmniDeck is still running.
+
+Support code: {0}
+
+{1}</value>
+  </data>
+  <data name="Error_StartFailed" xml:space="preserve">
+    <value>OmniDeck could not start.
+
+{0}</value>
+  </data>
+  <data name="Dialog_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+</root>

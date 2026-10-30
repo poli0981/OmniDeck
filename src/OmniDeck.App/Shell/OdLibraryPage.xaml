@@ -1,0 +1,108 @@
+<UserControl x:Class="OmniDeck.App.Shell.OdLibraryPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:res="clr-namespace:OmniDeck.Core.Localization;assembly=OmniDeck.Core"
+             xmlns:shell="clr-namespace:OmniDeck.App.Shell"
+             xmlns:theme="clr-namespace:OmniDeck.App.Theming"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             Foreground="{DynamicResource TextFillColorPrimaryBrush}">
+    <!--  The navigation view's frame does not pass the window's text color down: pages set their own.  -->
+    <UserControl.Resources>
+        <shell:OdSymbolConverter x:Key="Symbol" />
+    </UserControl.Resources>
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="{DynamicResource Od.Padding.Card}">
+            <TextBlock FontSize="{DynamicResource Od.Font.H1}"
+                       FontWeight="SemiBold"
+                       Text="{res:OdLoc Shell_LibraryTitle}" />
+            <TextBlock Margin="{DynamicResource Od.Margin.Item}"
+                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                       Text="{res:OdLoc Shell_LibraryIntro}"
+                       TextWrapping="Wrap" />
+            <TextBlock Foreground="{DynamicResource TextFillColorTertiaryBrush}" Text="{res:OdLoc Shell_LibraryEmpty}">
+                <TextBlock.Style>
+                    <Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding HasModules}" Value="False">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+            <ItemsControl Focusable="False" ItemsSource="{Binding Library}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type shell:OdModuleItemViewModel}">
+                        <ui:Card Width="260"
+                                 Margin="{DynamicResource Od.Margin.Tile}"
+                                 VerticalAlignment="Stretch"
+                                 theme:OdMotion.HoverScale="True">
+                            <DockPanel LastChildFill="False">
+                                <DockPanel DockPanel.Dock="Top">
+                                    <ui:SymbolIcon Margin="{DynamicResource Od.Padding.Control}"
+                                                   VerticalAlignment="Center"
+                                                   DockPanel.Dock="Left"
+                                                   FontSize="{DynamicResource Od.Font.H1}"
+                                                   Symbol="{Binding Info.Icon, Converter={StaticResource Symbol}}" />
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock FontSize="{DynamicResource Od.Font.H2}"
+                                                   FontWeight="SemiBold"
+                                                   Text="{Binding Title}"
+                                                   TextTrimming="CharacterEllipsis" />
+                                        <TextBlock FontSize="{DynamicResource Od.Font.Caption}"
+                                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                   Text="{Binding Category}"
+                                                   TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                </DockPanel>
+                                <StackPanel Margin="{DynamicResource Od.Padding.Control}"
+                                            DockPanel.Dock="Bottom"
+                                            Orientation="Horizontal">
+                                    <ui:Button Appearance="Primary"
+                                               Command="{Binding DataContext.OpenCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                               CommandParameter="{Binding}"
+                                               Content="{res:OdLoc Shell_Open}" />
+                                    <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                               Appearance="Transparent"
+                                               Command="{Binding DataContext.TogglePinCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                               CommandParameter="{Binding}">
+                                        <ui:Button.Style>
+                                            <Style BasedOn="{StaticResource {x:Type ui:Button}}" TargetType="ui:Button">
+                                                <Setter Property="ToolTip" Value="{res:OdLoc Shell_Pin}" />
+                                                <Setter Property="AutomationProperties.Name" Value="{res:OdLoc Shell_Pin}" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsPinned}" Value="True">
+                                                        <Setter Property="ToolTip" Value="{res:OdLoc Shell_Unpin}" />
+                                                        <Setter Property="AutomationProperties.Name" Value="{res:OdLoc Shell_Unpin}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ui:Button.Style>
+                                        <ui:SymbolIcon>
+                                            <ui:SymbolIcon.Style>
+                                                <Style TargetType="ui:SymbolIcon">
+                                                    <Setter Property="Symbol" Value="Pin24" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsPinned}" Value="True">
+                                                            <Setter Property="Symbol" Value="PinOff24" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </ui:SymbolIcon.Style>
+                                        </ui:SymbolIcon>
+                                    </ui:Button>
+                                </StackPanel>
+                            </DockPanel>
+                        </ui:Card>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
