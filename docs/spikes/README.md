@@ -16,7 +16,7 @@ P0 runs from 2 to 15 November 2026 ([ROADMAP](../ROADMAP.md#1-phases)). Its job 
 | # | Spike | Blocks | Decision | Note |
 |---|---|---|---|---|
 | 1 | DRM / Widevine in WebView2 | P2: Spotify catalog entry | **GO:** the runtime ships Widevine and Spotify plays, with no flags | [01-drm-widevine.md](01-drm-widevine.md) |
-| 2 | Google sign-in and SSO popups | P2: `google` profile group, Spotify sign-in | Pending ([#3](https://github.com/poli0981/OmniDeck/issues/3)) | `02-google-sign-in.md` |
+| 2 | Google sign-in and SSO popups | P2: `google` profile group, Spotify sign-in | **GO with conditions:** sign-ins work and persist; Google's ccTLD hop needs `navAllow` support; one unexplained session loss is watched in P2 | [02-google-sign-in.md](02-google-sign-in.md) |
 | 3 | Memory reality check and governor metric | **P1**: RAM governor ([§4](../RAM-GOVERNOR.md#4-cap-enforcement)) | **GO:** the metric is private commit; suspend trims, only hibernate frees memory | [03-memory.md](03-memory.md) |
 | 4 | CDP console capture | P2: bug-report flow | Pending ([#5](https://github.com/poli0981/OmniDeck/issues/5)) | `04-cdp-console.md` |
 | 5 | Runtime preset swap | **P1**: theme engine | **GO with conditions:** `Od` styles for WPF-UI's static keys, motion driven from code, text size from the registry | [05-theme-swap.md](05-theme-swap.md) |
