@@ -53,6 +53,10 @@ public partial class MainWindow
         {
             Loaded += async (_, _) => await RunAutoAsync();
         }
+        else if (Environment.GetCommandLineArgs().Contains("--measure"))
+        {
+            Loaded += async (_, _) => await RunMeasureAsync();
+        }
     }
 
     private Slot? Selected => SlotList.SelectedItem as Slot;
