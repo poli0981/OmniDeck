@@ -1,6 +1,5 @@
 using System.Globalization;
 using System.Windows;
-using System.Windows.Threading;
 using Serilog;
 
 namespace OmniDeck.App.Diagnostics;
@@ -13,24 +12,28 @@ namespace OmniDeck.App.Diagnostics;
 internal sealed class OdCrashHandler
 {
     private readonly ILogger _log;
+    private readonly IOdErrorPresenter _presenter;
+    private readonly TimeProvider _time;
     private int _showing;
 
-    public OdCrashHandler(ILogger log)
+    public OdCrashHandler(ILogger log, IOdErrorPresenter presenter, TimeProvider time)
     {
         _log = log.ForContext<OdCrashHandler>();
+        _presenter = presenter;
+        _time = time;
     }
 
     public void Hook(Application app)
     {
-        app.DispatcherUnhandledException += OnDispatcherUnhandledException;
-        AppDomain.CurrentDomain.UnhandledException += (_, e) =>
+        app.DispatcherUnhandledException += (_, e) =>
         {
-            _log.Fatal(e.ExceptionObject as Exception, "Unhandled exception (terminating: {Terminating})", e.IsTerminating);
-            Log.CloseAndFlush();
+            HandleUiException(e.Exception);
+            e.Handled = true;
         };
+        AppDomain.CurrentDomain.UnhandledException += (_, e) => HandleFatal(e.ExceptionObject as Exception, e.IsTerminating);
         TaskScheduler.UnobservedTaskException += (_, e) =>
         {
-            _log.Error(e.Exception, "Unobserved task exception");
+            HandleUnobserved(e.Exception);
             e.SetObserved();
         };
     }
@@ -49,29 +52,34 @@ internal sealed class OdCrashHandler
         return string.Create(CultureInfo.InvariantCulture, $"{when:yyMMdd-HHmm}-{hash % 0x10000:X4}");
     }
 
-    private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+    /// <summary>A UI-thread failure: logged, shown with its support code; the app keeps running.</summary>
+    /// <returns>The support code.</returns>
+    internal string HandleUiException(Exception exception)
     {
-        var code = SupportCode(e.Exception, DateTimeOffset.Now);
-        _log.Error(e.Exception, "Unhandled UI exception, support code {SupportCode}", code);
-        e.Handled = true;
+        var code = SupportCode(exception, _time.GetLocalNow());
+        _log.Error(exception, "Unhandled UI exception, support code {SupportCode}", code);
 
         // A failure inside the dialog itself must not stack dialogs.
-        if (Interlocked.Exchange(ref _showing, 1) == 1)
+        if (Interlocked.Exchange(ref _showing, 1) == 0)
         {
-            return;
+            try
+            {
+                _presenter.Show($"Something went wrong, but OmniDeck is still running.\n\nSupport code: {code}\n\n{exception.Message}");
+            }
+            finally
+            {
+                Volatile.Write(ref _showing, 0);
+            }
         }
 
-        try
-        {
-            MessageBox.Show(
-                $"Something went wrong, but OmniDeck is still running.\n\nSupport code: {code}\n\n{e.Exception.Message}",
-                "OmniDeck",
-                MessageBoxButton.OK,
-                MessageBoxImage.Warning);
-        }
-        finally
-        {
-            Volatile.Write(ref _showing, 0);
-        }
+        return code;
     }
+
+    internal void HandleFatal(Exception? exception, bool terminating)
+    {
+        _log.Fatal(exception, "Unhandled exception (terminating: {Terminating})", terminating);
+        Log.CloseAndFlush();
+    }
+
+    internal void HandleUnobserved(Exception exception) => _log.Error(exception, "Unobserved task exception");
 }
