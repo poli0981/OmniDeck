@@ -15,7 +15,7 @@ P0 runs from 2 to 15 November 2026 ([ROADMAP](../ROADMAP.md#1-phases)). Its job 
 
 | # | Spike | Blocks | Decision | Note |
 |---|---|---|---|---|
-| 1 | DRM / Widevine in WebView2 | P2: Spotify catalog entry | Pending ([#2](https://github.com/poli0981/OmniDeck/issues/2)) | `01-drm-widevine.md` |
+| 1 | DRM / Widevine in WebView2 | P2: Spotify catalog entry | **GO:** the runtime ships Widevine and Spotify plays, with no flags | [01-drm-widevine.md](01-drm-widevine.md) |
 | 2 | Google sign-in and SSO popups | P2: `google` profile group, Spotify sign-in | Pending ([#3](https://github.com/poli0981/OmniDeck/issues/3)) | `02-google-sign-in.md` |
 | 3 | Memory reality check and governor metric | **P1**: RAM governor ([§4](../RAM-GOVERNOR.md#4-cap-enforcement)) | Pending ([#4](https://github.com/poli0981/OmniDeck/issues/4)) | `03-memory.md` |
 | 4 | CDP console capture | P2: bug-report flow | Pending ([#5](https://github.com/poli0981/OmniDeck/issues/5)) | `04-cdp-console.md` |
