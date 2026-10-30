@@ -57,6 +57,10 @@ public partial class MainWindow
         {
             Loaded += async (_, _) => await RunMeasureAsync();
         }
+        else if (Arg("--cookie-set") is not null || Environment.GetCommandLineArgs().Contains("--cookie-check"))
+        {
+            Loaded += async (_, _) => await RunCookieProbeAsync();
+        }
     }
 
     private Slot? Selected => SlotList.SelectedItem as Slot;

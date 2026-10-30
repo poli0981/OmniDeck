@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>WebLab · cookie persistence</title>
+</head>
+<body style="font: 14px/1.5 'Segoe UI', sans-serif; margin: 24px">
+<h1>Cookie persistence probe</h1>
+<p>Lists the cookies this origin already has, then (with <code>?set=NAME</code>) sets a one-year
+cookie named NAME. Used to tell which ways of closing the host keep cookies across restarts.</p>
+<pre id="out"></pre>
+<script>
+const before = document.cookie;
+const name = new URLSearchParams(location.search).get('set');
+if (name) {
+  document.cookie = `${name}=${Date.now()}; max-age=31536000; path=/; secure; samesite=lax`;
+}
+const result = { probe: 'cookie', before, after: document.cookie, set: name };
+document.getElementById('out').textContent = JSON.stringify(result, null, 2);
+window.chrome?.webview?.postMessage(result);
+</script>
+</body>
+</html>
