@@ -79,9 +79,6 @@ Support code: {0}
 
 {0}</value>
   </data>
-  <data name="Memory_Nav" xml:space="preserve">
-    <value>Memory</value>
-  </data>
   <data name="Memory_Title" xml:space="preserve">
     <value>Running modules</value>
   </data>
@@ -147,6 +144,210 @@ Support code: {0}
   </data>
   <data name="Governor_HardCapKept" xml:space="preserve">
     <value>It is above its {0} limit, and nothing more can be hibernated: the open modules are in use or kept running.</value>
+  </data>
+  <data name="Settings_Nav" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Settings_General" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="Settings_Appearance" xml:space="preserve">
+    <value>Appearance</value>
+  </data>
+  <data name="Settings_Memory" xml:space="preserve">
+    <value>Memory</value>
+  </data>
+  <data name="Settings_Data" xml:space="preserve">
+    <value>Data</value>
+  </data>
+  <data name="Settings_About" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="Settings_Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="Settings_CloseToTray" xml:space="preserve">
+    <value>Keep running in the notification area when the window closes</value>
+  </data>
+  <data name="Settings_StartWithWindows" xml:space="preserve">
+    <value>Start OmniDeck when I sign in to Windows</value>
+  </data>
+  <data name="Settings_Theme" xml:space="preserve">
+    <value>Theme</value>
+  </data>
+  <data name="Settings_Preset" xml:space="preserve">
+    <value>Layout</value>
+  </data>
+  <data name="Settings_FontScale" xml:space="preserve">
+    <value>Text size</value>
+  </data>
+  <data name="Settings_Motion" xml:space="preserve">
+    <value>Animations</value>
+  </data>
+  <data name="Settings_AccentSystem" xml:space="preserve">
+    <value>Use the Windows accent color</value>
+  </data>
+  <data name="Settings_IdleAfter" xml:space="preserve">
+    <value>Suspend hidden modules after (minutes)</value>
+  </data>
+  <data name="Settings_HibernateAfter" xml:space="preserve">
+    <value>Hibernate hidden modules after (minutes)</value>
+  </data>
+  <data name="Settings_SoftCap" xml:space="preserve">
+    <value>Soft memory limit in MB (0: automatic)</value>
+  </data>
+  <data name="Settings_HardCap" xml:space="preserve">
+    <value>Hard memory limit in MB (0: automatic)</value>
+  </data>
+  <data name="Settings_DataFolder" xml:space="preserve">
+    <value>Data folder</value>
+  </data>
+  <data name="Settings_OpenDataFolder" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="Settings_Export" xml:space="preserve">
+    <value>Export settings…</value>
+  </data>
+  <data name="Settings_Import" xml:space="preserve">
+    <value>Import settings…</value>
+  </data>
+  <data name="Settings_FileFilter" xml:space="preserve">
+    <value>OmniDeck settings (*.json)|*.json</value>
+  </data>
+  <data name="Settings_Exported" xml:space="preserve">
+    <value>Settings exported.</value>
+  </data>
+  <data name="Settings_Imported" xml:space="preserve">
+    <value>Settings imported.</value>
+  </data>
+  <data name="Settings_ImportFailed" xml:space="preserve">
+    <value>That file is not an OmniDeck settings file.</value>
+  </data>
+  <data name="Language_System" xml:space="preserve">
+    <value>Follow Windows</value>
+  </data>
+  <data name="Language_English" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="Theme_System" xml:space="preserve">
+    <value>Follow Windows</value>
+  </data>
+  <data name="Theme_Light" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="Theme_Dark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="Preset_Dynamic" xml:space="preserve">
+    <value>Dynamic</value>
+  </data>
+  <data name="Preset_DynamicHint" xml:space="preserve">
+    <value>Compact and lively: smaller text, more motion.</value>
+  </data>
+  <data name="Preset_Standard" xml:space="preserve">
+    <value>Standard</value>
+  </data>
+  <data name="Preset_StandardHint" xml:space="preserve">
+    <value>Balanced, for most people.</value>
+  </data>
+  <data name="Preset_Comfort" xml:space="preserve">
+    <value>Comfort</value>
+  </data>
+  <data name="Preset_ComfortHint" xml:space="preserve">
+    <value>Larger text and targets, no motion.</value>
+  </data>
+  <data name="Onboarding_Title" xml:space="preserve">
+    <value>Welcome to OmniDeck</value>
+  </data>
+  <data name="Onboarding_Intro" xml:space="preserve">
+    <value>Pick a language and a layout. The layout applies as you choose it.</value>
+  </data>
+  <data name="Onboarding_Later" xml:space="preserve">
+    <value>You can change both later in Settings.</value>
+  </data>
+  <data name="Onboarding_Done" xml:space="preserve">
+    <value>Get started</value>
+  </data>
+  <data name="Legal_Title" xml:space="preserve">
+    <value>Before you start</value>
+  </data>
+  <data name="Legal_Intro" xml:space="preserve">
+    <value>OmniDeck is free software under the GNU General Public License v3. Please read these documents: continuing records that you have read them. It is not a condition of the license.</value>
+  </data>
+  <data name="Legal_Eula" xml:space="preserve">
+    <value>License agreement</value>
+  </data>
+  <data name="Legal_Disclaimer" xml:space="preserve">
+    <value>Disclaimer</value>
+  </data>
+  <data name="Legal_Privacy" xml:space="preserve">
+    <value>Privacy policy</value>
+  </data>
+  <data name="Legal_Notices" xml:space="preserve">
+    <value>Third-party notices</value>
+  </data>
+  <data name="Legal_HaveRead" xml:space="preserve">
+    <value>I have read these documents</value>
+  </data>
+  <data name="Legal_Continue" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="Legal_Quit" xml:space="preserve">
+    <value>Quit</value>
+  </data>
+  <data name="Legal_Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Legal_Missing" xml:space="preserve">
+    <value>{0} is missing from this copy of OmniDeck.</value>
+  </data>
+  <data name="About_Version" xml:space="preserve">
+    <value>Version {0}</value>
+  </data>
+  <data name="About_CheckUpdates" xml:space="preserve">
+    <value>Check for updates</value>
+  </data>
+  <data name="About_Checking" xml:space="preserve">
+    <value>Checking for updates…</value>
+  </data>
+  <data name="About_UpToDate" xml:space="preserve">
+    <value>OmniDeck is up to date.</value>
+  </data>
+  <data name="About_Available" xml:space="preserve">
+    <value>Version {0} is available.</value>
+  </data>
+  <data name="About_Download" xml:space="preserve">
+    <value>Download and restart</value>
+  </data>
+  <data name="About_Downloading" xml:space="preserve">
+    <value>Downloading the update: {0} %</value>
+  </data>
+  <data name="About_Failed" xml:space="preserve">
+    <value>Could not update: {0}</value>
+  </data>
+  <data name="About_NotInstalled" xml:space="preserve">
+    <value>Updates work in installed copies of OmniDeck, not in development builds.</value>
+  </data>
+  <data name="About_Links" xml:space="preserve">
+    <value>Links</value>
+  </data>
+  <data name="About_GitHub" xml:space="preserve">
+    <value>Source code on GitHub</value>
+  </data>
+  <data name="About_Discussions" xml:space="preserve">
+    <value>Discussions</value>
+  </data>
+  <data name="About_Discord" xml:space="preserve">
+    <value>Discord</value>
+  </data>
+  <data name="About_Legal" xml:space="preserve">
+    <value>License and legal documents</value>
+  </data>
+  <data name="About_Credits" xml:space="preserve">
+    <value>OmniDeck is built with .NET, WPF-UI, Velopack, CommunityToolkit.Mvvm, H.NotifyIcon, Serilog, Dapper, SQLite and Markdig. The third-party notices list them all.</value>
   </data>
   <data name="Dialog_OK" xml:space="preserve">
     <value>OK</value>

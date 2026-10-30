@@ -56,7 +56,7 @@ Honesty note: for in-process native modules the real win comes from modules *act
 
 Settings → Memory → "Running modules": live table of every module with state, memory estimate (the governor metric), last-used time, pin toggle, and Suspend / Hibernate / Close buttons. This is both a user feature and the primary debugging tool for the governor itself; the panel reads and writes the same scheduler, no side channel.
 
-As built in P1, the sidebar footer's **Memory** item opens the panel until the settings pages exist. Native modules share the shell process, so the panel shows OmniDeck's total against both caps rather than a per-module figure; web apps get their own figures with the web runner (P2). The pin toggle is labelled "Keep running", so it is not confused with pinning a module to the sidebar, and it is stored in `settings.json` (`memory.keepRunning`) next to the thresholds.
+As built in P1, the panel sits in Settings → Memory under the threshold fields, and the command palette's "Running modules" opens it. Native modules share the shell process, so the panel shows OmniDeck's total against both caps rather than a per-module figure; web apps get their own figures with the web runner (P2). The pin toggle is labelled "Keep running", so it is not confused with pinning a module to the sidebar, and it is stored in `settings.json` (`memory.keepRunning`) next to the thresholds.
 
 ## 6. Testing
 

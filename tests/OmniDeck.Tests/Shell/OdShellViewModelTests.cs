@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using Microsoft.Extensions.Time.Testing;
+using OmniDeck.App.Settings;
 using OmniDeck.App.Shell;
 using OmniDeck.Core.Modules;
 using OmniDeck.Core.Settings;
@@ -154,18 +155,23 @@ public sealed class OdShellViewModelTests : IDisposable
         using var shell = NewShell(host);
 
         var entries = shell.PaletteEntries();
+        var requested = new List<OdSettingsSection>();
+        shell.SettingsSectionRequested += (_, e) => requested.Add(e.Section);
 
-        Assert.Equal(new[] { "Module_clock", "Module_timer", "Module_calc", "Module library", "Running modules", "Quit OmniDeck" }, entries.Select(e => e.Title), StringComparer.Ordinal);
+        Assert.Equal(new[] { "Module_clock", "Module_timer", "Module_calc", "Module library", "Settings", "Running modules", "Quit OmniDeck" }, entries.Select(e => e.Title), StringComparer.Ordinal);
         Assert.Equal("Command", entries[^1].Detail);
         await entries[1].RunAsync();
         Assert.Equal("timer", shell.CurrentTarget);
         await entries[4].RunAsync();
-        Assert.Equal(OdShellViewModel.MemoryTarget, shell.CurrentTarget);
+        Assert.Equal(OdShellViewModel.SettingsTarget, shell.CurrentTarget);
         Assert.Null(host.Current);
         await entries[3].RunAsync();
         Assert.Equal(OdShellViewModel.LibraryTarget, shell.CurrentTarget);
-        Assert.False(_lifetime.IsQuitting);
         await entries[5].RunAsync();
+        Assert.Equal(OdShellViewModel.SettingsTarget, shell.CurrentTarget);
+        Assert.Equal(new[] { OdSettingsSection.Memory }, requested);
+        Assert.False(_lifetime.IsQuitting);
+        await entries[6].RunAsync();
         Assert.True(_lifetime.IsQuitting);
     });
 
