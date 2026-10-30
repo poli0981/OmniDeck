@@ -6,6 +6,11 @@ All notable changes to OmniDeck are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+- Stocks: Twelve Data with the user's own API key is now the only provider. Stooq was dropped because
+  its download endpoints now block scripted clients (P0 spike #7). The free Twelve Data plan covers US
+  listings; home-market EU listings and indices need a paid plan.
+
 ### Removed
 - Messenger from the web app catalog: Meta closed messenger.com on 15 April 2026 and sends web
   users to `facebook.com/messages`, which the Facebook entry already covers.

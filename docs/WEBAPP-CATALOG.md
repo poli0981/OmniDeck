@@ -49,9 +49,9 @@ Top-level file fields: `$schema` (optional editor hint), `schemaVersion` (int), 
 
 | id | profile | audioPin | Notes |
 |---|---|---|---|
-| spotify | spotify | yes | Web Player; requires DRM in the runtime — gated on the P0 spike result; third-party sign-in buttons (Google/Facebook/Apple) untested until then |
+| spotify | spotify | yes | Web Player; DRM works in the runtime ([spike #1](spikes/01-drm-widevine.md)); the third-party sign-in buttons (Google/Facebook/Apple) are still untested ([spike #2](spikes/02-google-sign-in.md)) |
 | discord | discord | no | no global PTT on web; host hotkey partial mitigation |
-| youtube | google | yes | |
+| youtube | google | yes | sign-in hops to Google's country-code domains, which need `navAllowSets` (P2, spike #2) |
 | gmail | google | no | |
 | gcalendar | google | no | |
 | gdrive | google | no | |

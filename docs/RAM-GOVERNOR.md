@@ -4,15 +4,15 @@ The governor is the feature that makes "many apps in one" viable. It moves every
 
 ## 1. State ladder
 
-| State | Entered when | Native module | Web app | Typical web-app RAM |
+| State | Entered when | Native module | Web app | Measured web-app cost (committed, P0 spike #3) |
 |---|---|---|---|---|
-| Active | visible / interacted | full UI | full WebView2 | 300–700 MB |
-| Idle | hidden < `IdleAfter` | keep view, stop animations/timers | hidden, still live | unchanged |
-| Suspended | hidden ≥ `IdleAfter` | `SuspendAsync`: drop caches, charts, bitmaps; GC follows | `TrySuspendAsync` + `MemoryUsageTargetLevel.Low` | tens of MB |
-| Hibernated | hidden ≥ `HibernateAfter`, or cap pressure | `HibernateAsync`: view + everything released, tiny state blob kept | `Dispose()`; only `{url}` kept, session lives in profile cookies | ≈ 0 |
+| Active | visible / interacted | full UI | full WebView2 | app 250–450 MB, plus 170–270 MB of shared browser, GPU and utility processes |
+| Idle | hidden < `IdleAfter` | keep view, stop animations/timers | hidden, still live | 15–31 % less, as Chromium drops the hidden page's caches |
+| Suspended | hidden ≥ `IdleAfter` | `SuspendAsync`: drop caches, charts, bitmaps; GC follows | `TrySuspendAsync` + `MemoryUsageTargetLevel.Low` | 85–95 % of Idle. The working set is trimmed by about 65 %, so this rung saves CPU and power, not memory |
+| Hibernated | hidden ≥ `HibernateAfter`, or cap pressure | `HibernateAsync`: view + everything released, tiny state blob kept | `Dispose()`; only `{url}` kept, session lives in profile cookies | 0. Disposing the *last* web app also ends the shared processes |
 | Closed | user closes | released | released | 0 |
 
-Reactivation from Suspended is instant; from Hibernated it is a cold open (view rebuild / page reload) — acceptable because the profile keeps the user signed in.
+Reactivation from Suspended is instant. From Hibernated it is a cold open (view rebuild and page reload, about 0.6–2.5 s); that is acceptable because the profile keeps the user signed in. After the last web app has been hibernated, the next one also restarts the browser process (about 160 ms).
 
 ## 2. Defaults (all configurable in Settings → Memory)
 
@@ -20,8 +20,8 @@ Reactivation from Suspended is instant; from Hibernated it is a cold open (view 
 |---|---|
 | `IdleAfter` | 5 min hidden |
 | `HibernateAfter` | 30 min hidden |
-| `SoftCapBytes` | 4.5 GiB |
-| `HardCapBytes` | 6.0 GiB |
+| `SoftCapBytes` | min(4.5 GiB, 35 % of physical RAM) |
+| `HardCapBytes` | min(6.0 GiB, 50 % of physical RAM) |
 | `PollInterval` | 10 s |
 
 ## 3. Pinning
@@ -38,10 +38,15 @@ Pinned modules are skipped by cap enforcement; if the hard cap is exceeded purel
 
 Total footprint = shell process + Σ all WebView2 processes (`CoreWebView2Environment.GetProcessInfos()` → PID), sampled every `PollInterval`.
 
-**Metric — chosen by P0 spike #3.** Summing `Process.WorkingSet64` over-counts: Chromium processes share DLL and shared-memory pages, and each process reports them again. Working set also drops whenever pages are trimmed (for example by `MemoryUsageTargetLevel.Low`), so a working-set cap would reward exactly the page shuffling the honesty note below rejects. The spike compares private commit (`Process.PrivateMemorySize64`) with private working set and fixes one metric; the caps, the toasts, and the task-manager panel all use it.
+**Metric: private commit** (`Process.PrivateMemorySize64`), summed over the shell and every WebView2 process. P0 spike #3 ([note](spikes/03-memory.md)) chose it for three reasons:
+- Summing `Process.WorkingSet64` over-counts, because Chromium processes share DLL and shared-memory pages and each one reports them again.
+- Working sets drop whenever pages are trimmed. Suspend + `Low` cut the private working set by 65–70 % but committed memory by only 5–15 %, so a working-set cap would reward exactly the page shuffling the honesty note below rejects.
+- Private commit needs no process handle.
 
-- **> SoftCap:** demote the least-recently-used unpinned module one step down the ladder; repeat next tick if still above.
-- **> HardCap:** force-hibernate LRU unpinned modules until below, then raise one toast summarizing what was hibernated.
+The caps, the toasts and the task-manager panel all use it. The panel may show the private working set beside it, since that is the figure Task Manager shows. Renderer processes are attributed to apps through `GetProcessExtendedInfosAsync`. The shared browser, GPU and utility processes form one "WebView2 (shared)" row and are never a demotion target.
+
+- **> SoftCap:** hibernate the least-recently-used unpinned module, since Suspended frees almost no memory. Repeat on the next tick if still above.
+- **> HardCap:** force-hibernate LRU unpinned modules until below, then raise one toast summarizing what was hibernated. If the shared WebView2 processes alone keep the total above the cap (the GPU process grows with video), the toast says so instead of hibernating apps that would free nothing.
 
 Ordering hint: `RamClass.Heavy` modules (web apps, media, stocks charts) are preferred victims over `Light` ones at equal recency.
 
