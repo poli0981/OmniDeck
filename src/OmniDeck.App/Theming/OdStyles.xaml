@@ -1,0 +1,24 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
+    <!--
+        WPF-UI 4.3 sets these controls' sizes through StaticResource (ButtonPadding, CardPadding,
+        CardControlPadding), which a preset swap cannot reach. These implicit styles keep the stock
+        look and read the Od.* tokens instead (docs/spikes/05-theme-swap.md). Keys WPF-UI reads through
+        DynamicResource are overridden in the preset layer itself (OdThemeResources).
+    -->
+    <Style BasedOn="{StaticResource DefaultUiButtonStyle}" TargetType="{x:Type ui:Button}">
+        <Setter Property="Padding" Value="{DynamicResource Od.Padding.Control}" />
+        <Setter Property="MinHeight" Value="{DynamicResource Od.HitTarget.Min}" />
+    </Style>
+    <Style BasedOn="{StaticResource DefaultButtonStyle}" TargetType="{x:Type Button}">
+        <Setter Property="Padding" Value="{DynamicResource Od.Padding.Control}" />
+        <Setter Property="MinHeight" Value="{DynamicResource Od.HitTarget.Min}" />
+    </Style>
+    <Style BasedOn="{StaticResource {x:Type ui:Card}}" TargetType="{x:Type ui:Card}">
+        <Setter Property="Padding" Value="{DynamicResource Od.Padding.Card}" />
+    </Style>
+    <Style BasedOn="{StaticResource DefaultUiCardControlStyle}" TargetType="{x:Type ui:CardControl}">
+        <Setter Property="Padding" Value="{DynamicResource Od.Padding.Card}" />
+    </Style>
+</ResourceDictionary>
