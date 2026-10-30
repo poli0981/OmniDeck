@@ -6,6 +6,14 @@ All notable changes to OmniDeck are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.0] — 2026-10-30
+
+The first installable OmniDeck, closing phase P1. It brings the shell with its sidebar, module
+library, command palette and notification-area icon, plus the RAM governor and its panel. It also
+has the clock, timer and calculator, the settings, legal documents and onboarding, and updates from
+inside the app. The 0.1.0-alpha.1 and 0.1.0-alpha.2 notes list all of it in detail. Web apps,
+weather, calendar, stocks and media arrive in P2 and P3.
+
 ### Added
 - Keyboard shortcuts: Ctrl+1 to Ctrl+9 open the modules in the sidebar, in order, and Ctrl+, opens
   Settings; Ctrl+K still opens the command palette.
@@ -112,7 +120,8 @@ user-facing features yet: the window only shows the version.
 - Supported platform narrowed to Windows 11 (24H2 or later), x64.
 - App data moves to `%LocalAppData%\OmniDeck.Data`, outside Velopack's install folder.
 
-[Unreleased]: https://github.com/poli0981/OmniDeck/compare/v0.1.0-alpha.2...HEAD
+[Unreleased]: https://github.com/poli0981/OmniDeck/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/poli0981/OmniDeck/compare/v0.1.0-alpha.2...v0.1.0
 [0.1.0-alpha.2]: https://github.com/poli0981/OmniDeck/compare/v0.1.0-alpha.1...v0.1.0-alpha.2
 [0.1.0-alpha.1]: https://github.com/poli0981/OmniDeck/compare/v0.0.1-alpha.1...v0.1.0-alpha.1
 [0.0.1-alpha.1]: https://github.com/poli0981/OmniDeck/releases/tag/v0.0.1-alpha.1

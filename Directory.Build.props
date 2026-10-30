@@ -47,7 +47,7 @@
     <RepositoryUrl>https://github.com/poli0981/OmniDeck</RepositoryUrl>
     <PackageProjectUrl>https://github.com/poli0981/OmniDeck</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
-    <Version>0.1.0-alpha.2</Version>
+    <Version>0.1.0</Version>
   </PropertyGroup>
 
   <!-- Build-time analyzers (warnings are errors). They live here rather than in each .csproj:

@@ -2,7 +2,7 @@
 
 > One deck for your everyday apps — a Windows 11 host for native mini-apps and curated web apps.
 
-[![Status](https://img.shields.io/badge/status-pre--alpha-red)](docs/ROADMAP.md)
+[![Status](https://img.shields.io/badge/status-alpha-orange)](docs/ROADMAP.md)
 [![Platform](https://img.shields.io/badge/platform-Windows%2011%20x64-blue)](#install)
 [![License](https://img.shields.io/badge/license-GPL--3.0-green)](LICENSE)
 [![.NET](https://img.shields.io/badge/.NET-10%20LTS-purple)](https://dotnet.microsoft.com/)
@@ -13,7 +13,7 @@ OmniDeck combines a set of lightweight native mini-apps (weather, calculator, st
 
 It is built on WPF (.NET 10 LTS) and **WebView2**, which reuses the Edge runtime that ships with Windows 11 instead of bundling a browser engine. That is what keeps the installer small while still running full web apps.
 
-**Project status: pre-alpha.** Development starts with phase P0 on 2 November 2026; the 0.9 public beta is planned for April 2027 and v1.0 for May 2027 ([roadmap](docs/ROADMAP.md)). Builds published before then are pipeline and development builds without the features below — follow along, but don't install them expecting a working app yet.
+**Project status: alpha.** 0.1.0 (phase P1) is the first installable build: the shell, the RAM governor, and the clock, timer and calculator modules. Web apps and the other modules arrive in P2 and P3; the 0.9 public beta is planned for April 2027 and v1.0 for May 2027 ([roadmap](docs/ROADMAP.md)). Until then, expect missing features and changes between versions.
 
 ## Planned features (v1.0)
 
