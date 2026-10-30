@@ -6,10 +6,11 @@ of this branch that it measured.
 
 - Build: `dotnet build spikes/OmniDeck.Spikes.slnx`. The solution is separate from `OmniDeck.slnx`,
   and `spikes/Directory.Build.props` replaces the repository's analyzer set.
-- Data: `%LocalAppData%\OmniDeck.Spikes\` (WebView2 profiles, CSV samples, raw responses). Never in
-  the working tree.
+- Data: `%LocalAppData%\OmniDeck.Spikes\` (WebView2 profiles, CSV samples, raw responses, logs). Never
+  in the working tree.
 - Secrets: environment variables only.
 
 | Harness | Spikes | Run |
 |---|---|---|
 | `ProviderProbe` | #7 providers | `dotnet run --project spikes/ProviderProbe -- stooq` · `-- twelvedata` (needs `OD_TWELVEDATA_KEY`) |
+| `ThemeLab` | #5 preset swap | `dotnet run --project spikes/ThemeLab` (interactive) · `-- --auto` (measurements → `theme\*.log`) |

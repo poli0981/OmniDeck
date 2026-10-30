@@ -1,0 +1,38 @@
+<Application
+    x:Class="ThemeLab.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ui:ThemesDictionary Theme="Dark" />
+                <ui:ControlsDictionary />
+                <!-- The preset layer is appended (and later replaced in place) by PresetEngine. -->
+            </ResourceDictionary.MergedDictionaries>
+
+            <!--
+                Od styles: BasedOn the WPF-UI defaults, but every size comes from an Od.* token through
+                DynamicResource. WPF-UI 4.3 sets Padding from StaticResource ButtonPadding, which a preset
+                swap cannot change; these setters can.
+            -->
+            <Style
+                x:Key="OdButtonStyle"
+                BasedOn="{StaticResource DefaultUiButtonStyle}"
+                TargetType="{x:Type ui:Button}">
+                <Setter Property="Padding" Value="{DynamicResource Od.Padding.Control}" />
+                <Setter Property="MinHeight" Value="{DynamicResource Od.HitTarget.Min}" />
+                <Setter Property="FontSize" Value="{DynamicResource Od.Font.Body}" />
+            </Style>
+            <Style
+                x:Key="OdTextBoxStyle"
+                BasedOn="{StaticResource DefaultUiTextBoxStyle}"
+                TargetType="{x:Type ui:TextBox}">
+                <Setter Property="Padding" Value="{DynamicResource Od.Padding.Control}" />
+                <Setter Property="MinHeight" Value="{DynamicResource Od.HitTarget.Min}" />
+                <Setter Property="FontSize" Value="{DynamicResource Od.Font.Body}" />
+            </Style>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

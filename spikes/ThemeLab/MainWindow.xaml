@@ -1,0 +1,124 @@
+<ui:FluentWindow
+    x:Class="ThemeLab.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:ThemeLab"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    Title="ThemeLab — spike #5"
+    Width="1320"
+    Height="900"
+    ExtendsContentIntoTitleBar="True"
+    WindowBackdropType="Mica"
+    WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="230" />
+        </Grid.RowDefinitions>
+
+        <ui:TitleBar Title="ThemeLab — spike #5: runtime preset swap" Grid.Row="0" />
+
+        <Grid Grid.Row="1" Margin="12,0,12,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Lab controls use fixed defaults on purpose: they must not move while presets swap. -->
+            <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                <TextBlock FontWeight="SemiBold" Text="Preset" />
+                <RadioButton Checked="OnPresetChecked" Content="Dynamic" GroupName="preset" Tag="Dynamic" />
+                <RadioButton Checked="OnPresetChecked" Content="Standard" GroupName="preset" IsChecked="True" Tag="Standard" />
+                <RadioButton Checked="OnPresetChecked" Content="Comfort" GroupName="preset" Tag="Comfort" />
+
+                <TextBlock Margin="0,12,0,0" FontWeight="SemiBold" Text="Theme (independent axis)" />
+                <RadioButton Checked="OnThemeChecked" Content="Dark" GroupName="theme" IsChecked="True" Tag="Dark" />
+                <RadioButton Checked="OnThemeChecked" Content="Light" GroupName="theme" Tag="Light" />
+                <RadioButton Checked="OnThemeChecked" Content="Follow Windows" GroupName="theme" Tag="System" />
+
+                <CheckBox x:Name="ApplyTextScale" Margin="0,12,0,0" Checked="OnTextScaleToggled" Content="Apply Windows text size" Unchecked="OnTextScaleToggled" />
+                <TextBlock x:Name="TextScaleInfo" TextWrapping="Wrap" />
+
+                <Button Margin="0,12,0,0" HorizontalAlignment="Stretch" Click="OnBenchmark" Content="Benchmark: swap presets ×30" />
+                <Button Margin="0,6,0,0" HorizontalAlignment="Stretch" Click="OnStress" Content="Stress: add 300 controls" />
+                <Button Margin="0,6,0,0" HorizontalAlignment="Stretch" Click="OnProbe" Content="Probe controls under each preset" />
+                <Button Margin="0,6,0,0" HorizontalAlignment="Stretch" Click="OnFrozenStoryboardTest" Content="Test DynamicResource in a style storyboard" />
+                <Button Margin="0,6,0,0" HorizontalAlignment="Stretch" Click="OnCopyLog" Content="Copy log" />
+            </StackPanel>
+
+            <!-- Sample surface: everything here consumes Od.* tokens or WPF-UI defaults. -->
+            <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <TextBlock FontSize="{DynamicResource Od.Font.H1}" FontWeight="SemiBold" Text="Heading 1 (Od.Font.H1)" />
+                    <TextBlock FontSize="{DynamicResource Od.Font.H2}" FontWeight="SemiBold" Text="Heading 2 (Od.Font.H2)" />
+                    <TextBlock
+                        Margin="{DynamicResource Od.Margin.Item}"
+                        FontSize="{DynamicResource Od.Font.Body}"
+                        Text="Body text (Od.Font.Body). The quick brown fox jumps over the lazy dog; Đồng hồ, máy tính, thời tiết; 時計と電卓。"
+                        TextWrapping="Wrap" />
+
+                    <ui:Card x:Name="ProbeCard" Margin="{DynamicResource Od.Margin.Item}">
+                        <StackPanel>
+                            <TextBlock FontSize="{DynamicResource Od.Font.Caption}" Text="WPF-UI defaults (no Od style): Padding comes from StaticResource ButtonPadding" />
+                            <WrapPanel Margin="0,8,0,0">
+                                <ui:Button x:Name="ProbeDefaultButton" Margin="0,0,8,8" Content="Default ui:Button" />
+                                <ui:Button Margin="0,0,8,8" Appearance="Primary" Content="Primary" />
+                                <ui:TextBox x:Name="ProbeDefaultTextBox" Width="220" Margin="0,0,8,8" PlaceholderText="Default ui:TextBox" />
+                                <ui:ToggleSwitch Margin="0,0,8,8" Content="Toggle" />
+                                <ComboBox Width="160" Margin="0,0,8,8" SelectedIndex="0">
+                                    <ComboBoxItem Content="ComboBox" />
+                                    <ComboBoxItem Content="Second" />
+                                </ComboBox>
+                                <ui:NumberBox Width="160" Margin="0,0,8,8" Value="5" />
+                            </WrapPanel>
+                        </StackPanel>
+                    </ui:Card>
+
+                    <ui:Card Margin="{DynamicResource Od.Margin.Item}">
+                        <StackPanel>
+                            <TextBlock FontSize="{DynamicResource Od.Font.Caption}" Text="Od styles: BasedOn WPF-UI, sizes from Od.* via DynamicResource" />
+                            <WrapPanel Margin="0,8,0,0">
+                                <ui:Button x:Name="ProbeOdButton" Margin="0,0,8,8" Content="Od ui:Button" Style="{StaticResource OdButtonStyle}" />
+                                <ui:TextBox x:Name="ProbeOdTextBox" Width="220" Margin="0,0,8,8" PlaceholderText="Od ui:TextBox" Style="{StaticResource OdTextBoxStyle}" />
+                            </WrapPanel>
+                        </StackPanel>
+                    </ui:Card>
+
+                    <Border
+                        Width="260"
+                        Margin="{DynamicResource Od.Margin.Item}"
+                        Padding="{DynamicResource Od.Padding.Card}"
+                        HorizontalAlignment="Left"
+                        local:OdMotion.HoverScale="True"
+                        Background="{DynamicResource CardBackground}"
+                        BorderBrush="{DynamicResource CardBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="{DynamicResource Od.Corner.Radius}">
+                        <TextBlock FontSize="{DynamicResource Od.Font.Body}" Text="Hover me (Od.Motion via code)" />
+                    </Border>
+
+                    <ui:InfoBar
+                        Title="Stale data"
+                        Margin="{DynamicResource Od.Margin.Item}"
+                        IsClosable="False"
+                        IsOpen="True"
+                        Message="ui:InfoBar under the current preset."
+                        Severity="Warning" />
+
+                    <WrapPanel x:Name="StressHost" />
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+
+        <TextBox
+            x:Name="LogBox"
+            Grid.Row="2"
+            Margin="12,0,12,12"
+            AcceptsReturn="True"
+            FontFamily="Cascadia Mono, Consolas"
+            HorizontalScrollBarVisibility="Auto"
+            IsReadOnly="True"
+            VerticalScrollBarVisibility="Auto" />
+    </Grid>
+</ui:FluentWindow>
