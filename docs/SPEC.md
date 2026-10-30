@@ -54,16 +54,18 @@ All mini-apps implement the module contract in [ARCHITECTURE](ARCHITECTURE.md) a
 
 ### 3.5 Stocks (US/EU)
 - **Watchlist** with quote, day change, sparkline; detail view with candlestick/OHLC + volume charts (ScottPlot 5), range 1M/6M/1Y/5Y.
-- **Providers** behind `IOdQuoteProvider`:
-  - `Stooq` (default, keyless): end-of-day CSV for US and major EU tickers and indices. Zero configuration.
-  - `TwelveData` (optional, user-supplied free API key): delayed intraday quotes and time series, US + international coverage. Key stored via **DPAPI**, never in plaintext or logs.
-- Client-side **sliding-window rate limiting** per provider; on limit or error, keep last cached values and show `N/A` for missing fields (never delete cached data on network failure).
+- **Provider** behind `IOdQuoteProvider`: `TwelveData`, with the user's own API key (free Basic plan or paid). The module asks for the key on first use; it is stored via **DPAPI**, never in plaintext or logs.
+  - **Coverage depends on the user's plan.** The free plan covers US stocks, ETFs and US-listed ADRs. Home-market EU listings need Grow, and indices need Pro. Symbol search (`show_plan=true`, free) labels each listing with the plan it needs, and a plan error reads "not available on your Twelve Data plan".
+  - **Stooq was dropped** in P0 because it now blocks scripted clients ([spike #7](spikes/07-providers.md)).
+- Client-side **sliding-window rate limiting**: ≤ 8 credits per rolling 60 s and the plan's daily budget, counting failed calls. Watchlist refreshes use batch quotes. On limit or error, keep the last cached values and show `N/A` for missing fields; never delete cached data on network failure.
 - Every stocks screen carries the data disclaimer footer ("delayed/indicative data — not investment advice"), mirrored in [DISCLAIMER](legal/DISCLAIMER.md).
 
 ### 3.6 Media player
 - Engine: **LibVLCSharp + VideoLAN.LibVLC.Windows (x64)**, plugins trimmed to codecs/demux/audio/video output.
 - Local files and folders, playlist (m3u load/save), subtitles (embedded + external `.srt`/`.ass`, encoding selection), audio track & device selection, speed 0.25–4×, snapshot.
-- libVLC initializes lazily on first open; the player counts as **pinned** while playback is active (governor may not suspend it).
+- libVLC initializes lazily on first open; the player counts as **pinned** while playback is active (governor may not suspend it). Suspend stops and disposes the player, and hibernate disposes libVLC too: playback holds 280–520 MB committed.
+- **Fullscreen** makes the module's own window cover the monitor. **Pop-out** hands the player to the new window by re-selecting the video track and seeking to the current time ([spike #6](spikes/06-libvlcsharp.md)).
+- **Build:** x64 only (`VlcWindowsX86Enabled` and `VlcWindowsArm64Enabled` set to false), with the trimmed plugin set: about 86 MB raw, 39 MB compressed.
 
 ## 4. Web runner
 
@@ -73,7 +75,8 @@ All mini-apps implement the module contract in [ARCHITECTURE](ARCHITECTURE.md) a
 - **Permissions:** `PermissionRequested` (mic/camera/clipboard/geolocation) shows a native prompt; the decision is remembered per app and reviewable in settings.
 - **Downloads:** routed through `DownloadStarting` to the user's Downloads folder with an in-shell progress row.
 - **Media pinning:** while `IsDocumentPlayingAudio` is true, the module is pinned (see RAM-GOVERNOR).
-- **Lifecycle:** hidden web apps are suspended via `TrySuspendAsync` + `MemoryUsageTargetLevel.Low`, later disposed entirely (session survives via profile cookies). Full state machine in [RAM-GOVERNOR](RAM-GOVERNOR.md).
+- **Lifecycle:** hidden web apps are suspended via `TrySuspendAsync` + `MemoryUsageTargetLevel.Low`, later disposed entirely (session survives via profile cookies). Disposing the last web app ends the shared browser process. Full state machine in [RAM-GOVERNOR](RAM-GOVERNOR.md).
+- **Google account domains:** Google's sign-in sets cookies on country-code domains (for example `accounts.google.com.vn`). The `google` entries need them in `navAllow`, through a catalog schema v2 field (`navAllowSets`) decided in P2 ([spike #2](spikes/02-google-sign-in.md)).
 - **Catalog:** shipped in `catalog/webapps.json`, refreshed from this repo's raw URL at most once per day; schema and rules in [WEBAPP-CATALOG](WEBAPP-CATALOG.md).
 
 ## 5. Cross-cutting requirements
@@ -86,7 +89,7 @@ All mini-apps implement the module contract in [ARCHITECTURE](ARCHITECTURE.md) a
 
 ## 6. Bug reporting flow
 
-1. A DevTools Protocol session per web app subscribes to `Runtime.consoleAPICalled` and `Log.entryAdded`, keeping a 200-entry ring buffer per app. .NET unhandled exceptions and the Serilog tail are collected shell-side.
+1. A DevTools Protocol session per web app (`Runtime` + `Log`, always on, DevTools UI still disabled) subscribes to `Runtime.consoleAPICalled`, `Runtime.exceptionThrown` and `Log.entryAdded`. It keeps a 200-entry ring buffer per app, plus a 50-entry errors-only ring so chatty apps cannot evict errors ([spike #4](spikes/04-cdp-console.md)). .NET unhandled exceptions and the Serilog tail are collected shell-side.
 2. **Report bug** composes: version, Windows build, UI preset, active modules + RAM snapshot, the relevant console ring buffer, and last log lines.
 3. Before packaging, a scrubber strips query strings, cookie values, and bearer-token-shaped strings.
 4. The app opens a pre-filled GitHub issue (bug template) and writes `bugreport-<timestamp>.zip` to `%LocalAppData%\OmniDeck.Data\reports` for the user to attach (issue-URL prefill has a length limit, so long logs travel in the zip).

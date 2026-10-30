@@ -10,7 +10,7 @@ Solo-developer plan, ~29 weeks from the start of P0 (2 November 2026). Each phas
 
 Repository foundation: documentation suite; solution skeleton (`OmniDeck.App`, `OmniDeck.Core`, `OmniDeck.Tests`); self-contained CI (build, tests, formatting, analyzers as errors, NuGet Audit, catalog validation, workflow and link linting, CodeQL, SonarCloud, Dependency Review, OpenSSF Scorecard); protected `main` and release tags; the Velopack release pipeline proven end to end with the `0.0.1-alpha.1` pre-release.
 
-### P0 — Spikes (2 – 15 Nov 2026)
+### P0 — Spikes (2 – 15 Nov 2026) — done early, 30 Oct 2026
 
 De-risk everything that could invalidate the design, on real hardware:
 
@@ -23,6 +23,15 @@ De-risk everything that could invalidate the design, on real hardware:
 7. **Providers:** hit Stooq CSV and Twelve Data free endpoints; freeze response models.
 
 **Exit:** a written go/no-go note per spike in [`docs/spikes/`](spikes/README.md). The proof-of-concept code stays on the unmerged `spike/p0` branch, so spike-only packages never reach `main`'s dependency graph or the release SBOM.
+
+**Result:** all seven notes are in. #1, #3 and #4 are GO; #2, #5, #6 and #7 are GO with conditions:
+- #1 DRM: Widevine ships with the runtime.
+- #2 sign-in: works and persists; Google's country-code hop needs `navAllowSets` in P2.
+- #3 memory: the governor metric is private commit; suspend trims, only hibernate frees.
+- #4 CDP capture: always on.
+- #5 presets: code-built, with `Od` styles over WPF-UI's static keys.
+- #6 libVLC: fullscreen in place; pop-out needs a vout restart and a seek.
+- #7 providers: Twelve Data with the user's own key; Stooq dropped.
 
 ### P1 — Shell & skeleton (16 Nov 2026 – 10 Jan 2027)
 
@@ -38,7 +47,7 @@ Full web runner (profiles, nav policy, SSO popups, notifications→toast, permis
 
 ### P3 — Stocks, presets, i18n (8 Mar – 11 Apr 2027)
 
-Stocks module (Stooq default + Twelve Data BYO key, watchlist, candlesticks); Dynamic and Comfort presets polished to spec (UI-MODES token table); VI + JA translations; settings import/export; accessibility pass (text scaling, contrast themes, keyboard nav).
+Stocks module (Twelve Data with the user's own key, which spike #7 left as the only provider; watchlist, candlesticks); Dynamic and Comfort presets polished to spec (UI-MODES token table); VI + JA translations; settings import/export; accessibility pass (text scaling, contrast themes, keyboard nav).
 
 **Exit (0.3.0):** feature-complete against SPEC v1 scope.
 
@@ -65,10 +74,11 @@ Every version below 1.0.0 is published as a GitHub **pre-release**; 1.0.0 is the
 
 | Risk | Impact | Mitigation |
 |---|---|---|
-| Widevine unavailable in WebView2 on target machines | Spotify won't play | P0 spike gates the catalog entry; fallback: ship Spotify entry disabled with an explanatory note, YouTube covers music for many users |
-| Google blocks sign-in in WebView2 | Google group unusable | P0 spike; fallback: session import guidance / treat as upstream limitation, documented |
-| LibVLCSharp airspace friction in WPF | Media UX degraded | P0 spike; fallback engine FlyleafLib |
-| Free API tiers change (Twelve Data/Stooq) | Stocks degraded | **Materialized for Stooq** (checked 2026-10-30): the CSV endpoint now answers scripted clients with a JavaScript browser check, and community reports say downloads need a per-user API key obtained through a captcha — P0 spike #7 decides the replacement. Provider abstraction; BYO-key model isolates OmniDeck from quota policy; Stocks is first in the cut order (§4) |
+| Widevine unavailable in WebView2 on target machines | Spotify won't play | **Retired by spike #1:** the evergreen runtime ships Widevine and Spotify plays without flags. If a future runtime breaks EME, the bug report's EME self-check shows it. Fallback unchanged: ship the Spotify entry disabled with a note |
+| Google blocks sign-in in WebView2 | Google group unusable | **Spike #2:** sign-in works with the default user agent, and one sign-in covers the `google` group. Google's hop to country-code domains needs `navAllowSets` (P2). Client hints name WebView2, so Google could still block it later; fallback: treat it as an upstream limitation, documented |
+| LibVLCSharp airspace friction in WPF | Media UX degraded | **Retired by spike #6:** overlay controls and fullscreen in place work in a `FluentWindow`. Pop-out needs a video-output restart and a seek, plus an overlay sizing fix in P2. FlyleafLib is not needed |
+| Free API tiers change (Twelve Data/Stooq) | Stocks degraded | **Materialized for Stooq** (2026-10-30), which now blocks scripted clients. Spike #7 leaves Twelve Data with the user's own key as the only provider; its free plan covers US listings. The provider abstraction stays; Stocks is first in the cut order (§4) |
+| Web sessions lost across restarts | Users signed out of web apps | Seen once in P0 and not reproduced (spike #2). P2 records sign-in health after restarts, and bug reports carry cookie-store counts (never values) |
 | User data stored in Velopack's install folder | Uninstall or reinstall wipes data and sign-ins | data root `%LocalAppData%\OmniDeck.Data`, never `%LocalAppData%\OmniDeck` ([ARCHITECTURE](ARCHITECTURE.md) §5) |
 | Solo bandwidth vs. other projects | Schedule slip | cut order below; phases sized with buffer |
 
