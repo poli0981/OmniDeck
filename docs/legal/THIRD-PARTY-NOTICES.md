@@ -15,14 +15,16 @@ OmniDeck is licensed under GPL-3.0. This file lists the third-party components O
 | Velopack | 1.2.161 | MIT | installer & updates |
 | Microsoft.Extensions.DependencyInjection (+ .Abstractions) | 10.0.14 | MIT | dependency injection |
 | Serilog + Serilog.Sinks.File | 4.4.0 / 7.0.0 | Apache-2.0 | logging to local files |
+| Dapper | 2.1.89 | Apache-2.0 | data access |
+| Microsoft.Data.Sqlite (+ .Core) | 10.0.14 | MIT | SQLite provider |
+| SQLitePCLRaw (bundle_e_sqlite3, core, provider.e_sqlite3, lib.e_sqlite3) | 2.1.13 | Apache-2.0 | SQLite bindings |
+| SQLite (the `e_sqlite3` native library) | bundled with SQLitePCLRaw 2.1.13 | public domain | local database engine |
 
 ## 2. Planned components (bundled from the version that introduces them)
 
 | Component | License | Role | Phase |
 |---|---|---|---|
 | CommunityToolkit.Mvvm | MIT | MVVM infrastructure | P1 |
-| Dapper | Apache-2.0 | data access | P1 |
-| Microsoft.Data.Sqlite / SQLitePCLRaw / e_sqlite3 (SQLite) | MIT / Apache-2.0 / public domain | local database | P1 |
 | H.NotifyIcon.Wpf | MIT | tray icon | P1 |
 | Microsoft.Web.WebView2 (SDK) | BSD-3-Clause (Microsoft) | web app engine bindings | P2 |
 | Ical.Net (+ NodaTime) | MIT (+ Apache-2.0) | iCalendar import/export | P2 |
@@ -60,6 +62,7 @@ Applies to the MIT-licensed components in §1, with these copyright notices:
 - Fluent UI System Icons: Copyright (c) 2020 Microsoft Corporation
 - Velopack: Copyright © 2021 Caelan Sayler; Copyright © 2024 Velopack Ltd.
 - Microsoft.Extensions.DependencyInjection and .Abstractions: Copyright (c) .NET Foundation and Contributors
+- Microsoft.Data.Sqlite and Microsoft.Data.Sqlite.Core: Copyright (c) .NET Foundation and Contributors
 
 ```
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -85,7 +88,11 @@ The .NET runtime's full license and third-party notices: `legal\Microsoft.NETCor
 
 ### Apache License 2.0
 
-Applies to Serilog and Serilog.Sinks.File: Copyright © Serilog Contributors.
+Applies to these components in §1, with their copyright notices:
+
+- Serilog and Serilog.Sinks.File: Copyright © Serilog Contributors
+- Dapper: Copyright © 2019 Stack Exchange, Inc.
+- SQLitePCLRaw: Copyright 2014-2024 SourceGear, LLC
 
 ```
                                  Apache License
@@ -265,6 +272,10 @@ Applies to Serilog and Serilog.Sinks.File: Copyright © Serilog Contributors.
 
    END OF TERMS AND CONDITIONS
 ```
+
+### SQLite
+
+SQLite, shipped as the `e_sqlite3` native library, is in the public domain: "The author disclaims copyright to this source code." (see https://sqlite.org/copyright.html).
 
 ## Contact
 
