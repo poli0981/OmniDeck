@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Spike #6 (issue #7): LibVLCSharp's VideoView inside a WPF-UI FluentWindow: airspace, overlay
+       controls, fullscreen, pop-out, and what libVLC adds to the install size. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <!-- x64 only, like OmniDeck: keeps the win-x86 libVLC copy out of the output. -->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>false</SelfContained>
+    <!-- The libVLC package picks architectures from $(Platform); AnyCPU would copy all three. -->
+    <VlcWindowsX86Enabled>false</VlcWindowsX86Enabled>
+    <VlcWindowsArm64Enabled>false</VlcWindowsArm64Enabled>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="LibVLCSharp.WPF" Version="3.10.2" />
+    <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.24" />
+    <PackageReference Include="WPF-UI" Version="4.3.0" />
+  </ItemGroup>
+
+  <!-- `-p:TrimVlc=true`: the plugin set SPEC §3.6 asks for (codecs, demux, audio/video output,
+       subtitles), to measure the size the installer would really carry. -->
+  <ItemGroup Condition="'$(TrimVlc)' == 'true'">
+    <VlcWindowsX64IncludeFiles Include="libvlc.dll;libvlccore.dll" />
+    <VlcWindowsX64IncludeFiles Include="plugins\access\%2A;plugins\audio_filter\%2A;plugins\audio_mixer\%2A;plugins\audio_output\%2A" />
+    <VlcWindowsX64IncludeFiles Include="plugins\codec\%2A;plugins\demux\%2A;plugins\packetizer\%2A;plugins\stream_filter\%2A" />
+    <VlcWindowsX64IncludeFiles Include="plugins\text_renderer\%2A;plugins\spu\%2A;plugins\video_chroma\%2A;plugins\video_filter\%2A;plugins\video_output\%2A;plugins\misc\%2A" />
+  </ItemGroup>
+
+</Project>

@@ -20,3 +20,14 @@ WebLab keeps WebView2 profiles in `%LocalAppData%\OmniDeck.Spikes\WebView2` (one
 `profile` group, so sign-ins persist across runs), memory samples in `memory\*.csv` (one row per process
 per 2 s sample, with the current phase) and its log in `weblab\*.log`. Sign-ins are done by hand in its
 window; the lab never touches the user agent.
+| `MediaLab` | #6 LibVLCSharp | `dotnet run --project spikes/MediaLab` (interactive) · `-- --auto` · `-- --auto-move --seek-on-move` · `dotnet build spikes/MediaLab -c Release -p:TrimVlc=true` (SPEC plugin set) |
+
+MediaLab plays local test clips from `%LocalAppData%\OmniDeck.Spikes\media\`, generated with ffmpeg
+(nothing is downloaded):
+
+```powershell
+ffmpeg -f lavfi -i "testsrc=size=1920x1080:rate=30" -f lavfi -i "sine=frequency=440" -t 60 -c:v libx264 -pix_fmt yuv420p -c:a aac -shortest test-1080p30.mp4
+ffmpeg -f lavfi -i "testsrc2=size=3840x2160:rate=60" -f lavfi -i "sine=frequency=660" -t 20 -c:v libx264 -preset ultrafast -pix_fmt yuv420p -c:a aac -shortest test-2160p60.mp4
+```
+
+Screen captures and the log land in `medialab\<timestamp>\`.

@@ -1,0 +1,69 @@
+<ui:FluentWindow
+    x:Class="MediaLab.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:vlc="clr-namespace:LibVLCSharp.WPF;assembly=LibVLCSharp.WPF"
+    Title="MediaLab — spike #6"
+    Width="1280"
+    Height="860"
+    ExtendsContentIntoTitleBar="True"
+    WindowBackdropType="Mica"
+    WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition x:Name="LogRow" Height="170" />
+        </Grid.RowDefinitions>
+
+        <ui:TitleBar x:Name="TitleBarControl" Title="MediaLab — spike #6: LibVLCSharp in a FluentWindow" Grid.Row="0" />
+
+        <Grid Grid.Row="1" Background="Black">
+            <vlc:VideoView x:Name="Video">
+                <!-- Overlay content: LibVLCSharp.WPF renders it in its own window above the video HWND. -->
+                <Grid>
+                    <TextBlock
+                        Margin="12"
+                        Padding="8,4"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top"
+                        Background="#CCC42B1C"
+                        Foreground="White"
+                        Text="WPF overlay above the video" />
+                    <Border Padding="10,6" VerticalAlignment="Bottom" Background="#B0000000">
+                        <DockPanel LastChildFill="True">
+                            <ui:Button Margin="0,0,8,0" Click="OnPlayPause" Content="Play / Pause" DockPanel.Dock="Left" />
+                            <ui:Button Margin="8,0,0,0" Click="OnFullscreenInPlace" Content="Fullscreen" DockPanel.Dock="Right" />
+                            <TextBlock x:Name="TimeText" Margin="8,0,0,0" VerticalAlignment="Center" DockPanel.Dock="Right" Foreground="White" Text="0:00 / 0:00" />
+                            <Slider x:Name="SeekSlider" VerticalAlignment="Center" Maximum="1" Minimum="0" PreviewMouseDown="OnSeekPressed" PreviewMouseUp="OnSeekReleased" />
+                        </DockPanel>
+                    </Border>
+                </Grid>
+            </vlc:VideoView>
+        </Grid>
+
+        <WrapPanel x:Name="LabBar" Grid.Row="2" Margin="8,6">
+            <Button Margin="0,0,6,0" Padding="10,2" Click="OnOpenFile" Content="Open file…" />
+            <Button Margin="0,0,6,0" Padding="10,2" Click="OnOpen1080" Content="Test 1080p30" />
+            <Button Margin="0,0,6,0" Padding="10,2" Click="OnOpen2160" Content="Test 2160p60" />
+            <Button Margin="0,0,12,0" Padding="10,2" Click="OnAddSubtitle" Content="Add .srt" />
+            <Button Margin="0,0,6,0" Padding="10,2" Click="OnFullscreenInPlace" Content="Fullscreen: in place" />
+            <Button Margin="0,0,6,0" Padding="10,2" Click="OnFullscreenWindow" Content="Fullscreen: own window" />
+            <Button Margin="0,0,6,0" Padding="10,2" Click="OnPopOut" Content="Pop out" />
+            <Button Margin="0,0,12,0" Padding="10,2" Click="OnHideShow" Content="Hide 3 s (tray)" />
+            <Button Margin="0,0,6,0" Padding="10,2" Click="OnCapture" Content="Capture screen" />
+            <Button Margin="0,0,6,0" Padding="10,2" Click="OnMemory" Content="Memory + stats" />
+        </WrapPanel>
+
+        <TextBox
+            x:Name="LogBox"
+            Grid.Row="3"
+            Margin="8,0,8,8"
+            FontFamily="Cascadia Mono, Consolas"
+            HorizontalScrollBarVisibility="Auto"
+            IsReadOnly="True"
+            VerticalScrollBarVisibility="Auto" />
+    </Grid>
+</ui:FluentWindow>
