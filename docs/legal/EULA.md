@@ -1,6 +1,6 @@
 # OmniDeck — End User License Agreement (EULA)
 
-Version 1.0 — effective from the first public release (0.0.1-alpha.1).
+Version 1.1 — effective from the first release after 0.0.1-alpha.1. Changes since 1.0: the Stooq stock data service is no longer used, and Messenger is no longer in the web app catalog.
 
 By installing or using OmniDeck ("the Software"), you acknowledge the terms below. If you do not agree with them, do not install or use the Software.
 
@@ -10,7 +10,7 @@ The Software is free software licensed under the **GNU General Public License v3
 
 ## 2. Third-party components and services
 
-The Software bundles third-party components (such as the .NET runtime, WPF-UI, Velopack and, in later versions, libVLC) that are governed by their own licenses, listed in THIRD-PARTY-NOTICES.md. It relies on the Microsoft Edge WebView2 Runtime that ships with Windows 11; the runtime is not bundled with the Software and is governed by Microsoft's license terms. The Software also loads third-party **web applications and data services** (e.g., Spotify, Discord, Google services, Open-Meteo, Stooq, Twelve Data). Your use of those services is governed solely by their own terms of service and privacy policies; you are responsible for complying with them. OmniDeck is not affiliated with, endorsed by, or sponsored by any of these providers, and their trademarks belong to their respective owners.
+The Software bundles third-party components (such as the .NET runtime, WPF-UI, Velopack and, in later versions, libVLC) that are governed by their own licenses, listed in THIRD-PARTY-NOTICES.md. It relies on the Microsoft Edge WebView2 Runtime that ships with Windows 11; the runtime is not bundled with the Software and is governed by Microsoft's license terms. The Software also loads third-party **web applications and data services** (e.g., Spotify, Discord, Google services, Open-Meteo, Twelve Data). Your use of those services is governed solely by their own terms of service and privacy policies; you are responsible for complying with them. OmniDeck is not affiliated with, endorsed by, or sponsored by any of these providers, and their trademarks belong to their respective owners.
 
 ## 3. Your responsibilities
 
