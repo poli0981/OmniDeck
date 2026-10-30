@@ -9,6 +9,7 @@ using OmniDeck.Core.Storage;
 using OmniDeck.Tests.Governor;
 using OmniDeck.Tests.Modules;
 using OmniDeck.Tests.TestSupport;
+using OmniDeck.Tests.Updates;
 using Serilog.Core;
 
 namespace OmniDeck.Tests.Settings;
@@ -139,6 +140,8 @@ public sealed class OdSettingsPagesTests : IDisposable
         Assert.Equal(new[] { "Follow Windows", "Light", "Dark" }, page.Themes.Select(t => t.Title), StringComparer.Ordinal);
         Assert.Equal(new[] { "Dynamic", "Standard", "Comfort" }, page.Presets.Select(p => p.Name), StringComparer.Ordinal);
         Assert.Equal("Larger text and targets, no motion.", page.Presets[2].Hint);
+        Assert.Equal("Comfort", page.Presets[2].ToString());
+        Assert.Equal("Dark", page.Themes[2].ToString());
         Assert.NotNull(page.Memory);
     }
 
@@ -194,6 +197,19 @@ public sealed class OdSettingsPagesTests : IDisposable
         await about.DownloadCommand.ExecuteAsync(null);
         Assert.Equal(OdUpdateState.Failed, about.State);
     });
+
+    [Fact]
+    public void OpeningAbout_ChecksForUpdatesOnce()
+    {
+        using var page = NewSettingsPage();
+
+        page.ShowSection(OdSettingsSection.About);
+        page.ShowSection(OdSettingsSection.General);
+        page.ShowSection(OdSettingsSection.About);
+
+        Assert.Equal(1, _updates.Checks);
+        Assert.Equal(OdUpdateState.UpToDate, page.About.State);
+    }
 
     [Fact]
     public void About_OpensLinksAndTheLegalDocuments()
@@ -252,34 +268,5 @@ public sealed class OdSettingsPagesTests : IDisposable
         public bool IsEnabled { get; private set; }
 
         public void Set(bool enabled) => IsEnabled = enabled;
-    }
-
-    private sealed class OdFakeUpdates : IOdUpdateService
-    {
-        public bool Installed { get; set; } = true;
-
-        public string? Available { get; set; }
-
-        public Exception? Failure { get; set; }
-
-        public bool Applied { get; private set; }
-
-        public bool IsInstalled => Installed;
-
-        public Task<string?> CheckAsync(CancellationToken cancellationToken) =>
-            Failure is { } failure ? Task.FromException<string?>(failure) : Task.FromResult(Available);
-
-        public Task DownloadAsync(IProgress<int> progress, CancellationToken cancellationToken)
-        {
-            if (Failure is { } failure)
-            {
-                return Task.FromException(failure);
-            }
-
-            progress.Report(100);
-            return Task.CompletedTask;
-        }
-
-        public void ApplyAndRestart() => Applied = true;
     }
 }

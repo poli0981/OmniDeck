@@ -38,7 +38,7 @@ libVLC note: once the media player ships, OmniDeck redistributes libVLC binaries
 ## 3. Not bundled
 
 - **Microsoft Edge WebView2 Runtime** — ships with Windows 11 and is updated by Microsoft under Microsoft's license terms; OmniDeck does not redistribute it.
-- **Development-time tools** (used to build and check OmniDeck, never distributed): Roslynator (Apache-2.0), Meziantou.Analyzer (MIT), ReferenceTrimmer (MIT), XamlStyler (Apache-2.0), xUnit (Apache-2.0), coverlet (MIT), Microsoft.NET.Test.Sdk (MIT), Velopack CLI `vpk` (MIT), SonarScanner for .NET (LGPL-3.0), SonarAnalyzer.CSharp (SONAR Source-Available License v1.0).
+- **Development-time tools** (used to build and check OmniDeck, never distributed): Roslynator (Apache-2.0), Meziantou.Analyzer (MIT), ReferenceTrimmer (MIT), XamlStyler (Apache-2.0), xUnit (Apache-2.0), coverlet (MIT), Microsoft.NET.Test.Sdk (MIT), Microsoft.Extensions.TimeProvider.Testing (MIT), Velopack CLI `vpk` (MIT), SonarScanner for .NET (LGPL-3.0), SonarAnalyzer.CSharp (SONAR Source-Available License v1.0).
 
 ## 4. Data services (not bundled; accessed at runtime)
 

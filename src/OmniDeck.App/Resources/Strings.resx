@@ -349,6 +349,12 @@ Support code: {0}
   <data name="About_Credits" xml:space="preserve">
     <value>OmniDeck is built with .NET, WPF-UI, Velopack, CommunityToolkit.Mvvm, H.NotifyIcon, Serilog, Dapper, SQLite and Markdig. The third-party notices list them all.</value>
   </data>
+  <data name="Update_AvailableTitle" xml:space="preserve">
+    <value>OmniDeck {0} is available</value>
+  </data>
+  <data name="Update_AvailableMessage" xml:space="preserve">
+    <value>Open Settings → About to install it.</value>
+  </data>
   <data name="Dialog_OK" xml:space="preserve">
     <value>OK</value>
   </data>

@@ -1,4 +1,5 @@
 using System.Windows.Documents;
+using System.Windows.Media;
 using System.Windows.Navigation;
 using Microsoft.Extensions.Time.Testing;
 using OmniDeck.App.Legal;
@@ -133,6 +134,32 @@ public sealed class OdLegalTests : IDisposable
 
         links[0].RaiseEvent(new RequestNavigateEventArgs(links[0].NavigateUri, null) { RoutedEvent = Hyperlink.RequestNavigateEvent });
         Assert.Equal(new[] { new Uri("https://example.com/a") }, opened);
+        return Task.CompletedTask;
+    });
+
+    [Fact]
+    public void Markdown_LinesUseThemeBrushes() => OdSta.Run(() =>
+    {
+        const string markdown = """
+            > quoted
+
+            ---
+
+            | A |
+            |---|
+            | 1 |
+            """;
+        var document = OdMarkdownRenderer.Render(markdown, _ => { });
+        var divider = new SolidColorBrush(Colors.Red);
+        var quote = new SolidColorBrush(Colors.Blue);
+
+        document.Resources["DividerStrokeColorDefaultBrush"] = divider;
+        document.Resources["ControlStrongStrokeColorDefaultBrush"] = quote;
+
+        var blocks = document.Blocks.ToList();
+        Assert.Same(quote, Assert.IsType<Section>(blocks[0]).BorderBrush);
+        Assert.Same(divider, Assert.IsType<Paragraph>(blocks[1]).BorderBrush);
+        Assert.Same(divider, Assert.IsType<Table>(blocks[2]).RowGroups[0].Rows[0].Cells[0].BorderBrush);
         return Task.CompletedTask;
     });
 

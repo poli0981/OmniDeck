@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OmniDeck.App.Settings;
@@ -67,6 +68,48 @@ public sealed partial class OdShellViewModel : ObservableObject, IDisposable
     /// It is rebuilt whenever its order or a pin changes, so the window can draw the pinned group.
     /// </summary>
     public ObservableCollection<OdModuleItemViewModel> Sidebar { get; } = [];
+
+    /// <summary>
+    /// The sidebar as drawn: all of it, or the first <paramref name="max"/> modules when the preset caps it
+    /// (<c>Od.Nav.MaxVisibleItems</c>, docs/UI-MODES.md §2). The module on screen always stays in view, in
+    /// the last place; the others remain in the library and the palette.
+    /// </summary>
+    public IReadOnlyList<OdModuleItemViewModel> VisibleSidebar(int max)
+    {
+        if (max <= 0 || Sidebar.Count <= max)
+        {
+            return [.. Sidebar];
+        }
+
+        var visible = Sidebar.Take(max).ToList();
+        if (_items.GetValueOrDefault(CurrentTarget) is { } current && !visible.Contains(current))
+        {
+            visible[^1] = current;
+        }
+
+        return visible;
+    }
+
+    /// <summary>
+    /// Where a Ctrl shortcut leads (docs/SPEC.md: full keyboard navigation of the shell): Ctrl+1 to Ctrl+9
+    /// open the modules shown in the sidebar, in order, and Ctrl+, opens Settings. Null for other keys.
+    /// </summary>
+    public string? ShortcutTarget(Key key, int maxVisible)
+    {
+        if (key == Key.OemComma)
+        {
+            return SettingsTarget;
+        }
+
+        var position = key switch
+        {
+            >= Key.D1 and <= Key.D9 => key - Key.D1,
+            >= Key.NumPad1 and <= Key.NumPad9 => key - Key.NumPad1,
+            _ => -1,
+        };
+        var visible = VisibleSidebar(maxVisible);
+        return position >= 0 && position < visible.Count ? visible[position].Id : null;
+    }
 
     /// <summary>Shows <paramref name="target"/>: a module id, or one of the shell's own pages. Other targets are ignored.</summary>
     public async Task NavigateAsync(string target)

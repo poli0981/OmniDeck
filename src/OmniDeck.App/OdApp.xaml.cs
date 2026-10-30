@@ -8,6 +8,7 @@ using OmniDeck.App.Resources;
 using OmniDeck.App.Settings;
 using OmniDeck.App.Shell;
 using OmniDeck.App.Theming;
+using OmniDeck.App.Updates;
 using OmniDeck.Core;
 using OmniDeck.Core.Governor;
 using OmniDeck.Core.Legal;
@@ -113,6 +114,7 @@ public partial class OdApp
         }
 
         _services.GetRequiredService<OdRamGovernor>().Start();
+        _services.GetRequiredService<OdUpdateWatcher>().Start();
     }
 
     /// <summary>The main window, created once. It owns the tray icon, so it exists even while hidden.</summary>

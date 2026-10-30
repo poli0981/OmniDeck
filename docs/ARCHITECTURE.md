@@ -12,11 +12,12 @@ global.json            pinned .NET SDK
 .config/               dotnet-tools.json: vpk, dotnet-sonarscanner, XamlStyler
 scripts/               pack.ps1 (publish + Velopack), validate-catalog.ps1
 src/
-  OmniDeck.App/        WPF shell: windows, navigation, tray, command palette,
-                       theme engine, legal gate, settings UI, task-manager panel
-  OmniDeck.Core/       contracts (IOdModule, IOdQuoteProvider, ...), RAM governor,
-                       storage (SQLite/Dapper, settings), toast service,
-                       bug-report composer, update service (Velopack), i18n helpers
+  OmniDeck.App/        WPF shell: windows, navigation, tray and notifications, command
+                       palette, theme engine, legal gate, onboarding, settings UI,
+                       task-manager panel, update service (Velopack)
+  OmniDeck.Core/       contracts (IOdModule, IOdNotifier, IOdQuoteProvider, ...), module
+                       host, RAM governor, storage (SQLite/Dapper, settings), theme
+                       tokens, legal acknowledgment, bug-report composer, i18n helpers
   OmniDeck.Modules/    built-in mini-apps: Clock, Timer, Calculator, Weather,
                        Calendar, Stocks, Media — one folder per module   (P1)
   OmniDeck.Web/        web runner: environment/profile management, catalog loader,
@@ -35,6 +36,8 @@ State at kickoff: `OmniDeck.App` (Velopack bootstrap + a placeholder `FluentWind
 Naming: namespace `OmniDeck.*`, public type prefix `Od*` (`OdModuleHost`, `OdRamGovernor`, `OdWebRunner`, `OdCatalogEntry`), interfaces `IOd*`. The WPF application class is `OdApp` (`OdApp.xaml`), started from `Program.Main` after Velopack's hooks; the executable is `OmniDeck.exe`.
 
 Patterns: MVVM via CommunityToolkit.Mvvm; constructor DI via `Microsoft.Extensions.DependencyInjection`; no service locator.
+
+Startup, as built in P1: `Program.Main` runs Velopack's hooks first (the uninstall hook deletes the data root), then the single-instance guard: a session-local mutex, and a second launch signals the first to show its window and exits. `OdApp` builds the container (`ServiceCollection` with `ValidateOnBuild`), installs the crash handler and starts the theme engine. It then shows the legal gate when the acknowledged legal version is not the current one, and onboarding on first run. Next it creates the main window, which owns the tray icon and therefore exists even when Windows starts OmniDeck in the tray (`--minimized`). Last come the governor and the daily update check. Shutdown is explicit: closing the window hides it in the tray, and only Quit ends the process. Notifications are tray balloons behind `IOdNotifier`, which Windows 11 shows as toasts, so the app needs no Windows-specific target framework or WinRT projection. The Velopack update service lives in the app, because Core must not reference Velopack.
 
 ## 2. Module contract
 
@@ -94,6 +97,6 @@ Serilog rolling files (7-day retention). Global handlers (`DispatcherUnhandledEx
 
 ## 7. Updates & packaging
 
-Velopack, per-user, GitHub Releases channel, delta updates; update check on About open and once per day in the background (notify-only, never auto-restart). Builds below 1.0 are GitHub pre-releases, so their update check includes pre-releases.
+Velopack, per-user, GitHub Releases channel, delta updates; update check on About open and once per day in the background (notify-only, never auto-restart). Builds below 1.0 are GitHub pre-releases, so their update check includes pre-releases. In code: `OdVelopackUpdateService` behind `IOdUpdateService`; Settings → About checks when opened and offers *Download and restart*, and `OdUpdateWatcher` checks a few minutes after start, then daily, and notifies once per new version. A development build is not installed, so it does neither.
 
 Releases are built by [`release.yml`](../.github/workflows/release.yml), self-contained in this repository: a GPG-signed `vX.Y.Z[-suffix]` tag on `main` runs `scripts/pack.ps1` (self-contained `win-x64` publish + `vpk pack`), build-provenance attestations, a draft GitHub Release with an SPDX SBOM and SHA-256 checksums, release notes from CHANGELOG, publication, and a Discord announcement — see [RELEASING](../RELEASING.md). The WebView2 Runtime ships with Windows 11; if it is ever missing, Velopack's `--framework webview2` bootstrapper can install it (evaluate in P2).

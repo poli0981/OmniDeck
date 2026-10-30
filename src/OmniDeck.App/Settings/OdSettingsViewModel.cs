@@ -136,6 +136,14 @@ public sealed partial class OdSettingsViewModel : ObservableObject, IDisposable
         UseSystemAccent = false;
     }
 
+    partial void OnSectionIndexChanged(int value)
+    {
+        if (value == (int)OdSettingsSection.About)
+        {
+            _ = About.CheckOnOpenAsync();
+        }
+    }
+
     partial void OnLanguageChanged(string value) => Apply(s => s with { Language = value });
 
     partial void OnCloseToTrayChanged(bool value) => Apply(s => s with { CloseToTray = value });
