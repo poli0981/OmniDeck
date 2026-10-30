@@ -14,6 +14,8 @@ public static class OdCoreServiceCollectionExtensions
         services.AddSingleton(log);
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IOdSettingsService, OdSettingsService>();
+        services.AddSingleton<OdDatabase>();
+        services.AddSingleton<IOdAppMeta, OdAppMeta>();
         return services;
     }
 }

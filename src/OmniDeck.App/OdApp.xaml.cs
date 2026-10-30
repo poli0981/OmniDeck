@@ -44,6 +44,7 @@ public partial class OdApp
     {
         Log.ForContext<OdApp>().Information("OmniDeck exiting with code {ExitCode}", e.ApplicationExitCode);
         _services?.Dispose();
+        OdDatabase.ReleaseAll();
         Log.CloseAndFlush();
         base.OnExit(e);
     }
@@ -60,6 +61,8 @@ public partial class OdApp
             .AddOmniDeckApp()
             .BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
         _services.GetRequiredService<OdCrashHandler>().Hook(this);
+        var applied = _services.GetRequiredService<OdDatabase>().Migrate(OdCoreMigrations.All);
+        Log.ForContext<OdApp>().Information("Database ready ({Applied} migrations applied)", applied);
         _guard.StartListening(() => _ = Dispatcher.InvokeAsync(ShowMainWindow));
         ShowMainWindow();
     }

@@ -13,6 +13,8 @@ All notable changes to OmniDeck are documented here. The format follows
 - Local log files in `%LocalAppData%\OmniDeck.Data\logs`, kept for seven days, plus crash handling
   that shows a support code and keeps OmniDeck running.
 - Uninstalling removes `%LocalAppData%\OmniDeck.Data`, as the privacy policy promises.
+- A local database, `%LocalAppData%\OmniDeck.Data\omnideck.db`, with a versioned schema that
+  upgrades itself at startup.
 
 ### Changed
 - Stocks: Twelve Data with the user's own API key is now the only provider. Stooq was dropped because
