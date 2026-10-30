@@ -33,11 +33,17 @@ De-risk everything that could invalidate the design, on real hardware:
 - #6 libVLC: fullscreen in place; pop-out needs a vout restart and a seek.
 - #7 providers: Twelve Data with the user's own key; Stooq dropped.
 
-### P1 — Shell & skeleton (16 Nov 2026 – 10 Jan 2027)
+### P1 — Shell & skeleton (16 Nov 2026 – 10 Jan 2027) — done early, 30 Oct 2026
 
 Shell (nav, tray, single-instance, command palette), module contract + host, RAM governor v1 with task-manager panel, theme engine + three presets (Standard polished, others functional), legal gate + About, settings + storage layer (data root, Velopack uninstall hook), and the three trivial modules: clock, timer, calculator.
 
 **Exit (0.1.0):** installable Velopack build; governor demotes/restores the trivial modules correctly; unit tests for governor + storage green.
+
+As delivered: eight work packages (PRs #20–#25, #27 and #29) and three releases (`0.1.0-alpha.1`, `0.1.0-alpha.2`, `0.1.0`), all three exit criteria met. Carried forward:
+
+- **P3 presets:** Comfort's AAA body text and Dynamic's gradient accents (docs/UI-MODES.md §2).
+- **P3 accessibility:** UI Automation exposes WPF-UI 4.3's navigation items as data items with no Invoke or Select pattern; keyboard users reach them with Tab and Enter. The accent swatches are announced by their hex codes.
+- **P2:** pop-out module windows, deferred by the P1 plan.
 
 ### P2 — Web runner & core modules (11 Jan – 7 Mar 2027)
 
