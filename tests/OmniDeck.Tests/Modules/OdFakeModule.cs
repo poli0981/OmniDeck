@@ -5,11 +5,14 @@ using OmniDeck.Core.Modules;
 namespace OmniDeck.Tests.Modules;
 
 /// <summary>A module that records what the host asks of it.</summary>
-public sealed class OdFakeModule(string id, OdRamClass ramClass = OdRamClass.Light) : IOdModule
+public sealed class OdFakeModule(string id, OdRamClass ramClass = OdRamClass.Light) : IOdModule, IOdResidency
 {
     public OdModuleInfo Info { get; } = new(id, "Module_" + id, "Apps24", "Test", ramClass);
 
     public IList<string> Calls { get; } = [];
+
+    /// <summary>Whether it works while hidden, as a web app with notifications does.</summary>
+    public bool StaysResident { get; set; }
 
     /// <summary>What <see cref="CanSuspendAsync"/> answers; false behaves like a playing media module.</summary>
     public bool CanSuspend { get; set; } = true;

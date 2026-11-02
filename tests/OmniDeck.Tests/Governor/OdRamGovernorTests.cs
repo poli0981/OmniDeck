@@ -12,16 +12,19 @@ namespace OmniDeck.Tests.Governor;
 public sealed class OdRamGovernorTests : IDisposable
 {
     private const long GiB = OdGovernorOptions.GiB;
+    private const long MiB = OdGovernorOptions.MiB;
 
     private readonly OdTempDirectory _temp = new();
     private readonly FakeTimeProvider _time = new(new DateTimeOffset(2026, 10, 30, 8, 0, 0, TimeSpan.Zero));
     private readonly OdFakeMemory _memory = new();
+    private readonly OdFakeReporter _reporter = new();
     private readonly OdFakeNotifier _notifier = new();
     private readonly OdSettingsService _settings;
     private readonly OdFakeModule _clock = new("clock");
     private readonly OdFakeModule _timer = new("timer");
     private readonly OdFakeModule _web = new("web", OdRamClass.Heavy);
     private readonly OdFakeModule _calc = new("calc");
+    private readonly OdFakeModule _mail = new("mail", OdRamClass.Heavy);
 
     public OdRamGovernorTests()
     {
@@ -152,6 +155,118 @@ public sealed class OdRamGovernorTests : IDisposable
     });
 
     [Fact]
+    public void Passes_CountTheReportedProcesses_ForTheWholeAndPerModule() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        using var governor = NewGovernor(host);
+        _reporter.Shared = 300 * MiB;
+        _reporter.Modules["web"] = 200 * MiB;
+
+        await governor.TickAsync();
+
+        Assert.Equal(_memory.Committed + (500 * MiB), governor.CommittedBytes);
+        Assert.Equal(200 * MiB, governor.Snapshot?.For("web"));
+        Assert.Null(governor.Snapshot?.For("clock"));
+        Assert.Equal(300 * MiB, governor.Snapshot?.SharedBytes);
+
+        _reporter.Fails = true;
+        await governor.TickAsync();
+        Assert.Equal(_memory.Committed, governor.CommittedBytes);
+    });
+
+    [Fact]
+    public void SoftCap_AtEqualRecency_TakesTheModuleThatUsesMore_AndCountsItGone() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        using var governor = NewGovernor(host);
+        await host.ShowAsync("web");
+        await host.ShowAsync("mail");
+        await host.ShowAsync("calc");
+        _memory.Committed = 4 * GiB;
+        _reporter.Shared = 200 * MiB;
+        _reporter.Modules["web"] = 300 * MiB;
+        _reporter.Modules["mail"] = 600 * MiB;
+
+        await governor.TickAsync();
+
+        Assert.Equal(OdModuleState.Hibernated, State(host, "mail"));
+        Assert.Equal(OdModuleState.Idle, State(host, "web"));
+
+        // Its processes take a moment to exit: the pass counts them gone, and the next one measures again.
+        Assert.Null(governor.Snapshot?.For("mail"));
+        Assert.Equal((4 * GiB) + (500 * MiB), governor.CommittedBytes);
+    });
+
+    [Fact]
+    public void ResidentModules_SkipTheLadder_GoLastToTheCaps_AndSaySo() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        using var governor = NewGovernor(host);
+        _web.StaysResident = true;
+        await host.ShowAsync("web");
+        _time.Advance(TimeSpan.FromMinutes(1));
+        await host.ShowAsync("timer");
+        _time.Advance(TimeSpan.FromMinutes(1));
+        await host.ShowAsync("calc");
+
+        _time.Advance(TimeSpan.FromHours(1));
+        await governor.TickAsync();
+        Assert.Equal(OdModuleState.Idle, State(host, "web"));
+        Assert.Equal(OdModuleState.Hibernated, State(host, "timer"));
+
+        await host.ShowAsync("timer");
+        await host.ShowAsync("calc");
+        _memory.Committed = 5 * GiB;
+        await governor.TickAsync();
+        Assert.Equal(OdModuleState.Hibernated, State(host, "timer"));
+        Assert.Equal(OdModuleState.Idle, State(host, "web"));
+        Assert.Empty(_notifier.Raised);
+
+        await governor.TickAsync();
+        Assert.Equal(OdModuleState.Hibernated, State(host, "web"));
+        var told = Assert.Single(_notifier.Raised);
+        Assert.Equal("Module_web was hibernated to save memory", told.Title);
+        Assert.Equal("web", told.Target);
+    });
+
+    [Fact]
+    public void HardCap_HeldThereBySharedProcesses_WarnsInsteadOfHibernating() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        using var governor = NewGovernor(host);
+        await host.ShowAsync("clock");
+        await host.ShowAsync("web");
+        _reporter.Shared = 6 * GiB;
+        _reporter.Modules["web"] = 400 * MiB;
+
+        await governor.TickAsync();
+
+        Assert.Equal(OdModuleState.Idle, State(host, "clock"));
+        var (title, message) = Assert.Single(_notifier.Shown);
+        Assert.Equal("OmniDeck is using a lot of memory", title);
+        Assert.Contains("the open web apps share use " + OdBytes.Format(6 * GiB), message, StringComparison.Ordinal);
+    });
+
+    [Fact]
+    public void HardCap_HibernatingTheLastWebApp_CountsTheSharedProcessesGone() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        using var governor = NewGovernor(host);
+        await host.ShowAsync("clock");
+        await host.ShowAsync("web");
+        await host.ShowAsync("calc");
+        _reporter.Shared = 6 * GiB;
+        _reporter.Modules["web"] = 400 * MiB;
+
+        await governor.TickAsync();
+
+        Assert.Equal(OdModuleState.Hibernated, State(host, "web"));
+        Assert.Equal(OdModuleState.Idle, State(host, "clock"));
+        Assert.Equal(_memory.Committed, governor.CommittedBytes);
+        Assert.Contains("hibernated a module", Assert.Single(_notifier.Shown).Message, StringComparison.Ordinal);
+    });
+
+    [Fact]
     public void Sampled_ReportsTheMemoryAndTheLimits() => OdSta.Run(async () =>
     {
         using var host = NewHost();
@@ -236,12 +351,12 @@ public sealed class OdRamGovernorTests : IDisposable
     }
 
     private OdModuleHost NewHost() => new(
-        [_clock, _timer, _web, _calc],
+        [_clock, _timer, _web, _calc, _mail],
         new OdDatabase(_temp.Combine("omnideck.db"), pooling: false),
         Logger.None,
         _time,
         _notifier,
         OdTestHttp.Client);
 
-    private OdRamGovernor NewGovernor(OdModuleHost host) => new(host, _settings, _memory, _time, _notifier, Logger.None);
+    private OdRamGovernor NewGovernor(OdModuleHost host) => new(host, _settings, _memory, [_reporter], _time, _notifier, Logger.None);
 }

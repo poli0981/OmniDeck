@@ -7,8 +7,9 @@ public interface IOdMemory
     long PhysicalBytes { get; }
 
     /// <summary>
-    /// Private commit of the processes OmniDeck runs: the shell in P1; the WebView2 processes join it
-    /// in P2. Unlike the working set, it does not drop when Windows merely trims pages.
+    /// Private commit of OmniDeck's own process, where the shell and the built-in modules run; the
+    /// processes it starts besides come from <see cref="IOdMemoryReporter"/>. Unlike the working set,
+    /// it does not drop when Windows merely trims pages.
     /// </summary>
     long CommittedBytes();
 

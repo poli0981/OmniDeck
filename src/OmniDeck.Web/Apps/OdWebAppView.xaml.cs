@@ -103,6 +103,7 @@ public partial class OdWebAppView : IOdWebSurface
             BrowserHost.Children.Add(browser);
             _browser = browser;
             await browser.EnsureCoreWebView2Async(environment, OdWebRuntime.ControllerOptions(environment, _module.Entry.Profile));
+            _module.Runtime.Track(_module.Info.Id, browser.CoreWebView2);
             Configure(browser.CoreWebView2);
             HideNotice();
             browser.CoreWebView2.Navigate(_module.StartPage.AbsoluteUri);
@@ -280,6 +281,11 @@ public partial class OdWebAppView : IOdWebSurface
         }
 
         _browser = null;
+        if (browser.CoreWebView2 is { } core)
+        {
+            _module.Runtime.Forget(core);
+        }
+
         BrowserHost.Children.Remove(browser);
         browser.Dispose();
         _module.Runtime.Close();

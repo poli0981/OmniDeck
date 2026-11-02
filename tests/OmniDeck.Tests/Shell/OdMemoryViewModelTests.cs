@@ -16,6 +16,7 @@ public sealed class OdMemoryViewModelTests : IDisposable
     private readonly OdTempDirectory _temp = new();
     private readonly FakeTimeProvider _time = new(new DateTimeOffset(2026, 10, 30, 8, 0, 0, TimeSpan.Zero));
     private readonly OdFakeMemory _memory = new();
+    private readonly OdFakeReporter _reporter = new();
     private readonly OdSettingsService _settings;
 
     public OdMemoryViewModelTests()
@@ -74,6 +75,24 @@ public sealed class OdMemoryViewModelTests : IDisposable
     });
 
     [Fact]
+    public void Rows_ShowWhatWebAppsUse_AndTheSharedProcesses() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        using var governor = NewGovernor(host);
+        using var panel = new OdMemoryViewModel(host, governor, _settings, _time);
+        Assert.False(panel.HasShared);
+
+        _reporter.Shared = 300 * OdGovernorOptions.MiB;
+        _reporter.Modules["timer"] = 200 * OdGovernorOptions.MiB;
+        await governor.TickAsync();
+
+        Assert.Equal("", panel.Rows[0].MemoryText);
+        Assert.Equal(OdBytes.Format(200 * OdGovernorOptions.MiB), panel.Rows[1].MemoryText);
+        Assert.True(panel.HasShared);
+        Assert.Equal(OdBytes.Format(300 * OdGovernorOptions.MiB), panel.SharedText);
+    });
+
+    [Fact]
     public void Commands_ActThroughTheGovernor() => OdSta.Run(async () =>
     {
         using var host = NewHost();
@@ -122,5 +141,5 @@ public sealed class OdMemoryViewModelTests : IDisposable
         new OdFakeNotifier(),
         OdTestHttp.Client);
 
-    private OdRamGovernor NewGovernor(OdModuleHost host) => new(host, _settings, _memory, _time, new OdFakeNotifier(), Logger.None);
+    private OdRamGovernor NewGovernor(OdModuleHost host) => new(host, _settings, _memory, [_reporter], _time, new OdFakeNotifier(), Logger.None);
 }

@@ -4,7 +4,7 @@ using System.Runtime;
 
 namespace OmniDeck.Core.Governor;
 
-/// <summary><see cref="IOdMemory"/> for this process (P1: native modules run in the shell).</summary>
+/// <summary><see cref="IOdMemory"/> for this process, where the shell and the built-in modules run.</summary>
 public sealed class OdProcessMemory : IOdMemory
 {
     public long PhysicalBytes { get; } = GC.GetGCMemoryInfo().TotalAvailableMemoryBytes;

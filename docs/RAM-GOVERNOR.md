@@ -32,11 +32,13 @@ A module is **pinned** (governor must not demote it below its current state) whe
 - the web app's `IsDocumentPlayingAudio` is true **and** its catalog entry has `audioPin: true` (Spotify, YouTube);
 - the user pinned it manually in the task-manager panel.
 
+A module that works while hidden is **resident** (`IOdResidency`): in P2, a web app with notifications on, which would stop notifying once suspended. The time ladder skips it; the caps may still hibernate it, after every other victim, and then OmniDeck shows a notification naming the app, which reopens it when clicked.
+
 Pinned modules are skipped by cap enforcement; if the hard cap is exceeded purely by pinned modules, the governor toasts a warning instead of killing audio.
 
 ## 4. Cap enforcement
 
-Total footprint = shell process + Σ all WebView2 processes (`CoreWebView2Environment.GetProcessInfos()` → PID), sampled every `PollInterval`.
+Total footprint = shell process + Σ all WebView2 processes, sampled every `PollInterval`.
 
 **Metric: private commit** (`Process.PrivateMemorySize64`), summed over the shell and every WebView2 process. P0 spike #3 ([note](spikes/03-memory.md)) chose it for three reasons:
 - Summing `Process.WorkingSet64` over-counts, because Chromium processes share DLL and shared-memory pages and each one reports them again.
@@ -50,13 +52,20 @@ The caps, the toasts and the task-manager panel all use it. The panel may show t
 
 Ordering hint: `RamClass.Heavy` modules (web apps, media, stocks charts) are preferred victims over `Light` ones at equal recency. Recency counts in poll intervals, so modules hidden within the same interval are equally recent.
 
+As built in P2:
+
+- **Measuring.** `IOdMemory` measures the shell; every `IOdMemoryReporter` adds the processes it follows. The web runner's `OdWebMemoryReporter` lists the WebView2 processes with `GetProcessExtendedInfosAsync` on each pass. A renderer counts for the app whose page it hosts: matched by main frame id (`CoreWebView2.FrameId`), or by host when only one open app shows that host. A renderer hosting pages of several apps is split evenly between them. The browser, GPU and utility processes, and pages no open app shows, count as shared. A reporter that fails is left out of that pass.
+- **Victim order:** resident modules last, then least recently used, then `Heavy` first, then the module that uses more.
+- **After a hibernation:** a web app's processes take a moment to exit. The pass therefore counts its figure as gone at once (and the shared processes too, when it was the last web app), and the next pass measures again. This keeps the hard-cap loop from hibernating more apps than needed.
+- **Shared processes at the hard cap:** the governor checks whether the shell, the shared processes and the web apps that are not victims (on screen, kept running, or refusing) are above the hard cap on their own. If they are, it hibernates nothing and its one notification for that excursion says why.
+
 Honesty note: for in-process native modules the real win comes from modules *actually releasing* resources in `SuspendAsync`/`HibernateAsync`. The governor performs a `GC.Collect` + LOH compaction after demotions, and deliberately does **not** call `EmptyWorkingSet` tricks — those only shuffle pages to standby and fake the numbers.
 
 ## 5. Task-manager panel
 
 Settings → Memory → "Running modules": live table of every module with state, memory estimate (the governor metric), last-used time, pin toggle, and Suspend / Hibernate / Close buttons. This is both a user feature and the primary debugging tool for the governor itself; the panel reads and writes the same scheduler, no side channel.
 
-As built in P1, the panel sits in Settings → Memory under the threshold fields, and the command palette's "Running modules" opens it. Native modules share the shell process, so the panel shows OmniDeck's total against both caps rather than a per-module figure; web apps get their own figures with the web runner (P2). The pin toggle is labelled "Keep running", so it is not confused with pinning a module to the sidebar, and it is stored in `settings.json` (`memory.keepRunning`) next to the thresholds.
+As built in P1, the panel sits in Settings → Memory under the threshold fields, and the command palette's "Running modules" opens it. Native modules share the shell process, so the panel shows OmniDeck's total against both caps rather than a per-module figure. Since P2, each open web app's row shows its own figure, and a "Shared web processes" row after the modules shows the shared ones. That row has no buttons, because the governor never demotes it. The pin toggle is labelled "Keep running", so it is not confused with pinning a module to the sidebar, and it is stored in `settings.json` (`memory.keepRunning`) next to the thresholds.
 
 ## 6. Testing
 

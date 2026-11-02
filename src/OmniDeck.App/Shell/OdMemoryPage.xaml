@@ -6,6 +6,7 @@
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              Foreground="{DynamicResource TextFillColorPrimaryBrush}">
     <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="Visible" />
         <shell:OdSymbolConverter x:Key="Symbol" />
     </UserControl.Resources>
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
@@ -52,7 +53,10 @@
                                                    TextTrimming="CharacterEllipsis" />
                                         <WrapPanel>
                                             <TextBlock Margin="0,0,12,0" Text="{Binding StateText}" />
-                                            <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}" Text="{Binding LastUsedText}" />
+                                            <TextBlock Margin="0,0,12,0"
+                                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                       Text="{Binding LastUsedText}" />
+                                            <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}" Text="{Binding MemoryText}" />
                                         </WrapPanel>
                                     </StackPanel>
                                 </DockPanel>
@@ -87,6 +91,25 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
+            <ui:Card Margin="{DynamicResource Od.Margin.Item}" Visibility="{Binding HasShared, Converter={StaticResource Visible}}">
+                <DockPanel>
+                    <TextBlock Margin="{DynamicResource Od.Padding.Control}"
+                               VerticalAlignment="Center"
+                               DockPanel.Dock="Right"
+                               FontWeight="SemiBold"
+                               Text="{Binding SharedText}" />
+                    <ui:SymbolIcon Margin="{DynamicResource Od.Padding.Control}"
+                                   DockPanel.Dock="Left"
+                                   FontSize="{DynamicResource Od.Font.H2}"
+                                   Symbol="Globe24" />
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock FontWeight="SemiBold" Text="{res:OdLoc Memory_SharedTitle}" />
+                        <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                   Text="{res:OdLoc Memory_SharedDescription}"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </DockPanel>
+            </ui:Card>
         </StackPanel>
     </ScrollViewer>
 </UserControl>
