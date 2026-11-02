@@ -240,7 +240,8 @@ public sealed class OdRamGovernorTests : IDisposable
         new OdDatabase(_temp.Combine("omnideck.db"), pooling: false),
         Logger.None,
         _time,
-        _notifier);
+        _notifier,
+        OdTestHttp.Client);
 
     private OdRamGovernor NewGovernor(OdModuleHost host) => new(host, _settings, _memory, _time, _notifier, Logger.None);
 }

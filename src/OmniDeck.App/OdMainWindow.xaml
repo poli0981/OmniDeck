@@ -73,6 +73,7 @@
                         Grid.Row="0"
                         NoLeftClickDelay="True"
                         ToolTipText="{res:OdLoc App_Name}"
+                        TrayBalloonTipClicked="OnTrayNotificationClicked"
                         TrayLeftMouseUp="OnTrayOpen">
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu>

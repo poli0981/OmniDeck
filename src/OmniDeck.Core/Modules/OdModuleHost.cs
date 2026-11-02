@@ -1,3 +1,4 @@
+using System.Net.Http;
 using System.Windows;
 using OmniDeck.Core.Storage;
 using Serilog;
@@ -19,9 +20,10 @@ public sealed class OdModuleHost : IDisposable
     private readonly ILogger _log;
     private readonly TimeProvider _time;
     private readonly IOdNotifier _notifier;
+    private readonly HttpClient _http;
     private readonly SemaphoreSlim _gate = new(1, 1);
 
-    public OdModuleHost(IEnumerable<IOdModule> modules, OdDatabase database, ILogger log, TimeProvider time, IOdNotifier notifier)
+    public OdModuleHost(IEnumerable<IOdModule> modules, OdDatabase database, ILogger log, TimeProvider time, IOdNotifier notifier, HttpClient http)
     {
         ArgumentNullException.ThrowIfNull(modules);
         ArgumentNullException.ThrowIfNull(log);
@@ -30,6 +32,7 @@ public sealed class OdModuleHost : IDisposable
         _log = log.ForContext<OdModuleHost>();
         _time = time;
         _notifier = notifier;
+        _http = http;
         Modules = [.. modules.Select(module => new OdHostedModule(module))];
 
         // Throws on a repeated id: two modules would share one settings document.
@@ -49,6 +52,8 @@ public sealed class OdModuleHost : IDisposable
     /// <summary>
     /// Makes <paramref name="moduleId"/> the visible module: initializes it on first use, builds its
     /// view when it has none (first open, or after hibernation) and hides the module shown before.
+    /// The previous module stays visible until the new one is active, so a module that fails to start
+    /// leaves the shell as it was.
     /// </summary>
     public async Task<FrameworkElement> ShowAsync(string moduleId)
     {
@@ -69,8 +74,8 @@ public sealed class OdModuleHost : IDisposable
 
             var view = hosted.View ?? hosted.Module.CreateView();
             hosted.View = view;
-            HideCurrent();
             await hosted.Module.ActivateAsync();
+            HideCurrent();
             Current = hosted;
             hosted.LastActive = _time.GetUtcNow();
             SetState(hosted, OdModuleState.Active);
@@ -169,6 +174,27 @@ public sealed class OdModuleHost : IDisposable
         }
     }
 
+    /// <summary>
+    /// Closes every open module before OmniDeck exits, so each one can save its state and let go of
+    /// what it holds; a web app's browser process, for one, writes its cookies out only when it closes
+    /// cleanly. A module that fails to close is logged and the rest still close.
+    /// </summary>
+    public async Task CloseAllAsync()
+    {
+        var open = Modules.Where(hosted => hosted.State is not (OdModuleState.Created or OdModuleState.Closed)).Select(hosted => hosted.Info.Id).ToList();
+        foreach (var moduleId in open)
+        {
+            try
+            {
+                await CloseAsync(moduleId);
+            }
+            catch (Exception ex)
+            {
+                _log.Warning(ex, "Module {ModuleId} failed to close", moduleId);
+            }
+        }
+    }
+
     public void Dispose() => _gate.Dispose();
 
     private OdHostedModule Get(string moduleId)
@@ -184,7 +210,9 @@ public sealed class OdModuleHost : IDisposable
         new OdModuleSettingsStore(_database, moduleId),
         _baseLog.ForContext(Constants.SourceContextPropertyName, "Module." + moduleId),
         _time,
-        _notifier);
+        new OdModuleNotifier(_notifier, moduleId),
+        _http,
+        _database);
 
     private void HideCurrent()
     {

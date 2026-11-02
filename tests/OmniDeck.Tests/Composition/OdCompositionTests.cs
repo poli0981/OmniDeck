@@ -27,6 +27,7 @@ public sealed class OdCompositionTests
         using var provider = services.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
 
         Assert.NotNull(provider.GetRequiredService<OdCrashHandler>());
+        Assert.StartsWith("OmniDeck/", provider.GetRequiredService<HttpClient>().DefaultRequestHeaders.UserAgent.ToString(), StringComparison.Ordinal);
         Assert.Same(provider.GetRequiredService<OdTrayNotifier>(), provider.GetRequiredService<IOdNotifier>());
         Assert.Equal(new[] { "clock", "timer", "calculator" }, provider.GetRequiredService<OdModuleHost>().Modules.Select(m => m.Info.Id), StringComparer.Ordinal);
     }

@@ -6,6 +6,12 @@ All notable changes to OmniDeck are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+- Clicking a notification opens the module that raised it: a finished timer opens Timer.
+- Quitting closes every open module first, so each one can save its state before OmniDeck exits.
+- OmniDeck re-styles its windows only when Windows' dark or light mode, accent color, High Contrast or
+  animation setting changes, not on every settings broadcast from Windows.
+
 ## [0.1.1] — 2026-11-02
 
 A fix release for 0.1.0. Picking accent colors, or Windows changing a theme setting, could make

@@ -131,7 +131,7 @@ public partial class OdApp
             {
                 if (!lifetime.IsQuitting)
                 {
-                    lifetime.Quit();
+                    _ = lifetime.QuitAsync();
                 }
             };
         }

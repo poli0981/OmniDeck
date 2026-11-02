@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!-- Windows-only from the start: DPAPI, toasts and the update service land here in P1. -->
+    <!-- Windows-only from the start: module views are WPF, and the Twelve Data key (P3) is kept with DPAPI. -->
     <TargetFramework>net10.0-windows</TargetFramework>
     <!-- IOdModule.CreateView returns a FrameworkElement (docs/ARCHITECTURE.md §2). -->
     <UseWPF>true</UseWPF>
