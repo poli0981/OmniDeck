@@ -6,6 +6,11 @@ All notable changes to OmniDeck are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.0-alpha.3] — 2026-11-02
+
+Third P2 alpha, the build to try out before 0.2.0: pop-out windows, web pages in full screen, an icon
+of its own, and fixes to the media player's controls.
+
 ### Added
 - Any module can open in a window of its own: choose "Open in new window" in its sidebar menu, or the
   window button on its library tile. It runs there beside whatever the main window shows, and OmniDeck
@@ -230,7 +235,8 @@ user-facing features yet: the window only shows the version.
 - Supported platform narrowed to Windows 11 (24H2 or later), x64.
 - App data moves to `%LocalAppData%\OmniDeck.Data`, outside Velopack's install folder.
 
-[Unreleased]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.2...HEAD
+[Unreleased]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.3...HEAD
+[0.2.0-alpha.3]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.2...v0.2.0-alpha.3
 [0.2.0-alpha.2]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.1...v0.2.0-alpha.2
 [0.2.0-alpha.1]: https://github.com/poli0981/OmniDeck/compare/v0.1.1...v0.2.0-alpha.1
 [0.1.1]: https://github.com/poli0981/OmniDeck/compare/v0.1.0...v0.1.1
