@@ -92,7 +92,13 @@ Support code: {0}
     <value>Soft limit {0} · hard limit {1}</value>
   </data>
   <data name="Memory_SharedNote" xml:space="preserve">
-    <value>Measured for OmniDeck as a whole: built-in modules share its process, so they have no figure of their own.</value>
+    <value>Built-in modules share OmniDeck's own process, so only web apps have a figure of their own.</value>
+  </data>
+  <data name="Memory_SharedTitle" xml:space="preserve">
+    <value>Shared web processes</value>
+  </data>
+  <data name="Memory_SharedDescription" xml:space="preserve">
+    <value>The browser, graphics and helper processes every web app uses. They close with the last web app.</value>
   </data>
   <data name="Memory_KeepRunning" xml:space="preserve">
     <value>Keep running</value>
@@ -144,6 +150,15 @@ Support code: {0}
   </data>
   <data name="Governor_HardCapKept" xml:space="preserve">
     <value>It is above its {0} limit, and nothing more can be hibernated: the open modules are in use or kept running.</value>
+  </data>
+  <data name="Governor_HardCapShared" xml:space="preserve">
+    <value>It is above its {0} limit because the processes the open web apps share use {1}, mostly for graphics. Hibernating other modules would not bring that down.</value>
+  </data>
+  <data name="Governor_ResidentHibernatedTitle" xml:space="preserve">
+    <value>{0} was hibernated to save memory</value>
+  </data>
+  <data name="Governor_ResidentHibernated" xml:space="preserve">
+    <value>It shows no notifications until you open it again. Click here to open it.</value>
   </data>
   <data name="Settings_Nav" xml:space="preserve">
     <value>Settings</value>

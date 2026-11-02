@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using OmniDeck.Core.Governor;
 using OmniDeck.Core.Localization;
 using OmniDeck.Core.Modules;
 
@@ -12,6 +13,9 @@ public sealed partial class OdMemoryRowViewModel(OdHostedModule hosted) : Observ
 
     [ObservableProperty]
     private string _lastUsedText = "";
+
+    [ObservableProperty]
+    private string _memoryText = "";
 
     [ObservableProperty]
     private bool _keepRunning;
@@ -31,12 +35,16 @@ public sealed partial class OdMemoryRowViewModel(OdHostedModule hosted) : Observ
 
     public string Title => hosted.Info.Title;
 
-    /// <summary>Re-reads the module's state; <paramref name="now"/> dates the last-used text.</summary>
-    public void Refresh(DateTimeOffset now, bool keepRunning)
+    /// <summary>
+    /// Re-reads the module's state; <paramref name="now"/> dates the last-used text, and
+    /// <paramref name="bytes"/> is the module's own memory, for one that runs processes of its own.
+    /// </summary>
+    public void Refresh(DateTimeOffset now, bool keepRunning, long? bytes = null)
     {
         var state = hosted.State;
         StateText = OdLocalization.Get("State_" + state);
         LastUsedText = LastUsed(state, now - hosted.LastActive);
+        MemoryText = bytes is { } own ? OdBytes.Format(own) : "";
         KeepRunning = keepRunning;
         CanSuspend = state == OdModuleState.Idle;
         CanHibernate = state is OdModuleState.Idle or OdModuleState.Suspended;

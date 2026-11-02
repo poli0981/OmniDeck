@@ -25,6 +25,12 @@ public sealed partial class OdMemoryViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private string _limitsText = "";
 
+    [ObservableProperty]
+    private string _sharedText = "";
+
+    [ObservableProperty]
+    private bool _hasShared;
+
     public OdMemoryViewModel(OdModuleHost host, OdRamGovernor governor, IOdSettingsService settings, TimeProvider time)
     {
         ArgumentNullException.ThrowIfNull(host);
@@ -49,10 +55,14 @@ public sealed partial class OdMemoryViewModel : ObservableObject, IDisposable
     public void Refresh()
     {
         var now = _time.GetUtcNow();
+        var snapshot = _governor.Snapshot;
         foreach (var row in Rows)
         {
-            row.Refresh(now, _governor.IsKeptRunning(row.Id));
+            row.Refresh(now, _governor.IsKeptRunning(row.Id), snapshot?.For(row.Id));
         }
+
+        HasShared = snapshot is { SharedBytes: > 0 };
+        SharedText = snapshot is { SharedBytes: > 0 and var shared } ? OdBytes.Format(shared) : "";
 
         var options = _governor.Options;
         InUseText = OdLocalization.Format("Memory_InUse", OdBytes.Format(_governor.CommittedBytes));

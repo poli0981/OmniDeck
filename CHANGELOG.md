@@ -26,6 +26,10 @@ All notable changes to OmniDeck are documented here. The format follows
 
 ### Changed
 - Clicking a notification opens the module that raised it: a finished timer opens Timer.
+- Settings → Memory shows what each open web app uses, and the browser processes they share in a row
+  of their own. The memory limits count the web apps' processes too. When OmniDeck must free memory,
+  it picks the app that uses more among those hidden for as long. When the shared processes alone
+  keep it over the limit, OmniDeck says so instead of closing apps that would free nothing.
 - Quitting closes every open module first, so each one can save its state before OmniDeck exits. With
   web apps open, it also waits a moment for the browser to save its cookies, so you stay signed in.
 - OmniDeck re-styles its windows only when Windows' dark or light mode, accent color, High Contrast or

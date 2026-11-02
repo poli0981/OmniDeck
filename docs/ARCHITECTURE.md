@@ -85,7 +85,7 @@ As built in P2 (`OmniDeck.Web`):
 
 ## 4. RAM governor (summary — full spec in RAM-GOVERNOR.md)
 
-A single scheduler owns all state transitions. Inputs: per-module visibility + last-interaction time, pin status (`CanSuspendAsync` / `IsDocumentPlayingAudio`), and total footprint = private commit (`Process.PrivateMemorySize64`) of the shell plus the WebView2 processes from `CoreWebView2Environment.GetProcessInfos()`. Policies: idle timers demote Active→Idle→Suspended→Hibernated; soft cap demotes LRU modules early; hard cap force-hibernates and toasts. The task-manager panel is a read/write view over the same scheduler (manual suspend/kill). In code: `OdRamGovernor` in `OmniDeck.Core/Governor`, polling every 10 s on the UI thread through `OdModuleHost`, behind `IOdMemory` so tests drive it with a fake gauge and `FakeTimeProvider`.
+A single scheduler owns all state transitions. Inputs: per-module visibility + last-interaction time, pin status (`CanSuspendAsync` / `IsDocumentPlayingAudio`), and total footprint = private commit (`Process.PrivateMemorySize64`) of the shell plus the WebView2 processes, which the web runner reports per app (`IOdMemoryReporter`, renderers matched to apps through `GetProcessExtendedInfosAsync`) with the browser, GPU and utility processes as one shared figure. Policies: idle timers demote Active→Idle→Suspended→Hibernated; soft cap demotes LRU modules early; hard cap force-hibernates and toasts. The task-manager panel is a read/write view over the same scheduler (manual suspend/kill). In code: `OdRamGovernor` in `OmniDeck.Core/Governor`, polling every 10 s on the UI thread through `OdModuleHost`, behind `IOdMemory` so tests drive it with a fake gauge and `FakeTimeProvider`.
 
 ## 5. Storage
 

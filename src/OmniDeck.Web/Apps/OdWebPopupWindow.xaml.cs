@@ -33,6 +33,7 @@ public partial class OdWebPopupWindow
         _browser = browser;
         await browser.EnsureCoreWebView2Async(environment, OdWebRuntime.ControllerOptions(environment, _module.Entry.Profile));
         var core = browser.CoreWebView2;
+        _module.Runtime.Track(_module.Info.Id, core);
 #if !DEBUG
         core.Settings.AreDevToolsEnabled = false;
 #endif
@@ -81,6 +82,11 @@ public partial class OdWebPopupWindow
         }
 
         _browser = null;
+        if (browser.CoreWebView2 is { } core)
+        {
+            _module.Runtime.Forget(core);
+        }
+
         BrowserHost.Children.Remove(browser);
         browser.Dispose();
         _module.Runtime.Close();

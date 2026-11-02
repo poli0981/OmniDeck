@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Microsoft.Web.WebView2.Core;
 using OmniDeck.Core.Storage;
 using Serilog;
@@ -9,7 +10,8 @@ namespace OmniDeck.Web.Runtime;
 /// one opens, with its user data in the data root's <c>WebView2</c> folder; each catalog profile is a
 /// WebView2 profile in it. It also follows the shared browser process, which writes cookies out as
 /// it exits: quitting waits for that, and so does opening an app while it is exiting, since a
-/// controller created then stalls for seconds (docs/spikes/03-memory.md). Used on the UI thread.
+/// controller created then stalls for seconds (docs/spikes/03-memory.md). It also knows which app
+/// each open browser belongs to, for the memory figures. Used on the UI thread.
 /// </summary>
 public sealed class OdWebRuntime(OdDataRoot dataRoot, OdWebOptions options, ILogger log)
 {
@@ -17,9 +19,13 @@ public sealed class OdWebRuntime(OdDataRoot dataRoot, OdWebOptions options, ILog
     public static readonly TimeSpan ExitWait = TimeSpan.FromSeconds(3);
 
     private readonly ILogger _log = log.ForContext<OdWebRuntime>();
+    private readonly List<(string ModuleId, CoreWebView2 Browser)> _browsers = [];
     private Task<CoreWebView2Environment>? _environment;
     private TaskCompletionSource? _exiting;
     private int _open;
+
+    /// <summary>The environment once a web app has opened; null before that.</summary>
+    public CoreWebView2Environment? Current { get; private set; }
 
     /// <summary>The installed WebView2 Runtime's version; null when it is missing.</summary>
     public static string? InstalledVersion()
@@ -68,6 +74,31 @@ public sealed class OdWebRuntime(OdDataRoot dataRoot, OdWebOptions options, ILog
     /// <summary>Waits, up to <see cref="ExitWait"/>, for the browser process to exit after the last browser closed.</summary>
     public Task WaitForExitAsync() => _exiting is { } exiting ? Task.WhenAny(exiting.Task, Task.Delay(ExitWait)) : Task.CompletedTask;
 
+    /// <summary>Counts <paramref name="browser"/>'s pages for <paramref name="moduleId"/> until <see cref="Forget"/>.</summary>
+    public void Track(string moduleId, CoreWebView2 browser) => _browsers.Add((moduleId, browser));
+
+    /// <summary>Stops counting a browser that is closing.</summary>
+    public void Forget(CoreWebView2 browser) => _browsers.RemoveAll(entry => ReferenceEquals(entry.Browser, browser));
+
+    /// <summary>The page each open browser shows: its app, its main frame and its host.</summary>
+    internal List<OdWebPage> Pages()
+    {
+        var pages = new List<OdWebPage>(_browsers.Count);
+        foreach (var (moduleId, browser) in _browsers)
+        {
+            try
+            {
+                pages.Add(new OdWebPage(moduleId, browser.FrameId, Uri.TryCreate(browser.Source, UriKind.Absolute, out var source) ? source.Host : ""));
+            }
+            catch (Exception ex) when (ex is InvalidOperationException or COMException)
+            {
+                // The browser is closing; its processes count as shared until they exit.
+            }
+        }
+
+        return pages;
+    }
+
     /// <summary>Options that open a browser on the catalog profile <paramref name="profile"/>.</summary>
     public static CoreWebView2ControllerOptions ControllerOptions(CoreWebView2Environment environment, string profile)
     {
@@ -85,6 +116,7 @@ public sealed class OdWebRuntime(OdDataRoot dataRoot, OdWebOptions options, ILog
         };
         var environment = await CoreWebView2Environment.CreateAsync(browserExecutableFolder: null, userDataFolder: dataRoot.WebView2Directory, environmentOptions);
         environment.BrowserProcessExited += OnBrowserProcessExited;
+        Current = environment;
         _log.Information("WebView2 {Version} ready (Chromium logging {Logging})", environment.BrowserVersionString, options.ChromiumLogging);
         return environment;
     }

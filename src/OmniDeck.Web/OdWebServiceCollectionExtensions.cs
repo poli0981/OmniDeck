@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using OmniDeck.Core.Governor;
 using OmniDeck.Core.Modules;
 using OmniDeck.Web.Apps;
 using OmniDeck.Web.Catalog;
@@ -18,6 +19,7 @@ public static class OdWebServiceCollectionExtensions
         services.AddSingleton(options);
         services.AddSingleton<OdCatalogService>();
         services.AddSingleton<OdWebRuntime>();
+        services.AddSingleton<IOdMemoryReporter, OdWebMemoryReporter>();
         services.AddSingleton<OdSignInHealth>();
 
         // After the built-in modules, in catalog order: that is the library's order.
