@@ -299,9 +299,11 @@ public sealed class OdMediaTests : IDisposable
         using var session = NewSession();
         using var screen = new OdMediaViewModel(session, new OdMediaSettings(), _ => { }, TimeProvider.System);
         Assert.True(screen.ShowsQueue);
+        Assert.True(screen.IsWindowed);
 
         screen.IsFullscreen = true;
         Assert.False(screen.ShowsQueue);
+        Assert.False(screen.IsWindowed);
 
         screen.IsFullscreen = false;
         screen.ToggleQueueCommand.Execute(null);

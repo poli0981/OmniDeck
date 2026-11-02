@@ -90,6 +90,7 @@ All mini-apps implement the module contract in [ARCHITECTURE](ARCHITECTURE.md) a
 - **Notifications:** `NotificationReceived` is intercepted and re-raised as a Windows toast tagged with the app name; per-app opt-out in settings.
 - **Permissions:** `PermissionRequested` (mic/camera/clipboard/geolocation) shows a native prompt; the decision is remembered per app and reviewable in settings.
 - **Downloads:** routed through `DownloadStarting` to the user's Downloads folder with an in-shell progress row.
+- **Full screen:** a page that goes full screen (a video, say) takes the window full screen with it, as the media player does; Esc or showing another module ends both.
 - **Media pinning:** while `IsDocumentPlayingAudio` is true, the module is pinned (see RAM-GOVERNOR).
 - **Lifecycle:** hidden web apps are suspended via `TrySuspendAsync` + `MemoryUsageTargetLevel.Low`, later disposed entirely (session survives via profile cookies). Disposing the last web app ends the shared browser process. Full state machine in [RAM-GOVERNOR](RAM-GOVERNOR.md).
 - **Google account domains:** Google's sign-in sets cookies on country-code domains (for example `accounts.google.com.vn`). The `google` entries allow them through the catalog's `google-account-domains` set (schema v2 `navAllowSets`, decided on 2 November 2026; [WEBAPP-CATALOG](WEBAPP-CATALOG.md) §1, [spike #2](spikes/02-google-sign-in.md)).

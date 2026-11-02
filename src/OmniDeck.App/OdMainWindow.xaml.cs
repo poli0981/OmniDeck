@@ -47,7 +47,8 @@ public partial class OdMainWindow : INavigationViewPageProvider
     private readonly OdSettingsPage _settingsPage;
     private readonly OdModuleStage _stage;
     private readonly OdModuleHost _host;
-    private OdWindowPlacement? _beforeFullscreen;
+    private readonly OdWindowCover _cover;
+    private OdPanePlacement? _paneBeforeFullscreen;
     private readonly Dictionary<string, NavigationViewItem> _moduleItems = new(StringComparer.Ordinal);
     private readonly NavigationViewItemSeparator _pinnedSeparator = new();
     private readonly OdTrayIcon _trayIcon = new();
@@ -91,6 +92,7 @@ public partial class OdMainWindow : INavigationViewPageProvider
         bugReportRequests.Requested += (sender, args) => _ = bugReports.ShowAsync(args.Error);
         _stage = new OdModuleStage { DataContext = shell };
         _host = host;
+        _cover = new OdWindowCover(this);
         ListenForFullscreen(shell);
 
         // A web app's browser is a native window over the stage that no dialog can cover: hide it meanwhile.
@@ -322,7 +324,7 @@ public partial class OdMainWindow : INavigationViewPageProvider
 
     private async void OnPreviewKeyDown(object sender, KeyEventArgs e)
     {
-        if (e.Key == Key.Escape && _beforeFullscreen is not null)
+        if (e.Key == Key.Escape && _cover.IsCovering)
         {
             e.Handled = true;
             SetFullscreen(on: false);
@@ -441,42 +443,35 @@ public partial class OdMainWindow : INavigationViewPageProvider
         SetFullscreen(e.On);
     }
 
-    /// <summary>
-    /// Covers the monitor the window is on, chrome hidden and corners square, or puts the window back
-    /// where it was (docs/spikes/06-libvlcsharp.md: the window covers the screen; the player never moves).
-    /// </summary>
+    /// <summary>Covers the monitor the window is on, chrome hidden, or puts the window back where it was.</summary>
     private void SetFullscreen(bool on)
     {
-        if (on == _beforeFullscreen is not null)
+        if (on == _cover.IsCovering)
         {
             return;
         }
 
-        if (on ? EnterFullscreen() : LeaveFullscreen())
+        if (on)
         {
-            OdFullscreen.SetIsActive(_stage, on);
+            if (!_cover.Cover(OdMonitors.BoundsOf(new WindowInteropHelper(this).Handle)))
+            {
+                return;
+            }
+
+            FoldChrome();
         }
+        else
+        {
+            _cover.Uncover();
+            UnfoldChrome();
+        }
+
+        OdFullscreen.SetIsActive(_stage, on);
     }
 
-    private bool EnterFullscreen()
+    private void FoldChrome()
     {
-        var monitor = OdMonitors.BoundsOf(new WindowInteropHelper(this).Handle);
-        if (monitor.IsEmpty)
-        {
-            return false;
-        }
-
-        _beforeFullscreen = new OdWindowPlacement(
-            WindowState,
-            Left,
-            Top,
-            Width,
-            Height,
-            Topmost,
-            ResizeMode,
-            WindowCornerPreference,
-            new OdPanePlacement(RootNavigation.OpenPaneLength, RootNavigation.CompactPaneLength, RootNavigation.IsPaneToggleVisible));
-        var dpi = VisualTreeHelper.GetDpi(this);
+        _paneBeforeFullscreen = new OdPanePlacement(RootNavigation.OpenPaneLength, RootNavigation.CompactPaneLength, RootNavigation.IsPaneToggleVisible, RootNavigation.FrameMargin);
         AppTitleBar.Visibility = Visibility.Collapsed;
         RootNavigation.TitleBar = null;
 
@@ -485,34 +480,26 @@ public partial class OdMainWindow : INavigationViewPageProvider
         RootNavigation.IsPaneToggleVisible = false;
         RootNavigation.OpenPaneLength = 0;
         RootNavigation.CompactPaneLength = 0;
-        WindowState = WindowState.Normal;
-        WindowCornerPreference = WindowCornerPreference.DoNotRound;
-        ResizeMode = ResizeMode.NoResize;
-        Topmost = true;
-        Left = monitor.X / dpi.DpiScaleX;
-        Top = monitor.Y / dpi.DpiScaleY;
-        Width = monitor.Width / dpi.DpiScaleX;
-        Height = monitor.Height / dpi.DpiScaleY;
-        return true;
+
+        // The folded pane's template still keeps a few pixels (its margins, the frame's border): the frame
+        // overlaps them. Clearing the title bar has just reset the frame's margin, so it is read only now.
+        UpdateLayout();
+        var offset = _stage.TranslatePoint(default, this);
+        var frame = RootNavigation.FrameMargin;
+        RootNavigation.FrameMargin = new Thickness(frame.Left - offset.X, frame.Top - offset.Y, frame.Right, frame.Bottom);
     }
 
-    private bool LeaveFullscreen()
+    private void UnfoldChrome()
     {
-        var before = _beforeFullscreen!;
-        _beforeFullscreen = null;
         AppTitleBar.Visibility = Visibility.Visible;
         RootNavigation.TitleBar = AppTitleBar;
-        RootNavigation.OpenPaneLength = before.Pane.OpenLength;
-        RootNavigation.CompactPaneLength = before.Pane.CompactLength;
-        RootNavigation.IsPaneToggleVisible = before.Pane.ToggleVisible;
-        WindowCornerPreference = before.Corners;
-        Topmost = before.Topmost;
-        ResizeMode = before.Resize;
-        Left = before.Left;
-        Top = before.Top;
-        Width = before.Width;
-        Height = before.Height;
-        WindowState = before.State;
-        return true;
+        if (_paneBeforeFullscreen is { } pane)
+        {
+            _paneBeforeFullscreen = null;
+            RootNavigation.OpenPaneLength = pane.OpenLength;
+            RootNavigation.CompactPaneLength = pane.CompactLength;
+            RootNavigation.IsPaneToggleVisible = pane.ToggleVisible;
+            RootNavigation.FrameMargin = pane.FrameMargin;
+        }
     }
 }
