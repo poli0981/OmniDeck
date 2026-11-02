@@ -11,12 +11,23 @@
       "description": "Editor hint pointing at this schema; ignored by the app."
     },
     "schemaVersion": {
-      "const": 1
+      "const": 2
     },
     "updated": {
       "type": "string",
       "description": "Date of the last content change (yyyy-MM-dd).",
       "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "navAllowSets": {
+      "type": "object",
+      "description": "Named lists of domains that entries add to their navAllow by name, for lists too long to repeat in each entry.",
+      "propertyNames": { "$ref": "#/$defs/slug" },
+      "additionalProperties": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": { "$ref": "#/$defs/domain" }
+      }
     },
     "apps": {
       "type": "array",
@@ -66,6 +77,13 @@
           "minItems": 1,
           "uniqueItems": true,
           "items": { "$ref": "#/$defs/domain" }
+        },
+        "navAllowSets": {
+          "type": "array",
+          "description": "Names of top-level navAllowSets whose domains the main frame may also navigate to.",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/slug" }
         },
         "popupAllow": {
           "type": "array",

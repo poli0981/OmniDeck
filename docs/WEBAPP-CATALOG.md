@@ -26,13 +26,16 @@ OmniDeck deliberately does **not** allow arbitrary user-added URLs in v1: the cu
 | `startUrl` | https URL | initial navigation target |
 | `profile` | string | cookie/profile group; entries sharing a value share sign-in. Reserved group: `google`. Anything else should be unique per app unless sharing is intentional |
 | `navAllow` | string[] | domains the main frame may navigate to; anything else opens in the system default browser |
+| `navAllowSets` | string[], optional | names of top-level `navAllowSets` whose domains this entry's main frame may also navigate to; for lists too long to repeat in each entry |
 | `popupAllow` | string[] | domains whose `window.open` popups open **in-app on the same profile** (SSO flows); all other popups go to the default browser |
 | `notifications` | bool | whether web notifications are bridged to Windows toasts (user can still disable per app) |
 | `audioPin` | bool | if true, the governor treats the app as pinned while it is playing audio |
 
-**Domain matching.** `navAllow` and `popupAllow` entries are lowercase domains or subdomains — no scheme, port, path, or wildcard. A host matches an entry when it equals it or ends with `.` + the entry, on whole DNS labels: `google.com` matches `mail.google.com`, never `evilgoogle.com`. `navAllow` governs **top-level (main-frame) navigations only**; subresource requests (scripts, images, media, API calls to CDNs) are never filtered by it, so a CDN belongs in `navAllow` only when the app really navigates the main frame there (a file download or a media viewer, for example). The `startUrl` host and every `popupAllow` entry must be covered by `navAllow`.
+**Domain matching.** `navAllow` and `popupAllow` entries are lowercase domains or subdomains — no scheme, port, path, or wildcard. A host matches an entry when it equals it or ends with `.` + the entry, on whole DNS labels: `google.com` matches `mail.google.com`, never `evilgoogle.com`. `navAllow` governs **top-level (main-frame) navigations only**; subresource requests (scripts, images, media, API calls to CDNs) are never filtered by it, so a CDN belongs in `navAllow` only when the app really navigates the main frame there (a file download or a media viewer, for example). The `startUrl` host must be covered by `navAllow`, and every `popupAllow` entry by `navAllow` or the entry's sets.
 
-Top-level file fields: `$schema` (optional editor hint), `schemaVersion` (int), `updated` (ISO date of the last content change), `apps` (array). The JSON Schema is [`catalog/webapps.schema.json`](../catalog/webapps.schema.json); `scripts/validate-catalog.ps1` checks it plus the rules a schema can't express (unique `id` and `name`, the coverage rules above, `updated` not in the future), and CI runs it on every pull request. The app rejects any fetched catalog whose `schemaVersion` it does not understand or that fails validation, and keeps the bundled copy.
+Top-level file fields: `$schema` (optional editor hint), `schemaVersion` (int, currently 2), `updated` (ISO date of the last content change), `navAllowSets` (optional: named lists of domains, each name `[a-z0-9-]`), `apps` (array).
+
+**Named domain sets.** `google-account-domains` lists Google's account host on every country-code domain, `accounts.google.<ccTLD>`, taken from `https://www.google.com/supported_domains` (186 domains; `google.com` itself is already in each entry's `navAllow`). Google's sign-in hops there to set its cookies, for example `accounts.google.com.vn/accounts/SetSID`. Every `google` entry uses the set, because they share one sign-in. The list lives in the catalog rather than in the app, so a change is a catalog pull request, not a release. Schema v2 (2 November 2026) added `navAllowSets`; no released build read v1, and the app reads v2 only. The JSON Schema is [`catalog/webapps.schema.json`](../catalog/webapps.schema.json); `scripts/validate-catalog.ps1` checks it plus the rules a schema can't express (unique `id` and `name`, every set an entry names exists and every set is used, the coverage rules above, `updated` not in the future), and CI runs it on every pull request. The app rejects any fetched catalog whose `schemaVersion` it does not understand or that fails validation, and keeps the bundled copy.
 
 ## 2. Review rules for new entries (PR checklist)
 
@@ -51,7 +54,7 @@ Top-level file fields: `$schema` (optional editor hint), `schemaVersion` (int), 
 |---|---|---|---|
 | spotify | spotify | yes | Web Player; DRM works in the runtime ([spike #1](spikes/01-drm-widevine.md)); the third-party sign-in buttons (Google/Facebook/Apple) are still untested ([spike #2](spikes/02-google-sign-in.md)) |
 | discord | discord | no | no global PTT on web; host hotkey partial mitigation |
-| youtube | google | yes | sign-in hops to Google's country-code domains, which need `navAllowSets` (P2, spike #2) |
+| youtube | google | yes | sign-in hops to Google's country-code domains, allowed through the `google-account-domains` set like every `google` entry ([spike #2](spikes/02-google-sign-in.md)) |
 | gmail | google | no | |
 | gcalendar | google | no | |
 | gdrive | google | no | |
