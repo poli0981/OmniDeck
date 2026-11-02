@@ -1,0 +1,223 @@
+﻿<UserControl x:Class="OmniDeck.Modules.Weather.OdWeatherView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:res="clr-namespace:OmniDeck.Core.Localization;assembly=OmniDeck.Core"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:weather="clr-namespace:OmniDeck.Modules.Weather">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="Visible" />
+    </UserControl.Resources>
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="{DynamicResource Od.Padding.Card}">
+            <DockPanel Margin="{DynamicResource Od.Margin.Item}">
+                <ui:Button VerticalAlignment="Center"
+                           Appearance="Transparent"
+                           AutomationProperties.Name="{res:OdLoc Weather_Refresh}"
+                           Command="{Binding RefreshCommand}"
+                           DockPanel.Dock="Right"
+                           Icon="{ui:SymbolIcon ArrowClockwise24}"
+                           ToolTip="{res:OdLoc Weather_Refresh}"
+                           Visibility="{Binding HasLocations, Converter={StaticResource Visible}}" />
+                <ComboBox Margin="{DynamicResource Od.Padding.Control}"
+                          VerticalAlignment="Center"
+                          AutomationProperties.Name="{res:OdLoc Weather_Units}"
+                          DockPanel.Dock="Right"
+                          ItemsSource="{Binding UnitsOptions}"
+                          SelectedItem="{Binding SelectedUnits}"
+                          ToolTip="{res:OdLoc Weather_Units}" />
+                <StackPanel>
+                    <TextBlock FontSize="{DynamicResource Od.Font.H1}"
+                               FontWeight="SemiBold"
+                               Text="{res:OdLoc Weather_Name}" />
+                    <TextBlock FontSize="{DynamicResource Od.Font.Caption}"
+                               Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                               Text="{Binding Updated}" />
+                </StackPanel>
+            </DockPanel>
+
+            <ui:InfoBar Margin="{DynamicResource Od.Margin.Item}"
+                        IsClosable="False"
+                        IsOpen="{Binding HasStatus}"
+                        Message="{Binding Status}"
+                        Severity="Warning" />
+
+            <ListBox Margin="{DynamicResource Od.Margin.Item}"
+                     AutomationProperties.Name="{res:OdLoc Weather_Places}"
+                     ItemsSource="{Binding Locations}"
+                     SelectedItem="{Binding SelectedLocation}"
+                     Visibility="{Binding HasLocations, Converter={StaticResource Visible}}">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type weather:OdWeatherLocation}">
+                        <DockPanel>
+                            <ui:Button Appearance="Transparent"
+                                       AutomationProperties.Name="{res:OdLoc Weather_Remove}"
+                                       Command="{Binding DataContext.RemoveCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                       CommandParameter="{Binding}"
+                                       DockPanel.Dock="Right"
+                                       Icon="{ui:SymbolIcon Dismiss16}"
+                                       ToolTip="{res:OdLoc Weather_Remove}" />
+                            <TextBlock VerticalAlignment="Center"
+                                       Text="{Binding Name}"
+                                       ToolTip="{Binding Description}" />
+                        </DockPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <TextBlock Margin="{DynamicResource Od.Margin.Item}"
+                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                       Text="{res:OdLoc Weather_Empty}"
+                       TextWrapping="Wrap"
+                       Visibility="{Binding IsEmpty, Converter={StaticResource Visible}}" />
+
+            <StackPanel Visibility="{Binding HasForecast, Converter={StaticResource Visible}}">
+                <ui:Card Margin="{DynamicResource Od.Margin.Tile}">
+                    <DockPanel DataContext="{Binding Now}">
+                        <ui:SymbolIcon Margin="{DynamicResource Od.Padding.Card}"
+                                       VerticalAlignment="Center"
+                                       DockPanel.Dock="Left"
+                                       FontSize="{DynamicResource Od.Font.H1}"
+                                       Symbol="{Binding Symbol}" />
+                        <StackPanel>
+                            <TextBlock FontSize="{DynamicResource Od.Font.H1}"
+                                       FontWeight="SemiBold"
+                                       Text="{Binding Temperature}" />
+                            <TextBlock Text="{Binding Condition}" />
+                            <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}" Text="{Binding FeelsLike}" />
+                            <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}" Text="{Binding Humidity}" />
+                            <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}" Text="{Binding Wind}" />
+                        </StackPanel>
+                    </DockPanel>
+                </ui:Card>
+
+                <TextBlock Margin="{DynamicResource Od.Margin.Item}"
+                           FontSize="{DynamicResource Od.Font.H2}"
+                           FontWeight="SemiBold"
+                           Text="{res:OdLoc Weather_Next48Hours}" />
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                    <ItemsControl Focusable="False" ItemsSource="{Binding Hours}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type weather:OdWeatherHour}">
+                                <StackPanel Margin="{DynamicResource Od.Margin.Tile}" ToolTip="{Binding Condition}">
+                                    <TextBlock HorizontalAlignment="Center"
+                                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                               Text="{Binding Time}" />
+                                    <ui:SymbolIcon HorizontalAlignment="Center" Symbol="{Binding Symbol}" />
+                                    <TextBlock HorizontalAlignment="Center"
+                                               FontWeight="SemiBold"
+                                               Text="{Binding Temperature}" />
+                                    <TextBlock HorizontalAlignment="Center"
+                                               FontSize="{DynamicResource Od.Font.Caption}"
+                                               Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                               Text="{Binding Chance}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <TextBlock Margin="{DynamicResource Od.Margin.Item}"
+                           FontSize="{DynamicResource Od.Font.H2}"
+                           FontWeight="SemiBold"
+                           Text="{res:OdLoc Weather_Next7Days}" />
+                <ItemsControl MaxWidth="720"
+                              HorizontalAlignment="Left"
+                              Focusable="False"
+                              ItemsSource="{Binding Days}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type weather:OdWeatherDay}">
+                            <Grid Margin="{DynamicResource Od.Padding.Control}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="2*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock VerticalAlignment="Center" Text="{Binding Day}" />
+                                <ui:SymbolIcon Grid.Column="1"
+                                               Margin="{DynamicResource Od.Padding.Control}"
+                                               VerticalAlignment="Center"
+                                               Symbol="{Binding Symbol}" />
+                                <TextBlock Grid.Column="2"
+                                           VerticalAlignment="Center"
+                                           Text="{Binding Condition}"
+                                           TextTrimming="CharacterEllipsis" />
+                                <TextBlock Grid.Column="3"
+                                           Margin="{DynamicResource Od.Padding.Control}"
+                                           VerticalAlignment="Center"
+                                           Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                           Text="{Binding Chance}" />
+                                <TextBlock Grid.Column="4"
+                                           VerticalAlignment="Center"
+                                           FontWeight="SemiBold"
+                                           Text="{Binding HighLow}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+
+            <TextBlock Margin="{DynamicResource Od.Margin.Item}"
+                       FontSize="{DynamicResource Od.Font.H2}"
+                       FontWeight="SemiBold"
+                       Text="{res:OdLoc Weather_AddPlace}" />
+            <DockPanel Margin="{DynamicResource Od.Margin.Item}">
+                <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                           Appearance="Primary"
+                           Command="{Binding SearchCommand}"
+                           Content="{res:OdLoc Weather_SearchButton}"
+                           DockPanel.Dock="Right" />
+                <ui:TextBox AutomationProperties.Name="{res:OdLoc Weather_Search}"
+                            PlaceholderText="{res:OdLoc Weather_Search}"
+                            Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
+                    <ui:TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding SearchCommand}" />
+                    </ui:TextBox.InputBindings>
+                </ui:TextBox>
+            </DockPanel>
+            <ui:ProgressRing Margin="{DynamicResource Od.Margin.Item}"
+                             HorizontalAlignment="Left"
+                             IsIndeterminate="True"
+                             Visibility="{Binding IsSearching, Converter={StaticResource Visible}}" />
+            <TextBlock Margin="{DynamicResource Od.Margin.Item}"
+                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                       Text="{Binding SearchMessage}"
+                       TextWrapping="Wrap"
+                       Visibility="{Binding HasSearchMessage, Converter={StaticResource Visible}}" />
+            <ItemsControl Focusable="False" ItemsSource="{Binding SearchResults}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type weather:OdWeatherLocation}">
+                        <DockPanel Margin="{DynamicResource Od.Padding.Control}">
+                            <ui:Button AutomationProperties.HelpText="{Binding Description}"
+                                       AutomationProperties.Name="{res:OdLoc Weather_Add}"
+                                       Command="{Binding DataContext.AddCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                       CommandParameter="{Binding}"
+                                       Content="{res:OdLoc Weather_Add}"
+                                       DockPanel.Dock="Right" />
+                            <TextBlock VerticalAlignment="Center"
+                                       Text="{Binding Description}"
+                                       TextTrimming="CharacterEllipsis" />
+                        </DockPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <TextBlock Margin="{DynamicResource Od.Margin.Item}" FontSize="{DynamicResource Od.Font.Caption}">
+                <Hyperlink NavigateUri="https://open-meteo.com/" RequestNavigate="OnAttributionNavigate">
+                    <Run Text="{res:OdLoc Weather_DataBy}" />
+                </Hyperlink>
+            </TextBlock>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
