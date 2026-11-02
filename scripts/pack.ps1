@@ -94,7 +94,8 @@ try {
         --packAuthors poli0981 `
         --packVersion $Version `
         --packDir $publishDir `
-        --mainExe OmniDeck.exe
+        --mainExe OmniDeck.exe `
+        --icon (Join-Path $repoRoot 'src\OmniDeck.App\Assets\OmniDeck.ico')
     if ($LASTEXITCODE -ne 0) { throw "vpk pack failed with exit code $LASTEXITCODE" }
 }
 finally {

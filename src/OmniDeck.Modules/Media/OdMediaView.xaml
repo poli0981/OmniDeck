@@ -80,8 +80,23 @@
                                 <ui:Button Margin="{DynamicResource Od.Padding.Control}"
                                            AutomationProperties.Name="{res:OdLoc Media_PlayPause}"
                                            Command="{Binding PlayPauseCommand}"
-                                           Icon="{ui:SymbolIcon Play24}"
-                                           ToolTip="{res:OdLoc Media_PlayPause}" />
+                                           ToolTip="{res:OdLoc Media_PlayPause}">
+                                    <ui:Button.Icon>
+                                        <!--  Pause while playing, Play otherwise.  -->
+                                        <ui:SymbolIcon>
+                                            <ui:SymbolIcon.Style>
+                                                <Style TargetType="ui:SymbolIcon">
+                                                    <Setter Property="Symbol" Value="Play24" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                                                            <Setter Property="Symbol" Value="Pause24" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </ui:SymbolIcon.Style>
+                                        </ui:SymbolIcon>
+                                    </ui:Button.Icon>
+                                </ui:Button>
                                 <ui:Button AutomationProperties.Name="{res:OdLoc Media_Next}"
                                            Command="{Binding NextCommand}"
                                            Icon="{ui:SymbolIcon Next24}"
