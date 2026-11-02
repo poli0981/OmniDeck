@@ -169,11 +169,7 @@ public sealed partial class OdShellViewModel : ObservableObject, IDisposable
         return NavigateAsync(SettingsTarget);
     }
 
-    private Task QuitAsync()
-    {
-        _lifetime.Quit();
-        return Task.CompletedTask;
-    }
+    private Task QuitAsync() => _lifetime.QuitAsync();
 
     private void OnModuleStateChanged(object? sender, OdModuleStateChangedEventArgs e)
     {

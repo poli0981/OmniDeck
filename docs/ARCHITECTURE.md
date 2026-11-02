@@ -58,7 +58,7 @@ public interface IOdModule
 }
 ```
 
-`IOdModuleContext` gives modules their own settings document (one JSON row per module in the `module_settings` table), the notifier (tray balloons, which Windows 11 shows as toasts), a logger and the clock; the HTTP client factory joins it with the first module that goes online (P2). Modules never construct these themselves.
+`IOdModuleContext` gives modules their own settings document (one JSON row per module in the `module_settings` table), the notifier (tray balloons, which Windows 11 shows as toasts; clicking one opens the module that raised it), a logger, the clock, the shared HTTP client and the database for the module's own tables. The HTTP client (`OdHttp`) is one `HttpClient` for OmniDeck's own features: it names OmniDeck in its User-Agent, keeps no cookies and gives up after 15 seconds. Module tables are migrated with Core's migrations, so one schema version covers the database. Modules never construct these themselves. Quitting closes every open module first (`OdModuleHost.CloseAllAsync`), so each one can save its state and let go of what it holds.
 
 `CreateView()` returns a WPF `FrameworkElement`, so wherever `IOdModule` lives must reference WPF. P1 decided to let `OmniDeck.Core` take that dependency (`UseWPF`) rather than add an abstractions project. Core holds the contract, `OdModuleHost` and the localization layer (`OdLocalization`, `{res:OdLoc Key}`), so modules depend on Core alone; Core still never references the app, Velopack or WPF-UI (an architecture test checks it), which is why `OdModuleInfo.Icon` is a `SymbolRegular` name rather than a symbol.
 

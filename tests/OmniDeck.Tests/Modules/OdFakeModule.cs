@@ -19,6 +19,12 @@ public sealed class OdFakeModule(string id, OdRamClass ramClass = OdRamClass.Lig
     /// <summary>Makes <see cref="HibernateAsync"/> fail, like a module with a bug.</summary>
     public bool ThrowOnHibernate { get; set; }
 
+    /// <summary>Makes <see cref="ActivateAsync"/> fail.</summary>
+    public bool ThrowOnActivate { get; set; }
+
+    /// <summary>Makes <see cref="CloseAsync"/> fail.</summary>
+    public bool ThrowOnClose { get; set; }
+
     public Task InitializeAsync(IOdModuleContext context)
     {
         Context = context;
@@ -36,6 +42,11 @@ public sealed class OdFakeModule(string id, OdRamClass ramClass = OdRamClass.Lig
     {
         // A real await, so the host's one-at-a-time gate is exercised across a dispatcher turn.
         await Task.Yield();
+        if (ThrowOnActivate)
+        {
+            throw new InvalidOperationException("activate failed");
+        }
+
         Calls.Add("activate");
     }
 
@@ -60,6 +71,11 @@ public sealed class OdFakeModule(string id, OdRamClass ramClass = OdRamClass.Lig
 
     public Task CloseAsync()
     {
+        if (ThrowOnClose)
+        {
+            throw new InvalidOperationException("close failed");
+        }
+
         Calls.Add("close");
         return Task.CompletedTask;
     }

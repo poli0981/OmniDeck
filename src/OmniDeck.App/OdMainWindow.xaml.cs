@@ -13,6 +13,7 @@ using OmniDeck.App.Shell;
 using OmniDeck.App.Theming;
 using OmniDeck.Core.Legal;
 using OmniDeck.Core.Localization;
+using OmniDeck.Core.Modules;
 using OmniDeck.Core.Settings;
 using OmniDeck.Core.Storage;
 using OmniDeck.Core.Theming;
@@ -90,7 +91,12 @@ public partial class OdMainWindow : INavigationViewPageProvider
         UpdateTrayIcon();
         TrayIcon.ForceCreate(enablesEfficiencyMode: false);
         notifier.Attach((title, message) => _ = Dispatcher.InvokeAsync(() => TrayIcon.ShowNotification(title, message, NotificationIcon.Info)));
-        Closed += (_, _) => TrayIcon.Dispose();
+        notifier.Clicked += OnNotificationClicked;
+        Closed += (_, _) =>
+        {
+            notifier.Clicked -= OnNotificationClicked;
+            TrayIcon.Dispose();
+        };
 
         SetUpNavigation(theme);
 
@@ -352,7 +358,19 @@ public partial class OdMainWindow : INavigationViewPageProvider
 
     private void OnTrayOpen(object sender, RoutedEventArgs e) => Present();
 
-    private void OnTrayQuit(object sender, RoutedEventArgs e) => _lifetime.Quit();
+    private void OnTrayNotificationClicked(object sender, RoutedEventArgs e) => _notifier.OnClicked();
+
+    /// <summary>A click on a notification brings the window up, on the module that raised it.</summary>
+    private async void OnNotificationClicked(object? sender, OdNotificationClickedEventArgs e)
+    {
+        Present();
+        if (e.Target is { } target)
+        {
+            await _shell.NavigateAsync(target);
+        }
+    }
+
+    private async void OnTrayQuit(object sender, RoutedEventArgs e) => await _lifetime.QuitAsync();
 
     private void OnTrayQuickTimer(object sender, RoutedEventArgs e) => _quickTimer.StartQuick(TimeSpan.FromMinutes(5));
 }

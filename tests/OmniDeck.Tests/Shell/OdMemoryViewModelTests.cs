@@ -119,7 +119,8 @@ public sealed class OdMemoryViewModelTests : IDisposable
         new OdDatabase(_temp.Combine("omnideck.db"), pooling: false),
         Logger.None,
         _time,
-        new OdFakeNotifier());
+        new OdFakeNotifier(),
+        OdTestHttp.Client);
 
     private OdRamGovernor NewGovernor(OdModuleHost host) => new(host, _settings, _memory, _time, new OdFakeNotifier(), Logger.None);
 }

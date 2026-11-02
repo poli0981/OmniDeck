@@ -28,6 +28,7 @@ public sealed class OdTimerServiceTests
         Assert.False(tea.IsRunning);
         Assert.Equal(TimeSpan.Zero, tea.RemainingAt(service.Now));
         Assert.Equal(new[] { ("Timer finished", "Tea is done.") }, _notifier.Shown);
+        Assert.Equal("timer", Assert.Single(_notifier.Raised).Target);
     });
 
     [Fact]

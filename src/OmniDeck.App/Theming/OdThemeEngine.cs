@@ -20,6 +20,7 @@ public sealed class OdThemeEngine : IDisposable
     private readonly ILogger _log;
     private Application? _app;
     private OdSettings? _applied;
+    private OdSystemLook? _systemLook;
     private double _textScale = 1.0;
 
     public OdThemeEngine(IOdSettingsService settings, ILogger log)
@@ -41,6 +42,7 @@ public sealed class OdThemeEngine : IDisposable
         ArgumentNullException.ThrowIfNull(app);
         _app = app;
         _applied = _settings.Current;
+        _systemLook = OdSystemLook.Read();
         _textScale = OdTextScale.Read();
         ApplyTheme();
         ApplyTokens();
@@ -57,6 +59,21 @@ public sealed class OdThemeEngine : IDisposable
             _textScale = now;
             ApplyTokens();
         }
+    }
+
+    /// <summary>
+    /// Records Windows' look as it is <paramref name="now"/>; true when it differs from the look the
+    /// theme was last applied for.
+    /// </summary>
+    internal bool NoteSystemLook(OdSystemLook now)
+    {
+        if (_systemLook == now)
+        {
+            return false;
+        }
+
+        _systemLook = now;
+        return true;
     }
 
     public void Dispose()
@@ -159,11 +176,17 @@ public sealed class OdThemeEngine : IDisposable
     {
         if (e.Category is UserPreferenceCategory.General or UserPreferenceCategory.Color or UserPreferenceCategory.Accessibility or UserPreferenceCategory.VisualStyle)
         {
+            // Windows sends this for many unrelated settings, and applying the theme again re-styles every
+            // window, so it happens only when the look OmniDeck follows has changed.
             _ = _app?.Dispatcher.InvokeAsync(() =>
             {
-                ApplyTheme();
+                if (NoteSystemLook(OdSystemLook.Read()))
+                {
+                    ApplyTheme();
+                    ApplyTokens();
+                }
+
                 RefreshTextScale();
-                ApplyTokens();
             });
         }
     }

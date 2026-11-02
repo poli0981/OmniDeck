@@ -143,7 +143,7 @@ public sealed class OdTimerService : IOdQuickTimer, IDisposable
             countdown.EndsAt = null;
             countdown.Remaining = TimeSpan.Zero;
             countdown.IsFinished = true;
-            _notifier.Notify(OdLocalization.Get("Timer_DoneTitle"), OdLocalization.Format("Timer_DoneMessage", countdown.Name));
+            _notifier.Notify(new OdNotification(OdLocalization.Get("Timer_DoneTitle"), OdLocalization.Format("Timer_DoneMessage", countdown.Name), OdTimerModule.Id));
         }
 
         Reschedule();

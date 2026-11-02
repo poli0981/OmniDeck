@@ -1,6 +1,9 @@
 using System.Windows.Media;
 using OmniDeck.App.Theming;
 using OmniDeck.Core.Settings;
+using OmniDeck.Core.Storage;
+using OmniDeck.Tests.TestSupport;
+using Serilog.Core;
 using Wpf.Ui.Appearance;
 
 namespace OmniDeck.Tests.Theming;
@@ -36,6 +39,20 @@ public sealed class OdThemeEngineTests
         Assert.True(followSystem);
         Assert.Equal(ApplicationTheme.Dark, theme);
         Assert.Equal(Color.FromRgb(0x10, 0x89, 0x3E), accent);
+    }
+
+    [Fact]
+    public void TheThemeIsAppliedAgain_OnlyWhenWindowsLookChanges()
+    {
+        using var temp = new OdTempDirectory();
+        using var engine = new OdThemeEngine(new OdSettingsService(new OdDataRoot(temp.Path), Logger.None), Logger.None);
+        var look = new OdSystemLook(SystemTheme.Dark, Colors.SteelBlue, HighContrast: false, Animations: true);
+
+        Assert.True(engine.NoteSystemLook(look));
+        Assert.False(engine.NoteSystemLook(look));
+        Assert.True(engine.NoteSystemLook(look with { Accent = Colors.IndianRed }));
+        Assert.True(engine.NoteSystemLook(look with { Accent = Colors.IndianRed, Animations = false }));
+        Assert.False(engine.NoteSystemLook(look with { Accent = Colors.IndianRed, Animations = false }));
     }
 
     [Fact]
