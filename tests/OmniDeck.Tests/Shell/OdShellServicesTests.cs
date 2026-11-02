@@ -96,6 +96,8 @@ public sealed class OdShellServicesTests
     {
         var service = new OdFakeDialogService();
         var dialogs = new OdDialogs(service);
+        var changes = new List<bool>();
+        dialogs.OpenChanged += (_, _) => changes.Add(dialogs.IsOpen);
         Assert.False(dialogs.CanShow);
 
         var host = new ContentDialogHost();
@@ -108,6 +110,7 @@ public sealed class OdShellServicesTests
         service.Close(ContentDialogResult.Primary);
         Assert.Equal(ContentDialogResult.Primary, await showing);
         Assert.False(dialogs.IsOpen);
+        Assert.Equal(new[] { true, false }, changes);
 
         // No visible main window in a test run: errors fall back to a message box, never a dialog.
         Assert.False(dialogs.CanShow);

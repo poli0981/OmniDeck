@@ -290,6 +290,9 @@
                                        Command="{Binding DownloadCommand}"
                                        Content="{res:OdLoc About_Download}"
                                        Visibility="{Binding CanDownload, Converter={StaticResource Visible}}" />
+                            <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                       Command="{Binding ReportBugCommand}"
+                                       Content="{res:OdLoc About_ReportBug}" />
                         </StackPanel>
                         <TextBlock Margin="{DynamicResource Od.Margin.Item}"
                                    AutomationProperties.LiveSetting="Polite"

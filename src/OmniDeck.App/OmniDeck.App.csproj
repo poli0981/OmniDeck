@@ -40,6 +40,26 @@
     <PackageReference Include="WPF-UI" Version="4.3.0" />
   </ItemGroup>
 
+  <!-- libVLC for the media player (docs/SPEC.md §3.6), copied to libvlc\win-x64 next to OmniDeck.exe:
+       x64 only, and only the plugins the player needs (docs/spikes/06-libvlcsharp.md). -->
+  <PropertyGroup>
+    <VlcWindowsX86Enabled>false</VlcWindowsX86Enabled>
+    <VlcWindowsArm64Enabled>false</VlcWindowsArm64Enabled>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.24" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <VlcWindowsX64IncludeFiles Include="libvlc.dll;libvlccore.dll" />
+    <VlcWindowsX64IncludeFiles Include="plugins\access\%2A;plugins\audio_filter\%2A;plugins\audio_mixer\%2A;plugins\audio_output\%2A" />
+    <VlcWindowsX64IncludeFiles Include="plugins\codec\%2A;plugins\demux\%2A;plugins\packetizer\%2A;plugins\stream_filter\%2A" />
+    <VlcWindowsX64IncludeFiles Include="plugins\text_renderer\%2A;plugins\spu\%2A;plugins\video_chroma\%2A;plugins\video_filter\%2A;plugins\video_output\%2A;plugins\misc\%2A" />
+    <!-- The player opens local files: no network streaming. -->
+    <VlcWindowsX64ExcludeFiles Include="plugins\access\libaccess_srt_plugin.dll;plugins\access\libftp_plugin.dll;plugins\access\libhttp_plugin.dll;plugins\access\libhttps_plugin.dll;plugins\access\librtp_plugin.dll;plugins\access\libsftp_plugin.dll;plugins\access\libsmb_plugin.dll" />
+  </ItemGroup>
+
   <!-- The license and legal documents travel with every build: the self-contained app
        redistributes MIT/BSD code whose notices must ship with it, and the P1 legal gate shows them. -->
   <ItemGroup>

@@ -8,6 +8,7 @@ using OmniDeck.App.Theming;
 using OmniDeck.App.Updates;
 using OmniDeck.Core.Localization;
 using OmniDeck.Core.Modules;
+using OmniDeck.Core.Reports;
 using OmniDeck.Core.Settings;
 using OmniDeck.Core.Storage;
 using OmniDeck.Web.Apps;
@@ -29,6 +30,10 @@ internal static class OdAppServiceCollectionExtensions
         services.AddSingleton<ISnackbarService, SnackbarService>();
         services.AddSingleton<OdDialogs>();
 
+        services.AddSingleton<OdBugReportRequests>();
+        services.AddSingleton<OdBugReports>();
+        services.AddSingleton<OdBugReporter>();
+        services.AddSingleton<OdBugReportFlow>();
         services.AddSingleton<OdMessageBoxErrorPresenter>();
         services.AddSingleton<IOdErrorPresenter, OdDialogErrorPresenter>();
         services.AddSingleton<OdCrashHandler>();

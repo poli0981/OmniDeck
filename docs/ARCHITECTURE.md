@@ -64,6 +64,15 @@ public interface IOdModule
 
 `OdModuleHost` runs the contract. It initializes a module on first open, builds its view when it has none (first open, or after hibernation), keeps the view of the visible module, and moves hidden ones down the ladder when the shell or the governor asks; it refuses to suspend or hibernate a module whose `CanSuspendAsync` returns false. Calls run one at a time on the UI thread. The shell's navigation view is chrome only: every module item navigates to one shared stage page, whose content is the view the host hands back, so the control never creates or caches module views.
 
+A view asks for full screen with `OdFullscreen.Request(view, on)`, a bubbling routed event raised from the view itself, since content it hosts in a window of its own (a video overlay) is outside the main window's tree. The main window then:
+
+- covers the monitor it is on (`OdMonitors.BoundsOf`);
+- hides the title bar;
+- folds the navigation pane to zero width. Changing its display mode would re-template the navigation view and re-create the stage, and with it any native child window;
+- sets `OdFullscreen.IsActive` on the stage, which views inherit.
+
+Esc, hiding to the tray, or showing another module ends it. A module that plays media implements `IOdMediaControls`, which the tray menu uses while something is loaded.
+
 Native modules run in-process. True RAM release for them means honoring `SuspendAsync`/`HibernateAsync`: dispose charts, bitmaps, timers, caches; the governor follows up with a GC. Web modules get real process-level release for free because WebView2 is out-of-process by design.
 
 ## 3. Web runner internals
@@ -119,8 +128,30 @@ Why not `%LocalAppData%\OmniDeck`: that is Velopack's install folder (packId `Om
 
 Serilog rolling files, kept for 7 days by age (a burst of errors rolls a new file every 10 MB, so a file count alone could push out the week before it). Global handlers (`DispatcherUnhandledException`, `AppDomain.UnhandledException`, `TaskScheduler.UnobservedTaskException`) log, show a friendly dialog, and offer the bug-report flow. A failure that repeats is reported once a minute, with the number of repeats in between, so one fault in a loop can neither stack dialogs nor flood the logs. When a web app's page or browser process fails, the app reloads once by itself; a second failure within a minute shows a notice with a Reload button (§3).
 
+**Bug reports**, as built in P2. Two buttons open the same dialog: About → Report a bug, and Report bug on the error dialog, which also passes in the error it showed.
+
+- **What the report holds:**
+  - OmniDeck's version and commit, Windows' version and build, and the UI preset;
+  - each module's state, how long it has been hidden, and the memory it uses;
+  - the last 500 lines of the logs;
+  - the sign-in cookie count of each profile;
+  - for a web app, its console capture.
+- **Scrubbing** (`OdScrubber` in `OmniDeck.Core/Reports`, a pure function) runs over every file before it is written. It replaces the user's profile folder with `%USERPROFILE%`, cuts URLs back to scheme, host and path, and removes:
+  - cookie values;
+  - bearer tokens, JWTs, and long hex or base64 runs;
+  - email addresses;
+  - numeric ids of 15 digits or more.
+- **Preview:** the dialog shows the issue text the report will carry. Picking another subject composes the report again.
+- **On Save:**
+  - `OdBugReports` writes `reports\bugreport-‹stamp›.zip` (issue.md, system.json, logs.txt and console-‹app›.txt for a web app) and keeps the ten newest.
+  - File Explorer opens with the zip selected.
+  - The browser opens the bug form with only the short fields (version, Windows, preset, module) in its query.
+- Nothing is uploaded (PRIVACY §3).
+
+A content dialog cannot cover a web app's browser, which is a native window. So while any dialog is open, the main window hides the module stage, and with it the browser.
+
 ## 7. Updates & packaging
 
-Velopack, per-user, GitHub Releases channel, delta updates; update check on About open and once per day in the background (notify-only, never auto-restart). Builds below 1.0 are GitHub pre-releases, so their update check includes pre-releases. In code: `OdVelopackUpdateService` behind `IOdUpdateService`; Settings → About checks when opened and offers *Download and restart*, and `OdUpdateWatcher` checks a few minutes after start, then daily, and notifies once per new version. A development build is not installed, so it does neither.
+Velopack, per-user, GitHub Releases channel, delta updates. The package carries libVLC for the media player in `libvlc\win-x64` next to OmniDeck.exe (x64 only, with the plugin set in SPEC §3.6), and LibVLCSharp loads it on the first play. Update check on About open and once per day in the background (notify-only, never auto-restart). Builds below 1.0 are GitHub pre-releases, so their update check includes pre-releases. In code: `OdVelopackUpdateService` behind `IOdUpdateService`; Settings → About checks when opened and offers *Download and restart*, and `OdUpdateWatcher` checks a few minutes after start, then daily, and notifies once per new version. A development build is not installed, so it does neither.
 
 Releases are built by [`release.yml`](../.github/workflows/release.yml), self-contained in this repository: a GPG-signed `vX.Y.Z[-suffix]` tag on `main` runs `scripts/pack.ps1` (self-contained `win-x64` publish + `vpk pack`), build-provenance attestations, a draft GitHub Release with an SPDX SBOM and SHA-256 checksums, release notes from CHANGELOG, publication, and a Discord announcement — see [RELEASING](../RELEASING.md). The WebView2 Runtime ships with Windows 11; if it is ever missing, Velopack's `--framework webview2` bootstrapper can install it (evaluate in P2).

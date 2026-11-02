@@ -66,6 +66,22 @@ All mini-apps implement the module contract in [ARCHITECTURE](ARCHITECTURE.md) a
 - libVLC initializes lazily on first open; the player counts as **pinned** while playback is active (governor may not suspend it). Suspend stops and disposes the player, and hibernate disposes libVLC too: playback holds 280–520 MB committed.
 - **Fullscreen** makes the module's own window cover the monitor. **Pop-out** hands the player to the new window by re-selecting the video track and seeking to the current time ([spike #6](spikes/06-libvlcsharp.md)).
 - **Build:** x64 only (`VlcWindowsX86Enabled` and `VlcWindowsArm64Enabled` set to false), with the trimmed plugin set: about 86 MB raw, 39 MB compressed.
+- **As built in P2 (first part):**
+  - The player opens local files, folders and .m3u playlists, from its buttons or dropped on it, and saves the queue as an .m3u.
+  - The queue and where playback stood live in the database (`media_playlists`), so they survive restarts.
+  - It has transport controls, a seek bar, volume and mute.
+  - libVLC ships in `libvlc\win-x64` next to OmniDeck.exe, with these plugin folders: access, audio_filter, audio_mixer, audio_output, codec, demux, misc, packetizer, spu, stream_filter, text_renderer, video_chroma, video_filter and video_output. The network access plugins (http, https, ftp, sftp, smb, rtp, srt) are left out, which comes to about 80 MB raw.
+  - Only libVLC's errors reach the app log, as warnings, less the three known harmless ones.
+  - The overlay's More menu has:
+    - the audio track and the subtitle track;
+    - a subtitle file (libVLC also picks one up from beside the video, with the same name);
+    - the subtitles' encoding, from Automatic, UTF-8 and the common code pages. libVLC reads it only when a file opens, so a new choice reopens the file where it stood;
+    - the speed, from 0.25× to 4×, kept for the files that follow;
+    - the audio device (Windows' default, or one libVLC lists);
+    - a snapshot of the picture, saved in Pictures\OmniDeck.
+  - Speed, encoding and device live in the module's settings document.
+  - Full screen: the button in the overlay, or a double-click on the picture, makes the main window cover its monitor (chrome hidden, square corners, topmost). Esc, or showing another module, puts it back. The player never moves, so its video window stays the same. The overlay is not fully transparent over a picture (alpha 1), because a click on a fully clear pixel of a layered window falls through to libVLC's window.
+  - While a player has a file loaded, the tray menu shows the file with Play or Pause, Next and Previous (`IOdMediaControls`). Without a player there is nothing to control: starting one while the view is away could make libVLC open a video window of its own.
 
 ## 4. Web runner
 

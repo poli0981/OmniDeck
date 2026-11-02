@@ -13,6 +13,13 @@ internal static class OdExternal
 
     public static void OpenFolder(string path) => Start(path);
 
+    /// <summary>Opens File Explorer on the folder holding <paramref name="path"/>, with the file selected.</summary>
+    public static void ShowFile(string path)
+    {
+        var explorer = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe");
+        using var process = Process.Start(new ProcessStartInfo(explorer) { ArgumentList = { "/select," + path } });
+    }
+
     private static void Start(string target)
     {
         using var process = Process.Start(new ProcessStartInfo(target) { UseShellExecute = true });

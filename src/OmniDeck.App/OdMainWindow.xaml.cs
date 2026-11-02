@@ -7,6 +7,7 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using H.NotifyIcon.Core;
+using OmniDeck.App.Diagnostics;
 using OmniDeck.App.Legal;
 using OmniDeck.App.Settings;
 using OmniDeck.App.Shell;
@@ -14,6 +15,7 @@ using OmniDeck.App.Theming;
 using OmniDeck.Core.Legal;
 using OmniDeck.Core.Localization;
 using OmniDeck.Core.Modules;
+using OmniDeck.Core.Runtime;
 using OmniDeck.Core.Settings;
 using OmniDeck.Core.Storage;
 using OmniDeck.Core.Theming;
@@ -44,6 +46,8 @@ public partial class OdMainWindow : INavigationViewPageProvider
     private readonly OdLibraryPage _library;
     private readonly OdSettingsPage _settingsPage;
     private readonly OdModuleStage _stage;
+    private readonly OdModuleHost _host;
+    private OdWindowPlacement? _beforeFullscreen;
     private readonly Dictionary<string, NavigationViewItem> _moduleItems = new(StringComparer.Ordinal);
     private readonly NavigationViewItemSeparator _pinnedSeparator = new();
     private readonly OdTrayIcon _trayIcon = new();
@@ -61,7 +65,10 @@ public partial class OdMainWindow : INavigationViewPageProvider
         IOdSettingsService settings,
         IOdAppLifetime lifetime,
         IOdAppMeta meta,
-        IOdQuickTimer quickTimer)
+        IOdQuickTimer quickTimer,
+        OdBugReportFlow bugReports,
+        OdBugReportRequests bugReportRequests,
+        OdModuleHost host)
     {
         ArgumentNullException.ThrowIfNull(theme);
         ArgumentNullException.ThrowIfNull(settingsPage);
@@ -80,7 +87,14 @@ public partial class OdMainWindow : INavigationViewPageProvider
         shell.SettingsSectionRequested += (_, e) => settingsPage.ShowSection(e.Section);
         settingsPage.About.LegalRequested += (_, _) =>
             new OdLegalWindow(new OdLegalViewModel(legalGate, OdApp.LegalFolder, readOnly: true)) { Owner = this }.Show();
+        settingsPage.About.BugReportRequested += (sender, args) => _ = bugReports.ShowAsync(error: null);
+        bugReportRequests.Requested += (sender, args) => _ = bugReports.ShowAsync(args.Error);
         _stage = new OdModuleStage { DataContext = shell };
+        _host = host;
+        ListenForFullscreen(shell);
+
+        // A web app's browser is a native window over the stage that no dialog can cover: hide it meanwhile.
+        dialogs.OpenChanged += (_, _) => _stage.Visibility = dialogs.IsOpen ? Visibility.Hidden : Visibility.Visible;
 
         dialogs.SetHost(RootDialogHost);
         snackbars.SetSnackbarPresenter(RootSnackbar);
@@ -308,6 +322,13 @@ public partial class OdMainWindow : INavigationViewPageProvider
 
     private async void OnPreviewKeyDown(object sender, KeyEventArgs e)
     {
+        if (e.Key == Key.Escape && _beforeFullscreen is not null)
+        {
+            e.Handled = true;
+            SetFullscreen(on: false);
+            return;
+        }
+
         // Exactly Ctrl: AltGr arrives as Ctrl+Alt, and must type its character rather than run a shortcut.
         if (Keyboard.Modifiers != ModifierKeys.Control || _dialogs.IsOpen)
         {
@@ -346,6 +367,7 @@ public partial class OdMainWindow : INavigationViewPageProvider
         }
 
         e.Cancel = true;
+        SetFullscreen(on: false);
         Hide();
 
         // Say once, ever, where the window went.
@@ -373,4 +395,124 @@ public partial class OdMainWindow : INavigationViewPageProvider
     private async void OnTrayQuit(object sender, RoutedEventArgs e) => await _lifetime.QuitAsync();
 
     private void OnTrayQuickTimer(object sender, RoutedEventArgs e) => _quickTimer.StartQuick(TimeSpan.FromMinutes(5));
+
+    private IOdMediaControls? LoadedMedia() =>
+        _host.Modules.Select(hosted => hosted.Module).OfType<IOdMediaControls>().FirstOrDefault(media => media.NowPlaying is not null);
+
+    /// <summary>The media items show only while a media module has something loaded.</summary>
+    private void OnTrayMenuOpened(object sender, RoutedEventArgs e)
+    {
+        var media = LoadedMedia();
+        var visibility = media is null ? Visibility.Collapsed : Visibility.Visible;
+        foreach (var item in new FrameworkElement[] { TrayMediaSeparator, TrayNowPlaying, TrayPlayPause, TrayNext, TrayPrevious })
+        {
+            item.Visibility = visibility;
+        }
+
+        if (media is not null)
+        {
+            TrayNowPlaying.Header = media.NowPlaying;
+            TrayPlayPause.Header = media.IsPlaying ? OdLocalization.Get("Tray_Pause") : OdLocalization.Get("Tray_Play");
+        }
+    }
+
+    private void OnTrayPlayPause(object sender, RoutedEventArgs e) => LoadedMedia()?.PlayPause();
+
+    private void OnTrayNext(object sender, RoutedEventArgs e) => LoadedMedia()?.Next();
+
+    private void OnTrayPrevious(object sender, RoutedEventArgs e) => LoadedMedia()?.Previous();
+
+    private void ListenForFullscreen(OdShellViewModel shell)
+    {
+        AddHandler(OdFullscreen.RequestedEvent, new EventHandler<OdFullscreenRequestedEventArgs>(OnFullscreenRequested));
+        shell.PropertyChanged += (_, e) =>
+        {
+            // Full screen belongs to the module on screen: showing another one ends it.
+            if (string.Equals(e.PropertyName, nameof(OdShellViewModel.CurrentView), StringComparison.Ordinal))
+            {
+                SetFullscreen(on: false);
+            }
+        };
+    }
+
+    private void OnFullscreenRequested(object? sender, OdFullscreenRequestedEventArgs e)
+    {
+        e.Handled = true;
+        SetFullscreen(e.On);
+    }
+
+    /// <summary>
+    /// Covers the monitor the window is on, chrome hidden and corners square, or puts the window back
+    /// where it was (docs/spikes/06-libvlcsharp.md: the window covers the screen; the player never moves).
+    /// </summary>
+    private void SetFullscreen(bool on)
+    {
+        if (on == _beforeFullscreen is not null)
+        {
+            return;
+        }
+
+        if (on ? EnterFullscreen() : LeaveFullscreen())
+        {
+            OdFullscreen.SetIsActive(_stage, on);
+        }
+    }
+
+    private bool EnterFullscreen()
+    {
+        var monitor = OdMonitors.BoundsOf(new WindowInteropHelper(this).Handle);
+        if (monitor.IsEmpty)
+        {
+            return false;
+        }
+
+        _beforeFullscreen = new OdWindowPlacement(
+            WindowState,
+            Left,
+            Top,
+            Width,
+            Height,
+            Topmost,
+            ResizeMode,
+            WindowCornerPreference,
+            new OdPanePlacement(RootNavigation.OpenPaneLength, RootNavigation.CompactPaneLength, RootNavigation.IsPaneToggleVisible));
+        var dpi = VisualTreeHelper.GetDpi(this);
+        AppTitleBar.Visibility = Visibility.Collapsed;
+        RootNavigation.TitleBar = null;
+
+        // The pane folds to nothing: changing its display mode would re-template the navigation view and
+        // re-create the stage, and with it a player's video window.
+        RootNavigation.IsPaneToggleVisible = false;
+        RootNavigation.OpenPaneLength = 0;
+        RootNavigation.CompactPaneLength = 0;
+        WindowState = WindowState.Normal;
+        WindowCornerPreference = WindowCornerPreference.DoNotRound;
+        ResizeMode = ResizeMode.NoResize;
+        Topmost = true;
+        Left = monitor.X / dpi.DpiScaleX;
+        Top = monitor.Y / dpi.DpiScaleY;
+        Width = monitor.Width / dpi.DpiScaleX;
+        Height = monitor.Height / dpi.DpiScaleY;
+        return true;
+    }
+
+    private bool LeaveFullscreen()
+    {
+        var before = _beforeFullscreen!;
+        _beforeFullscreen = null;
+        AppTitleBar.Visibility = Visibility.Visible;
+        RootNavigation.TitleBar = AppTitleBar;
+        RootNavigation.OpenPaneLength = before.Pane.OpenLength;
+        RootNavigation.CompactPaneLength = before.Pane.CompactLength;
+        RootNavigation.IsPaneToggleVisible = before.Pane.ToggleVisible;
+        WindowCornerPreference = before.Corners;
+        Topmost = before.Topmost;
+        ResizeMode = before.Resize;
+        Left = before.Left;
+        Top = before.Top;
+        Width = before.Width;
+        Height = before.Height;
+        WindowState = before.State;
+        return true;
+    }
 }

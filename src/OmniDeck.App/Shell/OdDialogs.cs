@@ -14,6 +14,9 @@ public sealed class OdDialogs(IContentDialogService service)
     private bool _hostReady;
     private int _open;
 
+    /// <summary>Raised when the first dialog opens and when the last one closes.</summary>
+    public event EventHandler? OpenChanged;
+
     /// <summary>Whether a dialog is showing.</summary>
     public bool IsOpen => _open > 0;
 
@@ -50,14 +53,21 @@ public sealed class OdDialogs(IContentDialogService service)
     public async Task<ContentDialogResult> ShowAsync(ContentDialog dialog)
     {
         ArgumentNullException.ThrowIfNull(dialog);
-        _open++;
+        if (++_open == 1)
+        {
+            OpenChanged?.Invoke(this, EventArgs.Empty);
+        }
+
         try
         {
             return await service.ShowAsync(dialog, CancellationToken.None);
         }
         finally
         {
-            _open--;
+            if (--_open == 0)
+            {
+                OpenChanged?.Invoke(this, EventArgs.Empty);
+            }
         }
     }
 }

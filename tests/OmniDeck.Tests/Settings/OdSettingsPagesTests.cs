@@ -219,13 +219,17 @@ public sealed class OdSettingsPagesTests : IDisposable
     {
         var about = new OdAboutViewModel(_updates, _openedLinks.Add);
         var legal = 0;
+        var reports = 0;
         about.LegalRequested += (_, _) => legal++;
+        about.BugReportRequested += (_, _) => reports++;
 
         about.OpenLinkCommand.Execute(OdAboutViewModel.Discussions);
         about.ShowLegalCommand.Execute(null);
+        about.ReportBugCommand.Execute(null);
 
         Assert.Equal(new[] { new Uri("https://github.com/poli0981/OmniDeck/discussions") }, _openedLinks);
         Assert.Equal(1, legal);
+        Assert.Equal(1, reports);
     }
 
     [Fact]

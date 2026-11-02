@@ -33,7 +33,7 @@ public sealed class OdCompositionTests
         Assert.NotNull(provider.GetRequiredService<OdCrashHandler>());
         Assert.StartsWith("OmniDeck/", provider.GetRequiredService<HttpClient>().DefaultRequestHeaders.UserAgent.ToString(), StringComparison.Ordinal);
         Assert.Same(provider.GetRequiredService<OdTrayNotifier>(), provider.GetRequiredService<IOdNotifier>());
-        Assert.Equal(new[] { "clock", "timer", "calculator", "weather", "calendar" }, provider.GetRequiredService<OdModuleHost>().Modules.Select(m => m.Info.Id), StringComparer.Ordinal);
+        Assert.Equal(new[] { "clock", "timer", "calculator", "weather", "calendar", "media" }, provider.GetRequiredService<OdModuleHost>().Modules.Select(m => m.Info.Id), StringComparer.Ordinal);
     }
 
     [Fact]
@@ -50,8 +50,8 @@ public sealed class OdCompositionTests
 
         var modules = provider.GetRequiredService<OdModuleHost>().Modules;
 
-        Assert.Equal(5 + catalog.Apps.Count, modules.Count);
-        Assert.Equal(catalog.Apps.Select(app => app.Id), modules.Skip(5).Select(module => module.Info.Id), StringComparer.Ordinal);
+        Assert.Equal(6 + catalog.Apps.Count, modules.Count);
+        Assert.Equal(catalog.Apps.Select(app => app.Id), modules.Skip(6).Select(module => module.Info.Id), StringComparer.Ordinal);
         Assert.Equal("Gmail", modules.Single(module => string.Equals(module.Info.Id, "gmail", StringComparison.Ordinal)).Info.Title);
     }
 

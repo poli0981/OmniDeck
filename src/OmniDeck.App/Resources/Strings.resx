@@ -430,4 +430,40 @@ Support code: {0}
   <data name="WebApps_NotChecked" xml:space="preserve">
     <value>Not checked for a newer catalog yet.</value>
   </data>
+  <data name="About_ReportBug" xml:space="preserve">
+    <value>Report a bug</value>
+  </data>
+  <data name="Error_Report" xml:space="preserve">
+    <value>Report bug</value>
+  </data>
+  <data name="Report_Title" xml:space="preserve">
+    <value>Report a bug</value>
+  </data>
+  <data name="Report_Intro" xml:space="preserve">
+    <value>OmniDeck saves a report on this PC and opens a new GitHub issue in your browser, with the short fields filled in. Nothing is sent: attach the report to the issue yourself. Web addresses keep no query, and tokens, cookies, email addresses, long ids and your user name are taken out first.</value>
+  </data>
+  <data name="Report_Subject" xml:space="preserve">
+    <value>What is it about?</value>
+  </data>
+  <data name="Report_General" xml:space="preserve">
+    <value>OmniDeck in general</value>
+  </data>
+  <data name="Report_Preview" xml:space="preserve">
+    <value>The issue text, also in the report as issue.md</value>
+  </data>
+  <data name="Report_Save" xml:space="preserve">
+    <value>Save and open GitHub</value>
+  </data>
+  <data name="Tray_Play" xml:space="preserve">
+    <value>Play</value>
+  </data>
+  <data name="Tray_Pause" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="Tray_Next" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="Tray_Previous" xml:space="preserve">
+    <value>Previous</value>
+  </data>
 </root>
