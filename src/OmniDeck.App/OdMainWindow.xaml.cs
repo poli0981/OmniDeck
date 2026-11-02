@@ -7,6 +7,7 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using H.NotifyIcon.Core;
+using OmniDeck.App.Diagnostics;
 using OmniDeck.App.Legal;
 using OmniDeck.App.Settings;
 using OmniDeck.App.Shell;
@@ -61,7 +62,9 @@ public partial class OdMainWindow : INavigationViewPageProvider
         IOdSettingsService settings,
         IOdAppLifetime lifetime,
         IOdAppMeta meta,
-        IOdQuickTimer quickTimer)
+        IOdQuickTimer quickTimer,
+        OdBugReportFlow bugReports,
+        OdBugReportRequests bugReportRequests)
     {
         ArgumentNullException.ThrowIfNull(theme);
         ArgumentNullException.ThrowIfNull(settingsPage);
@@ -80,7 +83,12 @@ public partial class OdMainWindow : INavigationViewPageProvider
         shell.SettingsSectionRequested += (_, e) => settingsPage.ShowSection(e.Section);
         settingsPage.About.LegalRequested += (_, _) =>
             new OdLegalWindow(new OdLegalViewModel(legalGate, OdApp.LegalFolder, readOnly: true)) { Owner = this }.Show();
+        settingsPage.About.BugReportRequested += (sender, args) => _ = bugReports.ShowAsync(error: null);
+        bugReportRequests.Requested += (sender, args) => _ = bugReports.ShowAsync(args.Error);
         _stage = new OdModuleStage { DataContext = shell };
+
+        // A web app's browser is a native window over the stage that no dialog can cover: hide it meanwhile.
+        dialogs.OpenChanged += (_, _) => _stage.Visibility = dialogs.IsOpen ? Visibility.Hidden : Visibility.Visible;
 
         dialogs.SetHost(RootDialogHost);
         snackbars.SetSnackbarPresenter(RootSnackbar);
