@@ -1,4 +1,8 @@
+using OmniDeck.Core.Governor;
+using OmniDeck.Core.Storage;
+using OmniDeck.Tests.TestSupport;
 using OmniDeck.Web.Runtime;
+using Serilog.Core;
 
 namespace OmniDeck.Tests.Web;
 
@@ -30,6 +34,18 @@ public sealed class OdWebMemoryTests
         Assert.Equal(50, report.Modules["calendar"]);
         Assert.Equal(100 + 1 + 40, report.SharedBytes);
         Assert.Equal(sizes.Values.Sum(), report.SharedBytes + report.Modules.Values.Sum());
+    }
+
+    [Fact]
+    public async Task BeforeAnyWebAppOpens_ThereIsNothingToReport()
+    {
+        using var temp = new OdTempDirectory();
+        var runtime = new OdWebRuntime(new OdDataRoot(temp.Path), new OdWebOptions(), Logger.None);
+
+        var report = await new OdWebMemoryReporter(runtime, Logger.None).ReportAsync();
+
+        Assert.Same(OdMemoryReport.None, report);
+        Assert.Null(runtime.Current);
     }
 
     [Fact]

@@ -102,7 +102,9 @@ jobs:
             '/d:sonar.cs.vstest.reportsPaths=TestResults/*.trx',
             '/d:sonar.cs.roslyn.ignoreIssues=true',
             '/d:sonar.exclusions=**/bin/**,**/obj/**,**/TestResults/**,publish/**,Releases/**',
-            '/d:sonar.coverage.exclusions=**/*.xaml.cs,**/Program.cs,scripts/**,.github/**'
+            # Views, and the thin wrappers over the native engines (the WebView2 runtime, libVLC), run only
+            # against those engines, which CI does not load; the logic around them is tested on its own.
+            '/d:sonar.coverage.exclusions=**/*.xaml.cs,**/Program.cs,**/OdWebRuntime.cs,**/OdVlcEngine.cs,**/OdVlcPlayer.cs,scripts/**,.github/**'
           )
           dotnet sonarscanner @scannerArgs
           if ($LASTEXITCODE -ne 0) { throw "SonarScanner begin failed with exit code $LASTEXITCODE." }
