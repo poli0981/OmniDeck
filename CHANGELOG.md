@@ -6,6 +6,13 @@ All notable changes to OmniDeck are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.0-alpha.1] — 2026-11-02
+
+First P2 alpha, for trying the web apps out. The eight apps of the catalog run inside OmniDeck on
+Microsoft Edge WebView2, with their notifications, site permissions and memory figures, and Weather
+and Calendar join the built-in modules. The bug report, Media, pop-out windows and the final polish
+arrive in the next alphas.
+
 ### Added
 - Weather: forecasts from Open-Meteo for the places you save, found by searching for a city. It
   shows the conditions now, the next 48 hours and the next 7 days, in the units your region uses or
@@ -175,7 +182,8 @@ user-facing features yet: the window only shows the version.
 - Supported platform narrowed to Windows 11 (24H2 or later), x64.
 - App data moves to `%LocalAppData%\OmniDeck.Data`, outside Velopack's install folder.
 
-[Unreleased]: https://github.com/poli0981/OmniDeck/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.1...HEAD
+[0.2.0-alpha.1]: https://github.com/poli0981/OmniDeck/compare/v0.1.1...v0.2.0-alpha.1
 [0.1.1]: https://github.com/poli0981/OmniDeck/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/poli0981/OmniDeck/compare/v0.1.0-alpha.2...v0.1.0
 [0.1.0-alpha.2]: https://github.com/poli0981/OmniDeck/compare/v0.1.0-alpha.1...v0.1.0-alpha.2
