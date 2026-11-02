@@ -43,7 +43,7 @@ dotnet run --project src/OmniDeck.App
 
 ## Reporting bugs
 
-Prefer the in-app **About → Report bug** flow (from P2) — it captures the console errors and logs the template asks for. For web app issues, include the console errors it captured; "it doesn't work" without details is triaged last.
+Prefer the in-app **Settings → About → Report a bug** flow — it captures the console errors and logs the template asks for. For web app issues, include the console errors it captured; "it doesn't work" without details is triaged last.
 
 ## Contact
 

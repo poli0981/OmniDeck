@@ -14,6 +14,13 @@ All notable changes to OmniDeck are documented here. The format follows
   module's window goes full screen like the main window.
 - Web apps: a video, or anything else a page shows full screen, now fills the screen, and Esc goes
   back.
+- OmniDeck has an icon of its own, a white "O" on blue: on the program, its windows, the taskbar and
+  the installer.
+
+### Changed
+- Media: the Play/Pause button shows Pause while something plays.
+- The roadmap is re-baselined: P2 started on 2 November 2026, as soon as P1 was done. The README,
+  the spec and the architecture notes now describe what P2 built.
 
 ### Fixed
 - Media: in full screen the picture started a few pixels from the left edge of the screen. It now

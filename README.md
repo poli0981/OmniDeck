@@ -13,12 +13,13 @@ OmniDeck combines a set of lightweight native mini-apps (weather, calculator, st
 
 It is built on WPF (.NET 10 LTS) and **WebView2**, which reuses the Edge runtime that ships with Windows 11 instead of bundling a browser engine. That is what keeps the installer small while still running full web apps.
 
-**Project status: alpha.** 0.1.0 (phase P1) is the first installable build: the shell, the RAM governor, and the clock, timer and calculator modules. Web apps and the other modules arrive in P2 and P3; the 0.9 public beta is planned for April 2027 and v1.0 for May 2027 ([roadmap](docs/ROADMAP.md)). Until then, expect missing features and changes between versions.
+**Project status: alpha.** 0.2.0-alpha.2 (phase P2) runs the curated web apps beside the clock, timer, calculator, weather, calendar and media player, with pop-out windows and an in-app bug report. Stocks, the polished Dynamic and Comfort presets, and the Vietnamese and Japanese translations come in P3; the 0.9 public beta is planned for April 2027 and v1.0 for May 2027 ([roadmap](docs/ROADMAP.md)). Until then, expect missing features and changes between versions.
 
 ## Planned features (v1.0)
 
 - **Native mini-apps** — clock & world clocks, countdown timer, calculator, weather (Open-Meteo), local calendar with `.ics` import/export, stock watchlist with candlestick charts (US/EU markets), and a full-codec media player (libVLC).
 - **Curated web apps** — each runs in its own WebView2 profile with a per-app navigation allowlist. Web notifications become Windows toasts. Adding a new app is a JSON entry, not a release ([catalog docs](docs/WEBAPP-CATALOG.md)).
+- **Pop-out windows** — any module can move into a window of its own, and go full screen there.
 - **RAM governor** — inactive modules are automatically suspended and then hibernated, with a hard memory cap. A built-in task-manager panel shows per-module RAM with manual suspend/kill ([details](docs/RAM-GOVERNOR.md)).
 - **Three UI presets** — Dynamic, Standard, and Comfort, implemented as design-token presets over one theme engine, with per-token overrides ([details](docs/UI-MODES.md)).
 - **Privacy** — zero telemetry, zero data collection. Everything is stored locally ([privacy policy](docs/legal/PRIVACY.md)).
@@ -32,21 +33,21 @@ Running web apps means running Chromium processes. OmniDeck manages this aggress
 
 These are properties of the web versions of the services, documented here so they are not reported as OmniDeck bugs:
 
-- **Spotify** runs the Web Player: audio quality is lower than the desktop app, and playback requires DRM (Widevine) support in the WebView2 runtime. A P0 spike decides whether the entry ships; if DRM is unavailable, it ships disabled with an explanation (see the [ROADMAP](docs/ROADMAP.md) risk register).
-- **Discord** web has no native global push-to-talk and limited screen sharing. OmniDeck provides a host-side global hotkey as partial mitigation.
+- **Spotify** runs the Web Player: audio quality is lower than the desktop app, and playback relies on DRM (Widevine), which ships with the WebView2 runtime (P0 spike #1). If a future runtime drops it, the entry is disabled with an explanation (see the [ROADMAP](docs/ROADMAP.md) risk register).
+- **Discord** web has no native global push-to-talk and limited screen sharing. A host-side global hotkey is on the roadmap's backlog.
 - Web app availability, layout, and sign-in flows are controlled by the respective service providers and can change or break at any time.
 
 ## Install
 
 1. Requirements: **Windows 11 (24H2 or later), x64.** Windows 10 is not supported. The Microsoft Edge **WebView2 Runtime** ships with Windows 11.
 2. Download a build from [Releases](https://github.com/poli0981/OmniDeck/releases) and run `OmniDeck-win-Setup.exe` (per-user, no admin required). Every version before 1.0 is published as a **pre-release** for testing.
-3. On first run (from P1 on), review and acknowledge the legal documents (EULA, disclaimer, privacy policy, third-party notices), then pick a UI preset and language.
+3. On first run, review and acknowledge the legal documents (EULA, disclaimer, privacy policy, third-party notices), then pick a UI preset and language.
 
 Updates are delivered in-app via Velopack; you can also check manually from **About**. Builds are not yet Authenticode-signed, so Windows SmartScreen may warn about an unknown publisher — see [SECURITY](SECURITY.md) for how to verify a download.
 
 ## Reporting bugs
 
-Use **About → Report bug** inside the app (from P2). It pre-fills a GitHub issue with the app version, OS build, active modules, and captured console errors from the affected web app, and saves a `bugreport-*.zip` (logs) to `%LocalAppData%\OmniDeck.Data\reports` that you can attach. Sensitive values (query strings, cookies, tokens) are scrubbed before packaging. You can also file manually with the [bug template](https://github.com/poli0981/OmniDeck/issues/new?template=bug_report.yml).
+Use **Settings → About → Report a bug** inside the app, or **Report bug** on an error dialog. OmniDeck shows the report first, then saves a `bugreport-*.zip` to `%LocalAppData%\OmniDeck.Data\reports` (the issue text, the version and Windows build, the modules and their memory, the end of the log and, for a web app, its console), shows it in Explorer, and opens a GitHub issue with the short fields filled in. Nothing is uploaded: attach the zip yourself. Addresses lose their query strings, and tokens, cookies, email addresses, long ids and your user name are taken out first. You can also file manually with the [bug template](https://github.com/poli0981/OmniDeck/issues/new?template=bug_report.yml).
 
 ## Documentation
 

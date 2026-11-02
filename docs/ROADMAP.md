@@ -3,6 +3,8 @@
 Solo-developer plan, ~29 weeks from the start of P0 (2 November 2026). Each phase has exit criteria; slipping triggers the cut order in §4, never a death march.
 
 > **Re-baselined 2026-10-28.** The first draft assumed a 20 July 2026 start and a January 2027 release. Development actually starts on 2 November 2026, so every phase keeps its original length and moves; P2 gains one buffer week for Tết (Lunar New Year, 6 February 2027). Windows 10 support was dropped at the same time ([SPEC](SPEC.md) §1).
+>
+> **Re-baselined 2026-11-02.** P0 and P1 both finished early, on 30 October 2026, so P2 started on 2 November 2026 instead of 11 January 2027. P3 and P4 keep their dates until P2 exits, and are re-baselined then.
 
 ## 1. Phases
 
@@ -39,21 +41,28 @@ Shell (nav, tray, single-instance, command palette), module contract + host, RAM
 
 **Exit (0.1.0):** installable Velopack build; governor demotes/restores the trivial modules correctly; unit tests for governor + storage green.
 
-As delivered: eight work packages (PRs #20–#25, #27 and #29) and three releases (`0.1.0-alpha.1`, `0.1.0-alpha.2`, `0.1.0`), all three exit criteria met. Carried forward:
+As delivered: eight work packages (PRs #20–#25, #27 and #29) and three releases (`0.1.0-alpha.1`, `0.1.0-alpha.2`, `0.1.0`), all three exit criteria met. Settings import/export, planned for P3, shipped with it. Carried forward:
 
 - **P3 presets:** Comfort's AAA body text and Dynamic's gradient accents (docs/UI-MODES.md §2).
 - **P3 accessibility:** UI Automation exposes WPF-UI 4.3's navigation items as data items with no Invoke or Select pattern; keyboard users reach them with Tab and Enter. The accent swatches are announced by their hex codes.
 - **P2:** pop-out module windows, deferred by the P1 plan.
 
-### P2 — Web runner & core modules (11 Jan – 7 Mar 2027)
+### P2 — Web runner & core modules (from 2 Nov 2026; planned 11 Jan – 7 Mar 2027)
 
 Full web runner (profiles, nav policy, SSO popups, notifications→toast, permissions, downloads, suspend/hibernate, catalog fetch) with the v1 catalog; weather; calendar (local + .ics); media player v1 on LibVLCSharp. Bug-report flow end to end (CDP capture → scrubber → prefilled issue + zip).
 
 **Exit (0.2.0):** dogfood daily — Gmail + Discord + YouTube stay signed in across hibernation; a full day's use stays under the hard cap.
 
+As delivered so far: the `0.1.1` hotfix (a tray icon that leaked GDI objects), then the plan's ten work packages and two catalog pull requests, released as `0.2.0-alpha.1` and `0.2.0-alpha.2` on 2 November 2026. `0.2.0` follows about a week of dogfooding against the exit criterion. Changed on the way:
+
+- Downloads use WebView2's own flyout rather than a progress row of OmniDeck's, and permission questions sit in a bar above the page, because no dialog can cover WebView2 ([SPEC](SPEC.md) §4).
+- Web apps with notifications on stay resident: the time ladder skips them ([RAM-GOVERNOR](RAM-GOVERNOR.md) §3).
+- Pop-out windows move the module's view, so web pages and videos keep running through the move ([ARCHITECTURE](ARCHITECTURE.md) §2).
+- Left for later: web app favicons, `.ics` subscriptions (they would need a privacy policy update) and Discord's global push-to-talk hotkey (all in §5), and the weather charts, which wait for ScottPlot in P3.
+
 ### P3 — Stocks, presets, i18n (8 Mar – 11 Apr 2027)
 
-Stocks module (Twelve Data with the user's own key, which spike #7 left as the only provider; watchlist, candlesticks); Dynamic and Comfort presets polished to spec (UI-MODES token table); VI + JA translations; settings import/export; accessibility pass (text scaling, contrast themes, keyboard nav).
+Stocks module (Twelve Data with the user's own key, which spike #7 left as the only provider; watchlist, candlesticks); Dynamic and Comfort presets polished to spec (UI-MODES token table); VI + JA translations; accessibility pass (text scaling, contrast themes, keyboard nav).
 
 **Exit (0.3.0):** feature-complete against SPEC v1 scope.
 
@@ -84,7 +93,7 @@ Every version below 1.0.0 is published as a GitHub **pre-release**; 1.0.0 is the
 | Google blocks sign-in in WebView2 | Google group unusable | **Spike #2:** sign-in works with the default user agent, and one sign-in covers the `google` group. Google's hop to country-code domains needs `navAllowSets` (P2). Client hints name WebView2, so Google could still block it later; fallback: treat it as an upstream limitation, documented |
 | LibVLCSharp airspace friction in WPF | Media UX degraded | **Retired by spike #6:** overlay controls and fullscreen in place work in a `FluentWindow`. Pop-out, in P2, moves the same view, so the video keeps playing and the overlay follows. FlyleafLib is not needed |
 | Free API tiers change (Twelve Data/Stooq) | Stocks degraded | **Materialized for Stooq** (2026-10-30), which now blocks scripted clients. Spike #7 leaves Twelve Data with the user's own key as the only provider; its free plan covers US listings. The provider abstraction stays; Stocks is first in the cut order (§4) |
-| Web sessions lost across restarts | Users signed out of web apps | Seen once in P0 and not reproduced (spike #2). P2 records sign-in health after restarts, and bug reports carry cookie-store counts (never values) |
+| Web sessions lost across restarts | Users signed out of web apps | Seen once in P0 and not reproduced (spike #2). Since P2, quitting closes the web apps cleanly so the browser writes its cookies out; sign-in health logs each profile's cookie count at close and at first load and warns when it drops to none; bug reports carry the counts (never values) |
 | User data stored in Velopack's install folder | Uninstall or reinstall wipes data and sign-ins | data root `%LocalAppData%\OmniDeck.Data`, never `%LocalAppData%\OmniDeck` ([ARCHITECTURE](ARCHITECTURE.md) §5) |
 | Solo bandwidth vs. other projects | Schedule slip | cut order below; phases sized with buffer |
 
@@ -98,4 +107,4 @@ The web runner, governor, legal gate, and the trivial modules are never cut — 
 
 ## 5. Post-v1 backlog (unordered)
 
-Finnhub provider (real-time US), Google Calendar native sync, multi-point global hotkeys per web app, catalog entries from §4 of WEBAPP-CATALOG, per-module popout window session restore, portable build.
+Finnhub provider (real-time US), Google Calendar native sync, `.ics` calendar subscriptions, multi-point global hotkeys per web app (Discord's push-to-talk among them), web app favicons in the sidebar, catalog entries from §4 of WEBAPP-CATALOG, per-module popout window session restore, portable build.
