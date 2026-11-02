@@ -6,6 +6,12 @@ All notable changes to OmniDeck are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+- Weather: forecasts from Open-Meteo for the places you save, found by searching for a city. It
+  shows the conditions now, the next 48 hours and the next 7 days, in the units your region uses or
+  the ones you pick. A forecast is fetched again at most every half hour, and only while Weather is
+  on screen; without a connection it shows the last forecast and says how old it is.
+
 ### Changed
 - Clicking a notification opens the module that raised it: a finished timer opens Timer.
 - Quitting closes every open module first, so each one can save its state before OmniDeck exits.

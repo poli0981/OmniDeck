@@ -154,4 +154,160 @@
   <data name="Calc_DivideByZero" xml:space="preserve">
     <value>Can't divide by zero</value>
   </data>
+  <data name="Category_Info" xml:space="preserve">
+    <value>Information</value>
+  </data>
+  <data name="Weather_Name" xml:space="preserve">
+    <value>Weather</value>
+  </data>
+  <data name="Weather_Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="Weather_Units" xml:space="preserve">
+    <value>Units</value>
+  </data>
+  <data name="Weather_UnitsAuto" xml:space="preserve">
+    <value>Follow my region</value>
+  </data>
+  <data name="Weather_UnitsMetric" xml:space="preserve">
+    <value>°C and km/h</value>
+  </data>
+  <data name="Weather_UnitsImperial" xml:space="preserve">
+    <value>°F and mph</value>
+  </data>
+  <data name="Weather_Places" xml:space="preserve">
+    <value>Saved places</value>
+  </data>
+  <data name="Weather_Remove" xml:space="preserve">
+    <value>Remove this place</value>
+  </data>
+  <data name="Weather_Empty" xml:space="preserve">
+    <value>Search for a city below to see its weather.</value>
+  </data>
+  <data name="Weather_Next48Hours" xml:space="preserve">
+    <value>Next 48 hours</value>
+  </data>
+  <data name="Weather_Next7Days" xml:space="preserve">
+    <value>Next 7 days</value>
+  </data>
+  <data name="Weather_AddPlace" xml:space="preserve">
+    <value>Add a place</value>
+  </data>
+  <data name="Weather_Search" xml:space="preserve">
+    <value>City name</value>
+  </data>
+  <data name="Weather_SearchButton" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Weather_SearchNone" xml:space="preserve">
+    <value>No places match that name.</value>
+  </data>
+  <data name="Weather_SearchFailed" xml:space="preserve">
+    <value>Open-Meteo could not be reached to search. Try again later.</value>
+  </data>
+  <data name="Weather_Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="Weather_DataBy" xml:space="preserve">
+    <value>Weather data by Open-Meteo.com</value>
+  </data>
+  <data name="Weather_Updated" xml:space="preserve">
+    <value>Updated {0}</value>
+  </data>
+  <data name="Weather_Stale" xml:space="preserve">
+    <value>Showing the forecast from {0}: Open-Meteo could not be reached.</value>
+  </data>
+  <data name="Weather_Unavailable" xml:space="preserve">
+    <value>The weather could not be loaded. Check your internet connection, then refresh.</value>
+  </data>
+  <data name="Weather_FeelsLike" xml:space="preserve">
+    <value>Feels like {0}</value>
+  </data>
+  <data name="Weather_Humidity" xml:space="preserve">
+    <value>Humidity {0}</value>
+  </data>
+  <data name="Weather_Wind" xml:space="preserve">
+    <value>Wind {0} {1}</value>
+  </data>
+  <data name="Weather_SpeedMetric" xml:space="preserve">
+    <value>{0} km/h</value>
+  </data>
+  <data name="Weather_SpeedImperial" xml:space="preserve">
+    <value>{0} mph</value>
+  </data>
+  <data name="Weather_HighLow" xml:space="preserve">
+    <value>{0} / {1}</value>
+  </data>
+  <data name="Weather_Today" xml:space="preserve">
+    <value>Today</value>
+  </data>
+  <data name="Weather_Clear" xml:space="preserve">
+    <value>Clear sky</value>
+  </data>
+  <data name="Weather_MainlyClear" xml:space="preserve">
+    <value>Mainly clear</value>
+  </data>
+  <data name="Weather_PartlyCloudy" xml:space="preserve">
+    <value>Partly cloudy</value>
+  </data>
+  <data name="Weather_Overcast" xml:space="preserve">
+    <value>Overcast</value>
+  </data>
+  <data name="Weather_Fog" xml:space="preserve">
+    <value>Fog</value>
+  </data>
+  <data name="Weather_Drizzle" xml:space="preserve">
+    <value>Drizzle</value>
+  </data>
+  <data name="Weather_FreezingDrizzle" xml:space="preserve">
+    <value>Freezing drizzle</value>
+  </data>
+  <data name="Weather_Rain" xml:space="preserve">
+    <value>Rain</value>
+  </data>
+  <data name="Weather_FreezingRain" xml:space="preserve">
+    <value>Freezing rain</value>
+  </data>
+  <data name="Weather_Snow" xml:space="preserve">
+    <value>Snow</value>
+  </data>
+  <data name="Weather_RainShowers" xml:space="preserve">
+    <value>Rain showers</value>
+  </data>
+  <data name="Weather_SnowShowers" xml:space="preserve">
+    <value>Snow showers</value>
+  </data>
+  <data name="Weather_Thunderstorm" xml:space="preserve">
+    <value>Thunderstorm</value>
+  </data>
+  <data name="Weather_ThunderstormHail" xml:space="preserve">
+    <value>Thunderstorm with hail</value>
+  </data>
+  <data name="Weather_Unknown" xml:space="preserve">
+    <value>Unknown conditions</value>
+  </data>
+  <data name="Weather_DirN" xml:space="preserve">
+    <value>N</value>
+  </data>
+  <data name="Weather_DirNE" xml:space="preserve">
+    <value>NE</value>
+  </data>
+  <data name="Weather_DirE" xml:space="preserve">
+    <value>E</value>
+  </data>
+  <data name="Weather_DirSE" xml:space="preserve">
+    <value>SE</value>
+  </data>
+  <data name="Weather_DirS" xml:space="preserve">
+    <value>S</value>
+  </data>
+  <data name="Weather_DirSW" xml:space="preserve">
+    <value>SW</value>
+  </data>
+  <data name="Weather_DirW" xml:space="preserve">
+    <value>W</value>
+  </data>
+  <data name="Weather_DirNW" xml:space="preserve">
+    <value>NW</value>
+  </data>
 </root>
