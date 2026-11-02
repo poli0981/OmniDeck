@@ -72,7 +72,15 @@ All mini-apps implement the module contract in [ARCHITECTURE](ARCHITECTURE.md) a
   - It has transport controls, a seek bar, volume and mute.
   - libVLC ships in `libvlc\win-x64` next to OmniDeck.exe, with these plugin folders: access, audio_filter, audio_mixer, audio_output, codec, demux, misc, packetizer, spu, stream_filter, text_renderer, video_chroma, video_filter and video_output. The network access plugins (http, https, ftp, sftp, smb, rtp, srt) are left out, which comes to about 80 MB raw.
   - Only libVLC's errors reach the app log, as warnings, less the three known harmless ones.
-  - Track, subtitle, device and speed choices, snapshots, fullscreen and the tray controls follow in the second part.
+  - The overlay's More menu has:
+    - the audio track and the subtitle track;
+    - a subtitle file (libVLC also picks one up from beside the video, with the same name);
+    - the subtitles' encoding, from Automatic, UTF-8 and the common code pages. libVLC reads it only when a file opens, so a new choice reopens the file where it stood;
+    - the speed, from 0.25× to 4×, kept for the files that follow;
+    - the audio device (Windows' default, or one libVLC lists);
+    - a snapshot of the picture, saved in Pictures\OmniDeck.
+  - Speed, encoding and device live in the module's settings document.
+  - Fullscreen and the tray controls follow.
 
 ## 4. Web runner
 

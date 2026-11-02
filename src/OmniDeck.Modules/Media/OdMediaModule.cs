@@ -44,7 +44,7 @@ public sealed class OdMediaModule : IOdModule
         var context = _context ?? throw new InvalidOperationException("The host initializes a module before its first view.");
         _session ??= new OdMediaSession(new OdMediaStore(context.Database), () => (_engine ??= _engines(context.Log)).CreatePlayer(), context.Log);
         var settings = context.Settings.Get(OdModulesJsonContext.Default.OdMediaSettings) ?? new OdMediaSettings();
-        _viewModel = new OdMediaViewModel(_session, settings, saved => context.Settings.Set(saved, OdModulesJsonContext.Default.OdMediaSettings));
+        _viewModel = new OdMediaViewModel(_session, settings, saved => context.Settings.Set(saved, OdModulesJsonContext.Default.OdMediaSettings), context.Time);
         return new OdMediaView { DataContext = _viewModel };
     }
 

@@ -17,6 +17,10 @@ internal sealed class OdMediaSession : IDisposable
     private TimeSpan _position;
     private int _volume = 80;
     private bool _muted;
+    private float _rate = OdMediaSpeeds.Normal;
+    private string _subtitleEncoding = OdSubtitleEncodings.Automatic;
+    private string? _audioDevice;
+    private string? _subtitle;
 
     public OdMediaSession(OdMediaStore store, Func<IOdMediaPlayer> newPlayer, ILogger log)
     {
@@ -66,6 +70,93 @@ internal sealed class OdMediaSession : IDisposable
             _muted = value;
             _player?.Muted = value;
         }
+    }
+
+    /// <summary>The playback speed, from a quarter to four times; it stays for the files that follow.</summary>
+    public float Rate
+    {
+        get => _rate;
+        set
+        {
+            _rate = OdMediaSpeeds.Clamp(value);
+            _player?.Rate = _rate;
+        }
+    }
+
+    /// <summary>The subtitles' text encoding; changing it opens the file again where it stood, as libVLC reads it only then.</summary>
+    public string SubtitleEncoding
+    {
+        get => _subtitleEncoding;
+        set
+        {
+            var encoding = OdSubtitleEncodings.Known(value);
+            if (string.Equals(encoding, _subtitleEncoding, StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            _subtitleEncoding = encoding;
+            if (_player is { State: OdMediaState.Playing or OdMediaState.Paused } player)
+            {
+                Start(player.Time, play: player.State == OdMediaState.Playing, keepSubtitle: true);
+            }
+        }
+    }
+
+    /// <summary>The audio output device, by libVLC's id; null is Windows' default.</summary>
+    public string? AudioDevice
+    {
+        get => _audioDevice;
+        set
+        {
+            _audioDevice = string.IsNullOrEmpty(value) ? null : value;
+            _player?.AudioDevice = _audioDevice;
+        }
+    }
+
+    public IReadOnlyList<OdMediaTrack> AudioTracks => _player?.AudioTracks ?? [];
+
+    public IReadOnlyList<OdMediaTrack> SubtitleTracks => _player?.SubtitleTracks ?? [];
+
+    public IReadOnlyList<OdMediaDevice> AudioDevices => _player?.AudioDevices ?? [];
+
+    public int AudioTrack
+    {
+        get => _player?.AudioTrack ?? -1;
+        set => _player?.AudioTrack = value;
+    }
+
+    public int SubtitleTrack
+    {
+        get => _player?.SubtitleTrack ?? -1;
+        set => _player?.SubtitleTrack = value;
+    }
+
+    public bool HasVideo => _player?.HasVideo == true;
+
+    /// <summary>Shows a subtitle file with the file playing, and again if it reopens; false with nothing playing.</summary>
+    public bool AddSubtitle(string path)
+    {
+        if (_player is not { } player || !player.AddSubtitle(path))
+        {
+            return false;
+        }
+
+        _subtitle = path;
+        return true;
+    }
+
+    /// <summary>Saves the picture on screen into <paramref name="folder"/>; returns the file, or null without a picture.</summary>
+    public string? TakeSnapshot(string folder, DateTimeOffset now)
+    {
+        if (_player is not { HasVideo: true } player || Queue.CurrentItem is not { } current)
+        {
+            return null;
+        }
+
+        Directory.CreateDirectory(folder);
+        var path = OdMediaSnapshots.PathFor(folder, Path.GetFileNameWithoutExtension(current), now);
+        return player.TakeSnapshot(path) ? path : null;
     }
 
     /// <summary>Adds files to the queue and saves it; with <paramref name="play"/>, plays the first of them.</summary>
@@ -194,7 +285,7 @@ internal sealed class OdMediaSession : IDisposable
 
     public void Dispose() => Release();
 
-    private void Start(TimeSpan from, bool play)
+    private void Start(TimeSpan from, bool play, bool keepSubtitle = false)
     {
         if (Queue.CurrentItem is not { } path)
         {
@@ -206,13 +297,24 @@ internal sealed class OdMediaSession : IDisposable
             _player = _newPlayer();
             _player.StateChanged += OnStateChanged;
             _player.TimeChanged += OnTimeChanged;
+            if (_audioDevice is not null)
+            {
+                _player.AudioDevice = _audioDevice;
+            }
+
             PlayerChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        // A subtitle file belongs to the file it was added to.
+        if (!keepSubtitle)
+        {
+            _subtitle = null;
         }
 
         _player.Volume = _volume;
         _player.Muted = _muted;
         _position = from;
-        _player.Open(path, from, play);
+        _player.Open(path, new OdMediaOpening(from, play, _subtitleEncoding, _subtitle));
         Save();
         Changed?.Invoke(this, EventArgs.Empty);
     }
@@ -235,6 +337,10 @@ internal sealed class OdMediaSession : IDisposable
             case OdMediaState.Paused:
                 _position = _player?.Time ?? _position;
                 Save();
+                break;
+            case OdMediaState.Playing when _player is { } player && Math.Abs(player.Rate - _rate) > 0.001f:
+                // libVLC starts each file at normal speed.
+                player.Rate = _rate;
                 break;
         }
 

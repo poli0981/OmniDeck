@@ -12,6 +12,7 @@ public sealed partial class OdMediaViewModel : ObservableObject, IDisposable
 {
     private readonly OdMediaSession _session;
     private readonly Action<OdMediaSettings> _saveSettings;
+    private readonly TimeProvider _time;
     private OdMediaSettings _settings;
     private bool _syncing;
 
@@ -49,13 +50,17 @@ public sealed partial class OdMediaViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private string _message = "";
 
-    internal OdMediaViewModel(OdMediaSession session, OdMediaSettings settings, Action<OdMediaSettings> saveSettings)
+    internal OdMediaViewModel(OdMediaSession session, OdMediaSettings settings, Action<OdMediaSettings> saveSettings, TimeProvider time)
     {
         _session = session;
         _settings = settings;
         _saveSettings = saveSettings;
+        _time = time;
         _session.Volume = settings.Volume;
         _session.Muted = settings.Muted;
+        _session.Rate = settings.Rate;
+        _session.SubtitleEncoding = settings.SubtitleEncoding;
+        _session.AudioDevice = settings.AudioDevice;
         _volume = settings.Volume;
         _muted = settings.Muted;
         _queueVisible = settings.QueueVisible;
@@ -71,6 +76,48 @@ public sealed partial class OdMediaViewModel : ObservableObject, IDisposable
     public ObservableCollection<OdMediaItem> Items { get; } = [];
 
     internal IOdMediaPlayer? Player => _session.Player;
+
+    internal IReadOnlyList<OdMediaTrack> AudioTracks => _session.AudioTracks;
+
+    internal int AudioTrack => _session.AudioTrack;
+
+    internal IReadOnlyList<OdMediaTrack> SubtitleTracks => _session.SubtitleTracks;
+
+    internal int SubtitleTrack => _session.SubtitleTrack;
+
+    internal IReadOnlyList<OdMediaDevice> AudioDevices => _session.AudioDevices;
+
+    internal string? AudioDevice => _session.AudioDevice;
+
+    internal string SubtitleEncoding => _session.SubtitleEncoding;
+
+    internal float Rate => _session.Rate;
+
+    internal void SetAudioTrack(int id) => _session.AudioTrack = id;
+
+    internal void SetSubtitleTrack(int id) => _session.SubtitleTrack = id;
+
+    internal void SetSubtitleEncoding(string encoding)
+    {
+        _session.SubtitleEncoding = encoding;
+        SaveSettings(_settings with { SubtitleEncoding = _session.SubtitleEncoding });
+    }
+
+    internal void SetRate(float rate)
+    {
+        _session.Rate = rate;
+        SaveSettings(_settings with { Rate = _session.Rate });
+    }
+
+    internal void SetAudioDevice(string? id)
+    {
+        _session.AudioDevice = id;
+        SaveSettings(_settings with { AudioDevice = _session.AudioDevice });
+    }
+
+    /// <summary>Shows a subtitle file with the file playing.</summary>
+    internal void AddSubtitle(string path) =>
+        Message = _session.AddSubtitle(path) ? "" : OdLocalization.Format("Media_SubtitleFailed", Path.GetFileName(path));
 
     /// <summary>Adds files, or a playlist's files, and plays the first one added.</summary>
     public void Add(IEnumerable<string> paths)
@@ -143,6 +190,11 @@ public sealed partial class OdMediaViewModel : ObservableObject, IDisposable
 
     [RelayCommand]
     private void Clear() => _session.Clear();
+
+    [RelayCommand]
+    private void TakeSnapshot() => Message = _session.TakeSnapshot(OdMediaSnapshots.Folder, _time.GetLocalNow()) is { } path
+        ? OdLocalization.Format("Media_SnapshotSaved", path)
+        : OdLocalization.Get("Media_SnapshotFailed");
 
     [RelayCommand]
     private void ToggleQueue() => QueueVisible = !QueueVisible;

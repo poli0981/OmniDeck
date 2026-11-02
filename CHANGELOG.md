@@ -10,7 +10,9 @@ All notable changes to OmniDeck are documented here. The format follows
 - Media: play your own music and videos. Add files, a folder or an .m3u playlist, or drop them on the
   player; the queue and where you stopped are kept for next time, and the queue can be saved as an
   .m3u. OmniDeck keeps the player running while something plays, and frees its memory once it has
-  been paused and out of sight for a while.
+  been paused and out of sight for a while. Its More menu picks the audio and subtitle tracks, adds
+  a subtitle file and sets its encoding, plays from a quarter to four times the speed, sends the
+  sound to another device, and saves a snapshot of the picture in Pictures\OmniDeck.
 - Report a bug from Settings → About, or from the dialog that shows an error. OmniDeck shows the
   issue text first, then saves a report on this PC: the issue text, the version and Windows build,
   the modules and the memory they use, the end of the log and, for a web app, its console. It then

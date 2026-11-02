@@ -77,6 +77,11 @@
                                     Maximum="100"
                                     Minimum="0"
                                     Value="{Binding Volume}" />
+                            <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                       AutomationProperties.Name="{res:OdLoc Media_More}"
+                                       Click="OnMoreClick"
+                                       Icon="{ui:SymbolIcon MoreHorizontal24}"
+                                       ToolTip="{res:OdLoc Media_More}" />
                             <ui:Button AutomationProperties.Name="{res:OdLoc Media_Queue}"
                                        Command="{Binding ToggleQueueCommand}"
                                        Icon="{ui:SymbolIcon TextBulletListLtr24}"

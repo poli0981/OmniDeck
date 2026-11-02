@@ -180,6 +180,92 @@ public sealed class OdMediaTests : IDisposable
     }
 
     [Fact]
+    public void Options_ReachThePlayer_AndAChangedEncodingReopensWhereItStood()
+    {
+        using var session = NewSession();
+        session.AudioDevice = "speakers";
+        session.Rate = 9f;
+        session.Add(["film.mkv", "next.mkv"], play: true);
+        var player = _engine.Players[0];
+
+        Assert.Equal("speakers", player.AudioDevice);
+        Assert.Equal(4f, session.Rate);
+        player.Rate = 1f;
+        player.Raise(OdMediaState.Playing);
+        Assert.Equal(4f, player.Rate);
+
+        player.AudioTracks = [new(-1, "Disable"), new(1, "English")];
+        player.SubtitleTracks = [new(-1, "Disable"), new(2, "Vietnamese")];
+        session.AudioTrack = 1;
+        session.SubtitleTrack = 2;
+        Assert.Equal((1, 2), (player.AudioTrack, player.SubtitleTrack));
+        Assert.Equal(2, session.AudioTracks.Count);
+        Assert.Equal(2, session.SubtitleTracks.Count);
+
+        Assert.True(session.AddSubtitle(@"C:\subs\film.vi.srt"));
+        player.Time = TimeSpan.FromSeconds(42);
+        session.SubtitleEncoding = "Windows-1258";
+        Assert.Equal(new OdMediaOpening(TimeSpan.FromSeconds(42), true, "Windows-1258", @"C:\subs\film.vi.srt"), player.LastOpening);
+
+        session.SubtitleEncoding = "nonsense";
+        Assert.Equal("", player.LastOpening?.SubtitleEncoding);
+
+        session.Next();
+        Assert.Null(player.LastOpening?.Subtitle);
+        Assert.Equal("", session.SubtitleEncoding);
+    }
+
+    [Fact]
+    public void ASnapshot_NeedsAPicture_AndIsNamedAfterTheFile()
+    {
+        using var session = NewSession();
+        var folder = _temp.Combine("shots");
+        var now = new DateTimeOffset(2026, 11, 2, 9, 5, 7, TimeSpan.FromHours(7));
+
+        Assert.Null(session.TakeSnapshot(folder, now));
+        session.Add(["My: Film.mkv"], play: true);
+        Assert.Null(session.TakeSnapshot(folder, now));
+
+        _engine.Players[0].HasVideo = true;
+        Assert.Equal(Path.Combine(folder, "My_ Film 2026-11-02 09-05-07.png"), session.TakeSnapshot(folder, now));
+        Assert.True(Directory.Exists(folder));
+    }
+
+    [Fact]
+    public void Encodings_AndSpeeds_AreTheOnesTheMenuOffers()
+    {
+        Assert.All(OdSubtitleEncodings.All, encoding => Assert.False(string.IsNullOrEmpty(OdSubtitleEncodings.Title(encoding))));
+        Assert.Equal(OdSubtitleEncodings.All.Count, OdSubtitleEncodings.All.Distinct(StringComparer.OrdinalIgnoreCase).Count());
+        Assert.Equal("Vietnamese (Windows-1258)", OdSubtitleEncodings.Title("Windows-1258"));
+        Assert.Equal("Shift_JIS", OdSubtitleEncodings.Known("shift_jis"));
+        Assert.Equal("", OdSubtitleEncodings.Known(null));
+        Assert.Equal(0.25f, OdMediaSpeeds.Clamp(0.1f));
+        Assert.Equal(1f, OdMediaSpeeds.Clamp(float.NaN));
+        Assert.Equal(OdMediaSpeeds.All.Count, OdMediaSpeeds.All.Distinct().Count());
+    }
+
+    [Fact]
+    public void TheScreen_KeepsTheSpeedEncodingAndDevice_InTheSettings() => OdSta.Run(() =>
+    {
+        using var session = NewSession();
+        OdMediaSettings? saved = null;
+        using var screen = new OdMediaViewModel(session, new OdMediaSettings { Rate = 1.5f, SubtitleEncoding = "Big5" }, settings => saved = settings, TimeProvider.System);
+        Assert.Equal((1.5f, "Big5"), (session.Rate, session.SubtitleEncoding));
+
+        screen.SetRate(2f);
+        screen.SetSubtitleEncoding("UTF-8");
+        screen.SetAudioDevice("headphones");
+
+        Assert.Equal(2f, saved?.Rate);
+        Assert.Equal("UTF-8", saved?.SubtitleEncoding);
+        Assert.Equal("headphones", saved?.AudioDevice);
+
+        screen.AddSubtitle(@"C:\subs\film.srt");
+        Assert.Equal("film.srt could not be added as subtitles.", screen.Message);
+        return Task.CompletedTask;
+    });
+
+    [Fact]
     public void LibVlcNoise_StaysOutOfTheLog()
     {
         Assert.False(OdVlcLog.Keep("main libvlc: option quiet does not exist"));
@@ -198,7 +284,7 @@ public sealed class OdMediaTests : IDisposable
         File.WriteAllText(Path.Combine(folder, "01 a.mp3"), "");
         var playlist = _temp.Combine("list.m3u");
         File.WriteAllText(playlist, "c.flac\n");
-        using var screen = new OdMediaViewModel(session, new OdMediaSettings { Volume = 30 }, settings => saved = settings);
+        using var screen = new OdMediaViewModel(session, new OdMediaSettings { Volume = 30 }, settings => saved = settings, TimeProvider.System);
 
         Assert.Equal("Nothing to play yet", screen.Title);
         screen.Add([folder, playlist, _temp.Combine("notes.txt")]);
@@ -291,18 +377,39 @@ public sealed class OdMediaTests : IDisposable
 
         public bool HasVideo { get; set; }
 
+        public IReadOnlyList<OdMediaTrack> AudioTracks { get; set; } = [];
+
+        public IReadOnlyList<OdMediaTrack> SubtitleTracks { get; set; } = [];
+
+        public int AudioTrack { get; set; }
+
+        public int SubtitleTrack { get; set; } = -1;
+
+        public float Rate { get; set; } = 1f;
+
+        public IReadOnlyList<OdMediaDevice> AudioDevices { get; set; } = [];
+
+        public string? AudioDevice { get; set; }
+
+        public OdMediaOpening? LastOpening { get; private set; }
+
         public int Volume { get; set; }
 
         public bool Muted { get; set; }
 
         public bool Disposed { get; private set; }
 
-        public void Open(string path, TimeSpan from, bool play)
+        public void Open(string path, OdMediaOpening opening)
         {
-            Calls.Add(string.Create(CultureInfo.InvariantCulture, $"open {Path.GetFileName(path)} {from.TotalSeconds} {play}"));
-            Time = from;
-            Raise(play ? OdMediaState.Playing : OdMediaState.Paused);
+            LastOpening = opening;
+            Calls.Add(string.Create(CultureInfo.InvariantCulture, $"open {Path.GetFileName(path)} {opening.From.TotalSeconds} {opening.Play}"));
+            Time = opening.From;
+            Raise(opening.Play ? OdMediaState.Playing : OdMediaState.Paused);
         }
+
+        public bool AddSubtitle(string path) => !path.EndsWith("film.srt", StringComparison.Ordinal);
+
+        public bool TakeSnapshot(string path) => HasVideo;
 
         public void Play()
         {

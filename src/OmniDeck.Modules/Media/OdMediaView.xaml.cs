@@ -1,4 +1,6 @@
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using Microsoft.Win32;
 using OmniDeck.Core.Localization;
@@ -76,6 +78,64 @@ public partial class OdMediaView
         if (Queue.SelectedItem is OdMediaItem item)
         {
             ViewModel?.PlayItemCommand.Execute(item);
+        }
+    }
+
+    // The menu is built when it opens: the tracks and devices are those of the file playing now.
+    private void OnMoreClick(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel is not { } model)
+        {
+            return;
+        }
+
+        var subtitles = Submenu(OdLocalization.Get("Media_Subtitles"), model.SubtitleTracks.Select(track => Choice(track.Name, track.Id == model.SubtitleTrack, () => model.SetSubtitleTrack(track.Id))));
+        subtitles.Items.Add(new Separator());
+        subtitles.Items.Add(Choice(OdLocalization.Get("Media_AddSubtitle"), isChecked: false, AddSubtitleFile, enabled: model.Player is not null));
+        subtitles.IsEnabled = true;
+
+        IEnumerable<MenuItem> devices =
+        [
+            Choice(OdLocalization.Get("Media_DefaultDevice"), model.AudioDevice is null, () => model.SetAudioDevice(null)),
+            .. model.AudioDevices.Select(device => Choice(device.Name, string.Equals(device.Id, model.AudioDevice, StringComparison.Ordinal), () => model.SetAudioDevice(device.Id))),
+        ];
+
+        var menu = new ContextMenu { PlacementTarget = (UIElement)sender, Placement = PlacementMode.Top };
+        menu.Items.Add(Submenu(OdLocalization.Get("Media_AudioTrack"), model.AudioTracks.Select(track => Choice(track.Name, track.Id == model.AudioTrack, () => model.SetAudioTrack(track.Id)))));
+        menu.Items.Add(subtitles);
+        menu.Items.Add(Submenu(OdLocalization.Get("Media_SubtitleEncoding"), OdSubtitleEncodings.All.Select(encoding => Choice(OdSubtitleEncodings.Title(encoding), string.Equals(encoding, model.SubtitleEncoding, StringComparison.Ordinal), () => model.SetSubtitleEncoding(encoding)))));
+        menu.Items.Add(Submenu(OdLocalization.Get("Media_Speed"), OdMediaSpeeds.All.Select(rate => Choice(OdMediaSpeeds.Title(rate), Math.Abs(rate - model.Rate) < 0.001f, () => model.SetRate(rate)))));
+        menu.Items.Add(Submenu(OdLocalization.Get("Media_AudioDevice"), devices));
+        menu.Items.Add(new Separator());
+        menu.Items.Add(Choice(OdLocalization.Get("Media_Snapshot"), isChecked: false, () => model.TakeSnapshotCommand.Execute(null), enabled: model.ShowsVideo));
+        menu.IsOpen = true;
+    }
+
+    private static MenuItem Submenu(string header, IEnumerable<MenuItem> items)
+    {
+        var submenu = new MenuItem { Header = header };
+        foreach (var item in items)
+        {
+            submenu.Items.Add(item);
+        }
+
+        submenu.IsEnabled = submenu.Items.Count > 0;
+        return submenu;
+    }
+
+    private static MenuItem Choice(string header, bool isChecked, Action choose, bool enabled = true)
+    {
+        var item = new MenuItem { Header = header, IsChecked = isChecked, IsEnabled = enabled };
+        item.Click += (_, _) => choose();
+        return item;
+    }
+
+    private void AddSubtitleFile()
+    {
+        var dialog = new OpenFileDialog { Filter = OdLocalization.Get("Media_SubtitleFilter") };
+        if (dialog.ShowDialog(Window.GetWindow(this)) == true)
+        {
+            ViewModel?.AddSubtitle(dialog.FileName);
         }
     }
 
