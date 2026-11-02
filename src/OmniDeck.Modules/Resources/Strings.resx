@@ -454,4 +454,70 @@
   <data name="Calendar_ReminderAllDay" xml:space="preserve">
     <value>{0}, all day</value>
   </data>
+  <data name="Category_Media" xml:space="preserve">
+    <value>Media</value>
+  </data>
+  <data name="Media_Name" xml:space="preserve">
+    <value>Media</value>
+  </data>
+  <data name="Media_Empty" xml:space="preserve">
+    <value>Nothing to play yet</value>
+  </data>
+  <data name="Media_Hint" xml:space="preserve">
+    <value>Add files or a folder, open an .m3u playlist, or drop files here. Double-click a file to play it.</value>
+  </data>
+  <data name="Media_NothingToPlay" xml:space="preserve">
+    <value>None of those are files the player can open.</value>
+  </data>
+  <data name="Media_Failed" xml:space="preserve">
+    <value>{0} could not be played.</value>
+  </data>
+  <data name="Media_AddFiles" xml:space="preserve">
+    <value>Add files</value>
+  </data>
+  <data name="Media_AddFolder" xml:space="preserve">
+    <value>Add folder</value>
+  </data>
+  <data name="Media_SavePlaylist" xml:space="preserve">
+    <value>Save playlist</value>
+  </data>
+  <data name="Media_Clear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="Media_Queue" xml:space="preserve">
+    <value>Queue</value>
+  </data>
+  <data name="Media_Remove" xml:space="preserve">
+    <value>Remove from the queue</value>
+  </data>
+  <data name="Media_PlayPause" xml:space="preserve">
+    <value>Play or pause</value>
+  </data>
+  <data name="Media_Previous" xml:space="preserve">
+    <value>Previous</value>
+  </data>
+  <data name="Media_Next" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="Media_Stop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="Media_Mute" xml:space="preserve">
+    <value>Mute</value>
+  </data>
+  <data name="Media_Volume" xml:space="preserve">
+    <value>Volume</value>
+  </data>
+  <data name="Media_Seek" xml:space="preserve">
+    <value>Position</value>
+  </data>
+  <data name="Media_FilesFilter" xml:space="preserve">
+    <value>Audio and video</value>
+  </data>
+  <data name="Media_AllFilter" xml:space="preserve">
+    <value>All files</value>
+  </data>
+  <data name="Media_PlaylistFilter" xml:space="preserve">
+    <value>Playlists (*.m3u, *.m3u8)|*.m3u;*.m3u8</value>
+  </data>
 </root>

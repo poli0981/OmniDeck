@@ -66,6 +66,13 @@ All mini-apps implement the module contract in [ARCHITECTURE](ARCHITECTURE.md) a
 - libVLC initializes lazily on first open; the player counts as **pinned** while playback is active (governor may not suspend it). Suspend stops and disposes the player, and hibernate disposes libVLC too: playback holds 280–520 MB committed.
 - **Fullscreen** makes the module's own window cover the monitor. **Pop-out** hands the player to the new window by re-selecting the video track and seeking to the current time ([spike #6](spikes/06-libvlcsharp.md)).
 - **Build:** x64 only (`VlcWindowsX86Enabled` and `VlcWindowsArm64Enabled` set to false), with the trimmed plugin set: about 86 MB raw, 39 MB compressed.
+- **As built in P2 (first part):**
+  - The player opens local files, folders and .m3u playlists, from its buttons or dropped on it, and saves the queue as an .m3u.
+  - The queue and where playback stood live in the database (`media_playlists`), so they survive restarts.
+  - It has transport controls, a seek bar, volume and mute.
+  - libVLC ships in `libvlc\win-x64` next to OmniDeck.exe, with these plugin folders: access, audio_filter, audio_mixer, audio_output, codec, demux, misc, packetizer, spu, stream_filter, text_renderer, video_chroma, video_filter and video_output. The network access plugins (http, https, ftp, sftp, smb, rtp, srt) are left out, which comes to about 80 MB raw.
+  - Only libVLC's errors reach the app log, as warnings, less the three known harmless ones.
+  - Track, subtitle, device and speed choices, snapshots, fullscreen and the tray controls follow in the second part.
 
 ## 4. Web runner
 
