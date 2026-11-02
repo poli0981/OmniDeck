@@ -43,6 +43,12 @@
   <data name="Shell_Close" xml:space="preserve">
     <value>Close</value>
   </data>
+  <data name="Shell_PopOut" xml:space="preserve">
+    <value>Open in new window</value>
+  </data>
+  <data name="Shell_PopIn" xml:space="preserve">
+    <value>Return to main window</value>
+  </data>
   <data name="Shell_PaletteCommand" xml:space="preserve">
     <value>Command</value>
   </data>

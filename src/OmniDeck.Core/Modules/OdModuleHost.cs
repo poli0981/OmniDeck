@@ -7,10 +7,10 @@ using Serilog.Core;
 namespace OmniDeck.Core.Modules;
 
 /// <summary>
-/// Runs the modules (docs/ARCHITECTURE.md §2): initializes each one on first use, keeps the view of
-/// the visible one, and moves the others down the state ladder when the shell or the RAM governor
-/// asks. Calls come from the UI thread and run one at a time, so a slow module never interleaves two
-/// transitions.
+/// Runs the modules (docs/ARCHITECTURE.md §2): initializes each one on first use, keeps the views of
+/// the visible ones (the main window's module and those in windows of their own), and moves the
+/// others down the state ladder when the shell or the RAM governor asks. Calls come from the UI thread
+/// and run one at a time, so a slow module never interleaves two transitions.
 /// </summary>
 public sealed class OdModuleHost : IDisposable
 {
@@ -58,7 +58,7 @@ public sealed class OdModuleHost : IDisposable
     /// <summary>Every registered module, in registration order.</summary>
     public IReadOnlyList<OdHostedModule> Modules { get; }
 
-    /// <summary>The visible module; <see langword="null"/> while the shell shows one of its own pages.</summary>
+    /// <summary>The module visible in the main window; <see langword="null"/> while the shell shows one of its own pages.</summary>
     public OdHostedModule? Current { get; private set; }
 
     public OdHostedModule? Find(string moduleId) => _byId.GetValueOrDefault(moduleId);
@@ -67,7 +67,7 @@ public sealed class OdModuleHost : IDisposable
     /// Makes <paramref name="moduleId"/> the visible module: initializes it on first use, builds its
     /// view when it has none (first open, or after hibernation) and hides the module shown before.
     /// The previous module stays visible until the new one is active, so a module that fails to start
-    /// leaves the shell as it was.
+    /// leaves the shell as it was. A module in a window of its own is docked first (<see cref="DockAsync"/>).
     /// </summary>
     public async Task<FrameworkElement> ShowAsync(string moduleId)
     {
@@ -75,25 +75,80 @@ public sealed class OdModuleHost : IDisposable
         await _gate.WaitAsync();
         try
         {
+            if (hosted.IsPoppedOut)
+            {
+                // Its view belongs to the other window until that window lets go of it.
+                throw new InvalidOperationException($"Module '{moduleId}' shows in a window of its own.");
+            }
+
             if (hosted == Current && hosted.View is { } shown)
             {
                 return shown;
             }
 
-            if (!hosted.IsInitialized)
-            {
-                await hosted.Module.InitializeAsync(CreateContext(hosted.Info.Id));
-                hosted.IsInitialized = true;
-            }
-
-            var view = hosted.View ?? hosted.Module.CreateView();
-            hosted.View = view;
+            var view = await EnsureViewAsync(hosted);
             await hosted.Module.ActivateAsync();
             HideCurrent();
             Current = hosted;
             hosted.LastActive = _time.GetUtcNow();
             SetState(hosted, OdModuleState.Active);
             return view;
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    /// <summary>
+    /// Moves <paramref name="moduleId"/> into a window of its own (a pop-out). Like <see cref="ShowAsync"/>,
+    /// it initializes the module and builds its view when it has none; the module stays active, out of
+    /// the governor's reach, until <see cref="DockAsync"/>. The main window's module stays as it is,
+    /// unless it is this one, which the main window then no longer shows.
+    /// </summary>
+    public async Task<FrameworkElement> PopOutAsync(string moduleId)
+    {
+        var hosted = Get(moduleId);
+        await _gate.WaitAsync();
+        try
+        {
+            var view = await EnsureViewAsync(hosted);
+            if (hosted.State != OdModuleState.Active)
+            {
+                await hosted.Module.ActivateAsync();
+            }
+
+            if (hosted == Current)
+            {
+                Current = null;
+            }
+
+            hosted.IsPoppedOut = true;
+            hosted.LastActive = _time.GetUtcNow();
+            SetState(hosted, OdModuleState.Active);
+            return view;
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    /// <summary>Its window closed: the module goes back to the main window, hidden, and down the ladder like any hidden module.</summary>
+    public async Task DockAsync(string moduleId)
+    {
+        var hosted = Get(moduleId);
+        await _gate.WaitAsync();
+        try
+        {
+            if (!hosted.IsPoppedOut)
+            {
+                return;
+            }
+
+            hosted.IsPoppedOut = false;
+            hosted.LastActive = _time.GetUtcNow();
+            SetState(hosted, OdModuleState.Idle);
         }
         finally
         {
@@ -177,9 +232,14 @@ public sealed class OdModuleHost : IDisposable
             if (hosted == Current)
             {
                 Current = null;
+            }
+
+            if (hosted.State == OdModuleState.Active)
+            {
                 hosted.LastActive = _time.GetUtcNow();
             }
 
+            hosted.IsPoppedOut = false;
             SetState(hosted, OdModuleState.Closed);
         }
         finally
@@ -217,6 +277,19 @@ public sealed class OdModuleHost : IDisposable
         return _byId.TryGetValue(moduleId, out var hosted)
             ? hosted
             : throw new ArgumentException($"No module has the id '{moduleId}'.", nameof(moduleId));
+    }
+
+    private async Task<FrameworkElement> EnsureViewAsync(OdHostedModule hosted)
+    {
+        if (!hosted.IsInitialized)
+        {
+            await hosted.Module.InitializeAsync(CreateContext(hosted.Info.Id));
+            hosted.IsInitialized = true;
+        }
+
+        var view = hosted.View ?? hosted.Module.CreateView();
+        hosted.View = view;
+        return view;
     }
 
     private OdModuleContext CreateContext(string moduleId) => new(

@@ -6,6 +6,39 @@ All notable changes to OmniDeck are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.0-alpha.3] — 2026-11-02
+
+Third P2 alpha, the build to try out before 0.2.0: pop-out windows, web pages in full screen, an icon
+of its own, and fixes to the media player's controls.
+
+### Added
+- Any module can open in a window of its own: choose "Open in new window" in its sidebar menu, or the
+  window button on its library tile. It runs there beside whatever the main window shows, and OmniDeck
+  never puts it to sleep while its window is open. Closing the window puts it back in the sidebar;
+  "Return to main window" shows it there. Web apps and videos keep playing through the move, and the
+  module's window goes full screen like the main window.
+- Web apps: a video, or anything else a page shows full screen, now fills the screen, and Esc goes
+  back.
+- OmniDeck has an icon of its own, a white "O" on blue: on the program, its windows, the taskbar and
+  the installer.
+
+### Changed
+- Media: the Play/Pause button shows Pause while something plays.
+- The roadmap is re-baselined: P2 started on 2 November 2026, as soon as P1 was done. The README,
+  the spec and the architecture notes now describe what P2 built.
+
+### Fixed
+- Media: in full screen the picture started a few pixels from the left edge of the screen. It now
+  fills the screen.
+- Media: beside the queue, the seek bar shrank to almost nothing, and at the window's default size
+  the queue button was cut off. The seek bar now has a row of its own, and the volume slider gets
+  shorter before anything is cut off.
+
+## [0.2.0-alpha.2] — 2026-11-02
+
+Second P2 alpha: the media player and the bug report join the web apps of alpha.1. Pop-out windows
+and the final polish come before 0.2.0.
+
 ### Added
 - Media: play your own music and videos. Add files, a folder or an .m3u playlist, or drop them on the
   player; the queue and where you stopped are kept for next time, and the queue can be saved as an
@@ -202,7 +235,9 @@ user-facing features yet: the window only shows the version.
 - Supported platform narrowed to Windows 11 (24H2 or later), x64.
 - App data moves to `%LocalAppData%\OmniDeck.Data`, outside Velopack's install folder.
 
-[Unreleased]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.1...HEAD
+[Unreleased]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.3...HEAD
+[0.2.0-alpha.3]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.2...v0.2.0-alpha.3
+[0.2.0-alpha.2]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.1...v0.2.0-alpha.2
 [0.2.0-alpha.1]: https://github.com/poli0981/OmniDeck/compare/v0.1.1...v0.2.0-alpha.1
 [0.1.1]: https://github.com/poli0981/OmniDeck/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/poli0981/OmniDeck/compare/v0.1.0-alpha.2...v0.1.0

@@ -3,7 +3,7 @@ using Wpf.Ui.Controls;
 
 namespace OmniDeck.App.Shell;
 
-/// <summary>Where the main window was, and how it looked, before it covered the screen.</summary>
+/// <summary>Where a window was, and how it looked, before it covered the screen.</summary>
 internal sealed record OdWindowPlacement(
     WindowState State,
     double Left,
@@ -12,5 +12,4 @@ internal sealed record OdWindowPlacement(
     double Height,
     bool Topmost,
     ResizeMode Resize,
-    WindowCornerPreference Corners,
-    OdPanePlacement Pane);
+    WindowCornerPreference Corners);

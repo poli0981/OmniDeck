@@ -10,7 +10,7 @@ Directory.Build.props  shared build settings: nullable, warnings as errors, anal
                        NuGet Audit, product metadata and dev-build version
 global.json            pinned .NET SDK
 .config/               dotnet-tools.json: vpk, dotnet-sonarscanner, XamlStyler
-scripts/               pack.ps1 (publish + Velopack), validate-catalog.ps1
+scripts/               pack.ps1 (publish + Velopack), validate-catalog.ps1, make-icon.ps1
 src/
   OmniDeck.App/        WPF shell: windows, navigation, tray and notifications, command
                        palette, theme engine, legal gate, onboarding, settings UI,
@@ -22,7 +22,7 @@ src/
                        Calendar, Stocks, Media — one folder per module   (P1)
   OmniDeck.Web/        web runner: environment/profile management, catalog loader,
                        navigation policy, notifications bridge, permissions,
-                       downloads, CDP console capture                     (P2)
+                       sign-in health, CDP console capture                (P2)
 tests/
   OmniDeck.Tests/      xUnit v3; governor state machine, providers, catalog validation,
                        scrubber, rate limiter
@@ -66,12 +66,20 @@ public interface IOdModule
 
 A view asks for full screen with `OdFullscreen.Request(view, on)`, a bubbling routed event raised from the view itself, since content it hosts in a window of its own (a video overlay) is outside the main window's tree. The main window then:
 
-- covers the monitor it is on (`OdMonitors.BoundsOf`);
+- covers the monitor it is on (`OdMonitors.BoundsOf`, `OdWindowCover`), and keeps where it was;
 - hides the title bar;
 - folds the navigation pane to zero width. Changing its display mode would re-template the navigation view and re-create the stage, and with it any native child window;
 - sets `OdFullscreen.IsActive` on the stage, which views inherit.
 
 Esc, hiding to the tray, or showing another module ends it. A module that plays media implements `IOdMediaControls`, which the tray menu uses while something is loaded.
+
+A module can also show in a window of its own (`OdPopOutWindow`), opened from its sidebar menu or its library tile:
+
+- The host keeps the module active there (`OdModuleHost.PopOutAsync`), so the governor leaves it alone. If the main window showed it, the main window shows the library instead. Asking for the module again brings its window to the front.
+- The view itself moves, so a web app's browser and a video keep running: WPF re-parents their native windows rather than creating new ones. Spike #6's hand-over to a second video view, with its track re-selection and seek, is not needed.
+- Closing the window docks the module back into the main window, hidden (`DockAsync`), and the time ladder applies again. "Return to main window" in the sidebar menu also shows it there.
+- Before closing, the window lets go of the view and hands the windows it still owns to the main window. LibVLCSharp's video overlay is owned by the window its video is in and would otherwise close for good with it.
+- A pop-out goes full screen as the main window does, and opens where it was last time in the session.
 
 Native modules run in-process. True RAM release for them means honoring `SuspendAsync`/`HibernateAsync`: dispose charts, bitmaps, timers, caches; the governor follows up with a GC. Web modules get real process-level release for free because WebView2 is out-of-process by design.
 
@@ -82,12 +90,13 @@ As built in P2 (`OmniDeck.Web`):
 - **Environment** (`OdWebRuntime`): one `CoreWebView2Environment` for the whole app, so the browser and GPU processes are shared across web apps. It is created when the first web app opens, with its user data folder in the data root's `WebView2\` folder. The runtime counts open browsers: after the last one closes, the shared browser process exits and writes its cookies out, and a web app opened meanwhile waits for that exit (up to 3 s), because a controller created during it stalls for seconds (docs/spikes/03-memory.md). Quitting closes every module, then waits the same way before the process ends. Without an installed WebView2 Runtime, a web app shows a notice whose button opens Microsoft's download page.
 - **Profiles:** one WebView2 profile per catalog `profile` value (`CoreWebView2ControllerOptions.ProfileName`). `google` is shared (one sign-in for Gmail/Calendar/Drive/Maps/YouTube); every other app is isolated. Cookies live in the profile, which is what lets **hibernate = full dispose** without losing sessions.
 - **Modules:** each catalog entry is an `OdWebAppModule` (Heavy, titled with the brand name, which is never translated). Its view (`OdWebAppView`) hosts the WPF `WebView2` control; notices sit above the browser rather than over it, because no WPF element can cover the browser's native window.
-- **Per-app pipeline on creation:** apply settings (`AreDevToolsEnabled=false` in Release, `IsPasswordAutosaveEnabled=false`, `IsGeneralAutofillEnabled=false`) → attach `NavigationStarting` → `NewWindowRequested` → `ProcessFailed` → `NotificationReceived` → `PermissionRequested` → start the CDP console capture → navigate.
+- **Per-app pipeline on creation:** apply settings (`AreDevToolsEnabled=false` in Release, `IsPasswordAutosaveEnabled=false`, `IsGeneralAutofillEnabled=false`) → attach `NavigationStarting` → `NewWindowRequested` → `ProcessFailed` → `ContainsFullScreenElementChanged` → `NotificationReceived` → `PermissionRequested` → start the CDP console capture → navigate.
 - **Navigation policy** (`OdNavPolicy`, a pure function of the entry and the catalog): a main-frame navigation stays in the app when it is HTTPS to a host that `navAllow` or one of the entry's `navAllowSets` covers (whole-label suffix match, case-insensitive), or an `about:`, `data:` or `blob:` page. Other web and `mailto:` links open in the default browser; every other scheme is blocked and only the scheme is logged. Frames inside a page are not filtered. A popup (`NewWindowRequested`) to a `popupAllow` host opens in an in-app window (`OdWebPopupWindow`) on the same profile, so a sign-in popup lands in the app's cookies; any other popup goes to the default browser.
 - **Link loop guard** (`OdExternalLinks`): the same link (scheme, host and path) opens in the browser at most 3 times in 30 s; after that it is held back and the app shows a notice, once per 30 s. In P0, Google retried a blocked sign-in hop 15 times in 40 seconds (docs/spikes/02-google-sign-in.md).
 - **Suspend path:** set `MemoryUsageTargetLevel = Low` → `TrySuspendAsync()` (WebView2 refuses while the control is visible; that is logged at Debug). **Resume:** set target `Normal`, and `Resume()` if still suspended.
 - **Hibernate path:** the module keeps the page on screen in memory, then disposes the control, which releases the app's processes. Reopening creates a new control on the same profile and navigates to that page. Closing the module forgets the page, and so does a restart: the next session opens `startUrl`.
 - **Crash recovery:** `ProcessFailed` for the page or the browser reloads the app once, on the page it showed; a second failure within a minute shows a notice with a Reload button instead. Frame, GPU and helper process failures recover on their own and are only logged.
+- **Full screen:** when the page shows something full screen (a video, say), the view asks for the window's full screen (§2). When the window leaves it first (Esc, another module), the page is told to leave too (`document.exitFullscreen()`).
 - **Console capture:** CDP `Runtime.consoleAPICalled`, `Runtime.exceptionThrown` and `Log.entryAdded` feed two rings kept by the module (`OdConsoleLog`: the last 200 entries and the last 50 errors), so they survive hibernation. They are formatted like DevTools (`%s`, `%d`, `%c`), held only for the session, and are there for the bug report.
 - **Notifications:** `NotificationReceived` is always marked handled, so WebView2 never shows its own notification window.
   - When the app's notifications are on, the notification becomes a tray notification: "‹App›: ‹title›" with the body below, cut to what a balloon holds. That switch is in Settings → Web apps and defaults to the catalog's `notifications`.
@@ -154,4 +163,4 @@ A content dialog cannot cover a web app's browser, which is a native window. So 
 
 Velopack, per-user, GitHub Releases channel, delta updates. The package carries libVLC for the media player in `libvlc\win-x64` next to OmniDeck.exe (x64 only, with the plugin set in SPEC §3.6), and LibVLCSharp loads it on the first play. Update check on About open and once per day in the background (notify-only, never auto-restart). Builds below 1.0 are GitHub pre-releases, so their update check includes pre-releases. In code: `OdVelopackUpdateService` behind `IOdUpdateService`; Settings → About checks when opened and offers *Download and restart*, and `OdUpdateWatcher` checks a few minutes after start, then daily, and notifies once per new version. A development build is not installed, so it does neither.
 
-Releases are built by [`release.yml`](../.github/workflows/release.yml), self-contained in this repository: a GPG-signed `vX.Y.Z[-suffix]` tag on `main` runs `scripts/pack.ps1` (self-contained `win-x64` publish + `vpk pack`), build-provenance attestations, a draft GitHub Release with an SPDX SBOM and SHA-256 checksums, release notes from CHANGELOG, publication, and a Discord announcement — see [RELEASING](../RELEASING.md). The WebView2 Runtime ships with Windows 11; if it is ever missing, Velopack's `--framework webview2` bootstrapper can install it (evaluate in P2).
+Releases are built by [`release.yml`](../.github/workflows/release.yml), self-contained in this repository: a GPG-signed `vX.Y.Z[-suffix]` tag on `main` runs `scripts/pack.ps1` (self-contained `win-x64` publish + `vpk pack`), build-provenance attestations, a draft GitHub Release with an SPDX SBOM and SHA-256 checksums, release notes from CHANGELOG, publication, and a Discord announcement — see [RELEASING](../RELEASING.md). The WebView2 Runtime ships with Windows 11; if it is ever missing, a web app says so and links to Microsoft's download page (§3). Velopack's `--framework webview2` bootstrapper was considered in P2 and left out for that reason. The executable, its windows and Setup carry `src/OmniDeck.App/Assets/OmniDeck.ico`, drawn by `scripts/make-icon.ps1` until a designed icon replaces it.

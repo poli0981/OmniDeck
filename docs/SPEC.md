@@ -22,11 +22,11 @@ Status: draft for v1.0 (target May 2027) · Applies to: Windows 11 (24H2 or late
 
 ## 2. Shell
 
-- **Navigation:** left sidebar listing pinned modules; full module library behind a "+" view. Sidebar density and item count vary by UI preset.
+- **Navigation:** left sidebar listing pinned modules, then the other open ones; the full module library is a page of its own (Library). Sidebar density and item count vary by UI preset.
 - **Command palette:** `Ctrl+K` opens a fuzzy launcher for every module, web app, and settings page.
-- **Tray:** single-instance app with tray icon; closing the window minimizes to tray (configurable). Tray menu: open, quick timer, media controls when playing, quit.
-- **Windowing:** modules open as tabs in the main window; any module can be popped out into its own top-level window.
-- **Settings:** general (language EN/VI/JA, startup, tray behavior), appearance (preset + per-token overrides), memory (governor thresholds), per-module settings, data (export/import settings JSON, open data folder), about.
+- **Tray:** single-instance app with tray icon; closing the window minimizes to tray (configurable). Tray menu: open, quick timer, media controls while the player has something loaded, quit.
+- **Windowing:** modules open in the main window one at a time, and stay in the sidebar while open; any module can move into a top-level window of its own (pop-out) and back ([ARCHITECTURE](ARCHITECTURE.md) §2).
+- **Settings:** general (language EN/VI/JA, startup, tray behavior), appearance (preset + per-token overrides), memory (governor thresholds), web apps (each app's notifications and permissions, clearing a group's sign-in data, the catalog in use), data (export/import settings JSON, open data folder), about.
 - **Legal gate:** on first run and whenever the acknowledged legal-doc version differs from the shipped version, show EULA, Disclaimer, Privacy Policy, and Third-Party Notices (shipped in the app's `legal\` folder, with links to this repo). The user acknowledges having read them; the acknowledgment (doc version + timestamp) is stored locally and the app stays on the gate until then. It is an acknowledgment, not a condition of the license: GPL-3.0 §9 does not require accepting the license to run the program.
 - **About:** app version + commit hash, update check (Velopack), links (GitHub, Discussions, Discord), credits, **Report bug** button (§6).
 
@@ -64,9 +64,9 @@ All mini-apps implement the module contract in [ARCHITECTURE](ARCHITECTURE.md) a
 - Engine: **LibVLCSharp + VideoLAN.LibVLC.Windows (x64)**, plugins trimmed to codecs/demux/audio/video output.
 - Local files and folders, playlist (m3u load/save), subtitles (embedded + external `.srt`/`.ass`, encoding selection), audio track & device selection, speed 0.25–4×, snapshot.
 - libVLC initializes lazily on first open; the player counts as **pinned** while playback is active (governor may not suspend it). Suspend stops and disposes the player, and hibernate disposes libVLC too: playback holds 280–520 MB committed.
-- **Fullscreen** makes the module's own window cover the monitor. **Pop-out** hands the player to the new window by re-selecting the video track and seeking to the current time ([spike #6](spikes/06-libvlcsharp.md)).
+- **Fullscreen** makes the module's own window cover the monitor. **Pop-out** moves the player's view, video window included, into the new window, so playback goes on; the track re-selection and seek that a second video view would need ([spike #6](spikes/06-libvlcsharp.md)) are not used.
 - **Build:** x64 only (`VlcWindowsX86Enabled` and `VlcWindowsArm64Enabled` set to false), with the trimmed plugin set: about 86 MB raw, 39 MB compressed.
-- **As built in P2 (first part):**
+- **As built in P2:**
   - The player opens local files, folders and .m3u playlists, from its buttons or dropped on it, and saves the queue as an .m3u.
   - The queue and where playback stood live in the database (`media_playlists`), so they survive restarts.
   - It has transport controls, a seek bar, volume and mute.
@@ -87,10 +87,11 @@ All mini-apps implement the module contract in [ARCHITECTURE](ARCHITECTURE.md) a
 
 - One shared `CoreWebView2Environment` (user data under `%LocalAppData%\OmniDeck.Data\WebView2`); one `CoreWebView2Profile` per catalog `profile` group (the `google` group is shared across Google apps for single sign-on; all others are isolated).
 - **Navigation policy:** top-level navigation outside the entry's `navAllow` suffix list opens in the system default browser. `NewWindowRequested` to a `popupAllow` domain opens an in-app popup on the same profile (SSO); everything else goes to the default browser.
-- **Notifications:** `NotificationReceived` is intercepted and re-raised as a Windows toast tagged with the app name; per-app opt-out in settings.
-- **Permissions:** `PermissionRequested` (mic/camera/clipboard/geolocation) shows a native prompt; the decision is remembered per app and reviewable in settings.
-- **Downloads:** routed through `DownloadStarting` to the user's Downloads folder with an in-shell progress row.
-- **Media pinning:** while `IsDocumentPlayingAudio` is true, the module is pinned (see RAM-GOVERNOR).
+- **Notifications:** `NotificationReceived` is intercepted and shown as a Windows notification under the app's name; each app's switch in Settings → Web apps defaults to the catalog's `notifications`. An app with notifications on keeps running while hidden ([RAM-GOVERNOR](RAM-GOVERNOR.md) §3).
+- **Permissions:** `PermissionRequested` for the user's devices and data (camera, microphone, location, clipboard reading and the like) asks once per app, in a bar above the page, since no dialog can cover WebView2. The answer is remembered per app and reviewable in Settings → Web apps.
+- **Downloads:** WebView2's own download flyout saves to the user's Downloads folder; it already handles SmartScreen verdicts and dangerous-file prompts.
+- **Full screen:** a page that goes full screen (a video, say) takes the window full screen with it, as the media player does; Esc or showing another module ends both.
+- **Media pinning:** while `IsDocumentPlayingAudio` is true and the entry has `audioPin`, the module is pinned (see RAM-GOVERNOR).
 - **Lifecycle:** hidden web apps are suspended via `TrySuspendAsync` + `MemoryUsageTargetLevel.Low`, later disposed entirely (session survives via profile cookies). Disposing the last web app ends the shared browser process. Full state machine in [RAM-GOVERNOR](RAM-GOVERNOR.md).
 - **Google account domains:** Google's sign-in sets cookies on country-code domains (for example `accounts.google.com.vn`). The `google` entries allow them through the catalog's `google-account-domains` set (schema v2 `navAllowSets`, decided on 2 November 2026; [WEBAPP-CATALOG](WEBAPP-CATALOG.md) §1, [spike #2](spikes/02-google-sign-in.md)).
 - **Catalog:** shipped in `catalog/webapps.json`, refreshed from this repo's raw URL at most once per day; schema and rules in [WEBAPP-CATALOG](WEBAPP-CATALOG.md).
@@ -106,9 +107,9 @@ All mini-apps implement the module contract in [ARCHITECTURE](ARCHITECTURE.md) a
 ## 6. Bug reporting flow
 
 1. A DevTools Protocol session per web app (`Runtime` + `Log`, always on, DevTools UI still disabled) subscribes to `Runtime.consoleAPICalled`, `Runtime.exceptionThrown` and `Log.entryAdded`. It keeps a 200-entry ring buffer per app, plus a 50-entry errors-only ring so chatty apps cannot evict errors ([spike #4](spikes/04-cdp-console.md)). .NET unhandled exceptions and the Serilog tail are collected shell-side.
-2. **Report bug** composes: version, Windows build, UI preset, active modules + RAM snapshot, the relevant console ring buffer, and last log lines.
-3. Before packaging, a scrubber strips query strings, cookie values, and bearer-token-shaped strings.
-4. The app opens a pre-filled GitHub issue (bug template) and writes `bugreport-<timestamp>.zip` to `%LocalAppData%\OmniDeck.Data\reports` for the user to attach (issue-URL prefill has a length limit, so long logs travel in the zip).
+2. **Report a bug** (Settings → About, or Report bug on the error dialog) composes: version and commit, Windows build, UI preset, the modules with their states and memory, the last 500 log lines, the console rings of the web app picked as the subject, and each web profile's cookie count (never values).
+3. Before anything is shown or saved, a scrubber removes query strings and fragments, cookie values, bearer, JWT and other long hex or base64 tokens, email addresses, ids of 15 digits or more, and the user name in profile paths.
+4. A dialog previews the issue text. Saving writes `bugreport-<timestamp>.zip` (issue.md, system.json, logs.txt and the console) to `%LocalAppData%\OmniDeck.Data\reports`, keeps the ten newest, shows it in Explorer, and opens a GitHub issue (bug template) with the short fields filled in; long logs travel in the zip, since issue URLs have a length limit. Nothing is uploaded.
 
 ## 7. Reference versions (verified 2026-10-28; Dependabot owns bumps from here)
 

@@ -8,6 +8,8 @@
     <AssemblyName>OmniDeck</AssemblyName>
     <RootNamespace>OmniDeck.App</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- The executable's icon, which its windows, shortcuts and Explorer show (scripts/make-icon.ps1). -->
+    <ApplicationIcon>Assets\OmniDeck.ico</ApplicationIcon>
     <!-- Custom entry point: Velopack's hooks must run before WPF loads OdApp.xaml resources. -->
     <StartupObject>OmniDeck.App.Program</StartupObject>
     <!-- Ship only the UI languages OmniDeck supports (EN neutral, VI, JA). -->

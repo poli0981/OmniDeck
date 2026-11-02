@@ -182,6 +182,97 @@ public sealed class OdShellViewModelTests : IDisposable
     });
 
     [Fact]
+    public void PopOut_OfTheModuleOnScreen_LeavesTheLibraryInTheMainWindow() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        using var shell = NewShell(host);
+        var opened = new List<OdPopOutEventArgs>();
+        shell.PopOutOpened += (_, e) => opened.Add(e);
+        await shell.NavigateAsync("clock");
+
+        await shell.PopOutCommand.ExecuteAsync(shell.Library[0]);
+
+        var popOut = Assert.Single(opened);
+        Assert.Same(shell.Library[0], popOut.Item);
+        Assert.Same(host.Find("clock")?.View, popOut.View);
+        Assert.True(shell.Library[0].IsPoppedOut);
+        Assert.Equal(OdModuleState.Active, shell.Library[0].State);
+        Assert.Equal(OdShellViewModel.LibraryTarget, shell.CurrentTarget);
+        Assert.Null(shell.CurrentView);
+        Assert.Contains(shell.Library[0], shell.Sidebar);
+    });
+
+    [Fact]
+    public void APoppedOutModule_IsBroughtUpInItsWindow() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        using var shell = NewShell(host);
+        var raised = new List<string>();
+        shell.PopOutActivationRequested += (_, e) => raised.Add(e.Item.Id);
+        await shell.NavigateAsync("timer");
+        await shell.PopOutCommand.ExecuteAsync(shell.Library[0]);
+
+        await shell.NavigateAsync("clock");
+        await shell.PopOutCommand.ExecuteAsync(shell.Library[0]);
+
+        Assert.Equal(new[] { "clock", "clock" }, raised, StringComparer.Ordinal);
+        Assert.Equal("timer", shell.CurrentTarget);
+        Assert.Same(host.Find("timer"), host.Current);
+    });
+
+    [Fact]
+    public void PopIn_ClosesTheWindow_AndShowsTheModuleInTheMainWindow() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        using var shell = NewShell(host);
+        var closed = new List<string>();
+        shell.PopOutCloseRequested += (_, e) => closed.Add(e.Item.Id);
+        await shell.PopOutCommand.ExecuteAsync(shell.Library[0]);
+        await shell.PopInCommand.ExecuteAsync(shell.Library[1]);
+
+        await shell.PopInCommand.ExecuteAsync(shell.Library[0]);
+
+        Assert.Equal(new[] { "clock" }, closed, StringComparer.Ordinal);
+        Assert.False(shell.Library[0].IsPoppedOut);
+        Assert.Equal("clock", shell.CurrentTarget);
+        Assert.Same(host.Find("clock")?.View, shell.CurrentView);
+        Assert.Same(host.Find("clock"), host.Current);
+    });
+
+    [Fact]
+    public void ClosingItsWindow_DocksTheModuleHidden() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        using var shell = NewShell(host);
+        await shell.NavigateAsync("timer");
+        await shell.PopOutCommand.ExecuteAsync(shell.Library[0]);
+
+        await shell.DockAsync(shell.Library[0]);
+
+        Assert.False(shell.Library[0].IsPoppedOut);
+        Assert.Equal(OdModuleState.Idle, shell.Library[0].State);
+        Assert.Equal("timer", shell.CurrentTarget);
+        Assert.Contains(shell.Library[0], shell.Sidebar);
+    });
+
+    [Fact]
+    public void ClosingAPoppedOutModule_ClosesItsWindow() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        using var shell = NewShell(host);
+        var closed = new List<string>();
+        shell.PopOutCloseRequested += (_, e) => closed.Add(e.Item.Id);
+        await shell.PopOutCommand.ExecuteAsync(shell.Library[0]);
+
+        await shell.CloseCommand.ExecuteAsync(shell.Library[0]);
+
+        Assert.Equal(new[] { "clock" }, closed, StringComparer.Ordinal);
+        Assert.False(shell.Library[0].IsPoppedOut);
+        Assert.DoesNotContain(shell.Library[0], shell.Sidebar);
+        Assert.Equal(OdShellViewModel.LibraryTarget, shell.CurrentTarget);
+    });
+
+    [Fact]
     public void PaletteEntries_OpenModules_ShowTheLibrary_AndQuit() => OdSta.Run(async () =>
     {
         using var host = NewHost();

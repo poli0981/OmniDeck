@@ -12,6 +12,8 @@ The governor is the feature that makes "many apps in one" viable. It moves every
 | Hibernated | hidden ≥ `HibernateAfter`, or cap pressure | `HibernateAsync`: view + everything released, tiny state blob kept | `Dispose()`; only `{url}` kept, session lives in profile cookies | 0. Disposing the *last* web app also ends the shared processes |
 | Closed | user closes | released | released | 0 |
 
+A module in a window of its own (a pop-out) is visible while that window is open, so it stays Active whatever the main window shows; closing the window puts it back on the ladder as a hidden module.
+
 Reactivation from Suspended is instant. From Hibernated it is a cold open (view rebuild and page reload, about 0.6–2.5 s); that is acceptable because the profile keeps the user signed in. After the last web app has been hibernated, the next one also restarts the browser process (about 160 ms).
 
 ## 2. Defaults (all configurable in Settings → Memory)
@@ -70,3 +72,12 @@ As built in P1, the panel sits in Settings → Memory under the threshold fields
 ## 6. Testing
 
 The scheduler is pure logic over an injected clock and an injected memory sampler — unit-test every transition, cap scenario, and pinning rule in `OmniDeck.Tests` without touching real WebView2.
+
+**Resource soak, P2** (2 November 2026, Release build, one 2560×1440 monitor at 100 %):
+
+- Idle on the library page, the shell held 103 MB of private commit, 32 GDI and 36 USER objects and 735 handles.
+- 21 pop-out round trips (Clock into a window of its own and back) left the GDI and USER objects and handles flat after the first one: 39, 45 and 762.
+- 21 page full-screen round trips on Discord's sign-in page also left them flat: 40, 49 and 798.
+- With that page open, the seven WebView2 processes held 508 MB. The first full screen raised them to about 725 MB, mostly the GPU process's surfaces for the larger window, and they stayed there.
+
+A signed-in day of use is the P2 exit's dogfooding ([ROADMAP](ROADMAP.md) §1).
