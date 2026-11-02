@@ -6,6 +6,11 @@ All notable changes to OmniDeck are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.0-alpha.2] — 2026-11-02
+
+Second P2 alpha: the media player and the bug report join the web apps of alpha.1. Pop-out windows
+and the final polish come before 0.2.0.
+
 ### Added
 - Media: play your own music and videos. Add files, a folder or an .m3u playlist, or drop them on the
   player; the queue and where you stopped are kept for next time, and the queue can be saved as an
@@ -202,7 +207,8 @@ user-facing features yet: the window only shows the version.
 - Supported platform narrowed to Windows 11 (24H2 or later), x64.
 - App data moves to `%LocalAppData%\OmniDeck.Data`, outside Velopack's install folder.
 
-[Unreleased]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.1...HEAD
+[Unreleased]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.2...HEAD
+[0.2.0-alpha.2]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.1...v0.2.0-alpha.2
 [0.2.0-alpha.1]: https://github.com/poli0981/OmniDeck/compare/v0.1.1...v0.2.0-alpha.1
 [0.1.1]: https://github.com/poli0981/OmniDeck/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/poli0981/OmniDeck/compare/v0.1.0-alpha.2...v0.1.0
