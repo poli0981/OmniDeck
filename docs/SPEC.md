@@ -76,7 +76,7 @@ All mini-apps implement the module contract in [ARCHITECTURE](ARCHITECTURE.md) a
 - **Downloads:** routed through `DownloadStarting` to the user's Downloads folder with an in-shell progress row.
 - **Media pinning:** while `IsDocumentPlayingAudio` is true, the module is pinned (see RAM-GOVERNOR).
 - **Lifecycle:** hidden web apps are suspended via `TrySuspendAsync` + `MemoryUsageTargetLevel.Low`, later disposed entirely (session survives via profile cookies). Disposing the last web app ends the shared browser process. Full state machine in [RAM-GOVERNOR](RAM-GOVERNOR.md).
-- **Google account domains:** Google's sign-in sets cookies on country-code domains (for example `accounts.google.com.vn`). The `google` entries need them in `navAllow`, through a catalog schema v2 field (`navAllowSets`) decided in P2 ([spike #2](spikes/02-google-sign-in.md)).
+- **Google account domains:** Google's sign-in sets cookies on country-code domains (for example `accounts.google.com.vn`). The `google` entries allow them through the catalog's `google-account-domains` set (schema v2 `navAllowSets`, decided on 2 November 2026; [WEBAPP-CATALOG](WEBAPP-CATALOG.md) §1, [spike #2](spikes/02-google-sign-in.md)).
 - **Catalog:** shipped in `catalog/webapps.json`, refreshed from this repo's raw URL at most once per day; schema and rules in [WEBAPP-CATALOG](WEBAPP-CATALOG.md).
 
 ## 5. Cross-cutting requirements

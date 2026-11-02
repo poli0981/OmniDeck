@@ -47,7 +47,7 @@ Spotify's "Continue with Google / Facebook / Apple" buttons were not tried; the 
 
 ## Consequences
 
-- **Google's account domains on every country-code TLD.** Google lists them at `https://www.google.com/supported_domains`. Enumerating about 190 domains in each `google` entry would be unreadable. The proposal is a catalog schema v2 field, `navAllowSets: ["google-account-domains"]`, which the app resolves from a list it bundles. A narrower rule in code would only allow `accounts.google.<ccTLD>/accounts/SetSID`. Either way this changes the catalog or its schema, so it is decided in P2 with the maintainer's approval.
+- **Google's account domains on every country-code TLD.** Google lists them at `https://www.google.com/supported_domains`. Enumerating about 190 domains in each `google` entry would be unreadable. The proposal is a catalog schema v2 field, `navAllowSets: ["google-account-domains"]`, which the app resolves from a list it bundles. A narrower rule in code would only allow `accounts.google.<ccTLD>/accounts/SetSID`. Either way this changes the catalog or its schema, so it is decided in P2 with the maintainer's approval. **Decided on 2 November 2026:** the first option, with the set defined in the catalog itself instead of bundled with the app, so it changes with a catalog pull request ([WEBAPP-CATALOG](../WEBAPP-CATALOG.md) §1).
 - **Sessions must be checked, not assumed.** The P2 exit criterion "stays signed in across hibernation" makes the unexplained loss a real risk:
   - P2 dogfoods with Chromium logging available;
   - the web runner records whether each app comes back signed in after a restart. The `--check-signed-in` probes become a debug-only health check;
