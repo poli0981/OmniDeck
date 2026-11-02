@@ -11,6 +11,10 @@ All notable changes to OmniDeck are documented here. The format follows
   shows the conditions now, the next 48 hours and the next 7 days, in the units your region uses or
   the ones you pick. A forecast is fetched again at most every half hour, and only while Weather is
   on screen; without a connection it shows the last forecast and says how old it is.
+- Calendar: your own events in a month grid, a week list or a 30-day agenda, with repeats (daily,
+  weekly, monthly or yearly, every so many, until a date) and reminders, which appear while OmniDeck
+  is running. Import and export .ics files; repeats written by other calendar apps are kept as they
+  are. One date of a series can be deleted without touching the rest.
 
 ### Changed
 - Clicking a notification opens the module that raised it: a finished timer opens Timer.

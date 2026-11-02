@@ -17,6 +17,7 @@ using OmniDeck.Core.Runtime;
 using OmniDeck.Core.Settings;
 using OmniDeck.Core.Storage;
 using OmniDeck.Modules;
+using OmniDeck.Modules.Calendar;
 using OmniDeck.Modules.Resources;
 using Serilog;
 
@@ -115,6 +116,7 @@ public partial class OdApp
 
         _services.GetRequiredService<OdRamGovernor>().Start();
         _services.GetRequiredService<OdUpdateWatcher>().Start();
+        _services.GetRequiredService<OdReminderService>().Start();
     }
 
     /// <summary>The main window, created once. It owns the tray icon, so it exists even while hidden.</summary>

@@ -5,8 +5,10 @@ using System.Text.RegularExpressions;
 using OmniDeck.App.Resources;
 using OmniDeck.Core.Legal;
 using OmniDeck.Core.Modules;
+using OmniDeck.Core.Storage;
 using OmniDeck.Core.Theming;
 using OmniDeck.Modules.Calculator;
+using OmniDeck.Modules.Calendar;
 using OmniDeck.Modules.Clock;
 using OmniDeck.Modules.Resources;
 using OmniDeck.Modules.Timer;
@@ -88,7 +90,8 @@ public sealed partial class OdResxKeyTests
         {
             // Names and categories travel as keys in OdModuleInfo; the shell resolves them.
             using var timers = new OdTimerService(TimeProvider.System, new OdFakeNotifier());
-            IOdModule[] modules = [new OdClockModule(), new OdTimerModule(timers), new OdCalculatorModule(), new OdWeatherModule()];
+            var calendar = new OdCalendarModule(new OdCalendarStore(new OdDatabase(Path.Combine(Path.GetTempPath(), "unused.db"), pooling: false)));
+            IOdModule[] modules = [new OdClockModule(), new OdTimerModule(timers), new OdCalculatorModule(), new OdWeatherModule(), calendar];
             keys.UnionWith(modules.SelectMany(module => new[] { module.Info.NameKey, module.Info.CategoryKey }));
         }
 
