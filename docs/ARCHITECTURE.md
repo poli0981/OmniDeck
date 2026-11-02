@@ -73,6 +73,14 @@ A view asks for full screen with `OdFullscreen.Request(view, on)`, a bubbling ro
 
 Esc, hiding to the tray, or showing another module ends it. A module that plays media implements `IOdMediaControls`, which the tray menu uses while something is loaded.
 
+A module can also show in a window of its own (`OdPopOutWindow`), opened from its sidebar menu or its library tile:
+
+- The host keeps the module active there (`OdModuleHost.PopOutAsync`), so the governor leaves it alone. If the main window showed it, the main window shows the library instead. Asking for the module again brings its window to the front.
+- The view itself moves, so a web app's browser and a video keep running: WPF re-parents their native windows rather than creating new ones. Spike #6's hand-over to a second video view, with its track re-selection and seek, is not needed.
+- Closing the window docks the module back into the main window, hidden (`DockAsync`), and the time ladder applies again. "Return to main window" in the sidebar menu also shows it there.
+- Before closing, the window lets go of the view and hands the windows it still owns to the main window. LibVLCSharp's video overlay is owned by the window its video is in and would otherwise close for good with it.
+- A pop-out goes full screen as the main window does, and opens where it was last time in the session.
+
 Native modules run in-process. True RAM release for them means honoring `SuspendAsync`/`HibernateAsync`: dispose charts, bitmaps, timers, caches; the governor follows up with a GC. Web modules get real process-level release for free because WebView2 is out-of-process by design.
 
 ## 3. Web runner internals

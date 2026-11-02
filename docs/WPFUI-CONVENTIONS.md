@@ -105,5 +105,5 @@ WPF-UI ships Fluent System Icons (MIT). **Segoe Fluent Icons cannot be redistrib
 - `ui:` controls subclass their native counterparts — code and tests targeting base types (`ButtonBase`, `TextBoxBase`) keep working; don't duplicate logic per control flavor.
 - XamlStyler formats everything, including `ui:` attributes (upstream uses XamlStyler themselves).
 - High Contrast: when active, WPF-UI/system colors win over presets ([UI-MODES](UI-MODES.md) §4) — verify in the P3 accessibility pass.
-- `FluentWindow` chrome + child-HWND content (LibVLCSharp `VideoView`): fullscreen toggle is part of P0 spike #6; don't ship media pop-out before it passes.
+- `FluentWindow` chrome + child-HWND content (LibVLCSharp `VideoView`): fullscreen passed P0 spike #6, and media pop-out passed in P2 by moving the same view, whose overlay must not be owned by a closing window ([ARCHITECTURE](ARCHITECTURE.md) §2).
 - Version bumps of `WPF-UI*` packages are Dependabot PRs like any other, but read the release notes first — v3→v4 proved this library will rename APIs between majors.

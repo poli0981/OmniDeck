@@ -36,6 +36,9 @@ public partial class OdMainWindow : INavigationViewPageProvider
 {
     private const int WmSettingChange = 0x001A;
 
+    // How far below and right of this window's corner a module's own window first opens.
+    private const double PopOutOffset = 48;
+
     private readonly OdShellViewModel _shell;
     private readonly OdDialogs _dialogs;
     private readonly OdTrayNotifier _notifier;
@@ -48,6 +51,8 @@ public partial class OdMainWindow : INavigationViewPageProvider
     private readonly OdModuleStage _stage;
     private readonly OdModuleHost _host;
     private readonly OdWindowCover _cover;
+    private readonly Dictionary<string, OdPopOutWindow> _popOuts = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, Rect> _popOutBounds = new(StringComparer.Ordinal);
     private OdPanePlacement? _paneBeforeFullscreen;
     private readonly Dictionary<string, NavigationViewItem> _moduleItems = new(StringComparer.Ordinal);
     private readonly NavigationViewItemSeparator _pinnedSeparator = new();
@@ -94,6 +99,7 @@ public partial class OdMainWindow : INavigationViewPageProvider
         _host = host;
         _cover = new OdWindowCover(this);
         ListenForFullscreen(shell);
+        ListenForPopOuts(shell);
 
         // A web app's browser is a native window over the stage that no dialog can cover: hide it meanwhile.
         dialogs.OpenChanged += (_, _) => _stage.Visibility = dialogs.IsOpen ? Visibility.Hidden : Visibility.Visible;
@@ -275,10 +281,16 @@ public partial class OdMainWindow : INavigationViewPageProvider
     private NavigationViewItem ModuleItem(OdModuleItemViewModel module)
     {
         var pin = new MenuItem { Command = _shell.TogglePinCommand, CommandParameter = module };
+        var popOut = new MenuItem { CommandParameter = module };
         var close = new MenuItem { Command = _shell.CloseCommand, CommandParameter = module };
         close.SetBinding(HeaderedItemsControl.HeaderProperty, Localized("Shell_Close"));
-        var menu = new ContextMenu { Items = { pin, close } };
-        menu.Opened += (_, _) => pin.Header = OdLocalization.Get(module.IsPinned ? "Shell_Unpin" : "Shell_Pin");
+        var menu = new ContextMenu { Items = { pin, popOut, close } };
+        menu.Opened += (_, _) =>
+        {
+            pin.Header = OdLocalization.Get(module.IsPinned ? "Shell_Unpin" : "Shell_Pin");
+            popOut.Header = module.IsPoppedOut ? OdLocalization.Get("Shell_PopIn") : OdLocalization.Get("Shell_PopOut");
+            popOut.Command = module.IsPoppedOut ? _shell.PopInCommand : _shell.PopOutCommand;
+        };
 
         var item = new NavigationViewItem
         {
@@ -298,6 +310,12 @@ public partial class OdMainWindow : INavigationViewPageProvider
         if (sender.SelectedItem is NavigationViewItem { TargetPageTag: { Length: > 0 } target })
         {
             await _shell.NavigateAsync(target);
+
+            // A module in a window of its own stays there: the selection goes back to what this window shows.
+            if (!string.Equals(target, _shell.CurrentTarget, StringComparison.Ordinal))
+            {
+                RootNavigation.Navigate(_shell.CurrentTarget);
+            }
         }
     }
 
@@ -435,6 +453,51 @@ public partial class OdMainWindow : INavigationViewPageProvider
                 SetFullscreen(on: false);
             }
         };
+    }
+
+    private void ListenForPopOuts(OdShellViewModel shell)
+    {
+        shell.PopOutOpened += (_, e) => OpenPopOut(e.Item, e.View!);
+        shell.PopOutActivationRequested += (_, e) => _popOuts.GetValueOrDefault(e.Item.Id)?.Present();
+        shell.PopOutCloseRequested += (_, e) =>
+        {
+            if (_popOuts.Remove(e.Item.Id, out var window))
+            {
+                window.Release();
+                _popOutBounds[e.Item.Id] = window.LastBounds;
+            }
+        };
+    }
+
+    /// <summary>Opens a module's own window where it was last in this session, or beside this window.</summary>
+    private void OpenPopOut(OdModuleItemViewModel item, FrameworkElement view)
+    {
+        var window = new OdPopOutWindow(item, view, this);
+        if (_popOutBounds.TryGetValue(item.Id, out var bounds))
+        {
+            window.Left = bounds.Left;
+            window.Top = bounds.Top;
+            window.Width = bounds.Width;
+            window.Height = bounds.Height;
+        }
+        else if (IsVisible && WindowState == WindowState.Normal)
+        {
+            window.Left = Left + PopOutOffset;
+            window.Top = Top + PopOutOffset;
+        }
+        else
+        {
+            window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+        }
+
+        window.Returned += async (_, _) =>
+        {
+            _popOuts.Remove(item.Id);
+            _popOutBounds[item.Id] = window.LastBounds;
+            await _shell.DockAsync(item);
+        };
+        _popOuts[item.Id] = window;
+        window.Show();
     }
 
     private void OnFullscreenRequested(object? sender, OdFullscreenRequestedEventArgs e)
