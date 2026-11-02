@@ -1,0 +1,34 @@
+﻿<UserControl x:Class="OmniDeck.Web.Apps.OdWebAppView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!--  Notices sit above the browser: WebView2 is a native window that no WPF element can cover.  -->
+        <DockPanel x:Name="NoticePanel"
+                   Grid.Row="0"
+                   Margin="{DynamicResource Od.Margin.Item}"
+                   Visibility="Collapsed">
+            <ui:Button x:Name="NoticeAction"
+                       Margin="{DynamicResource Od.Padding.Control}"
+                       VerticalAlignment="Center"
+                       Click="OnNoticeAction"
+                       DockPanel.Dock="Right" />
+            <ui:InfoBar x:Name="Notice"
+                        IsClosable="False"
+                        IsOpen="True"
+                        Severity="Warning" />
+        </DockPanel>
+
+        <Grid x:Name="BrowserHost" Grid.Row="1" />
+        <ui:ProgressRing x:Name="Starting"
+                         Grid.Row="1"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         IsIndeterminate="True" />
+    </Grid>
+</UserControl>

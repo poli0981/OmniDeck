@@ -2,6 +2,7 @@ using OmniDeck.App.Resources;
 using OmniDeck.Core.Localization;
 using OmniDeck.Modules.Resources;
 using OmniDeck.Tests.TestSupport;
+using OmniDeck.Web.Resources;
 
 [assembly: AssemblyFixture(typeof(OdAppStringsFixture))]
 
@@ -14,5 +15,6 @@ public sealed class OdAppStringsFixture
     {
         OdLocalization.Instance.Register(OdAppStrings.Resources);
         OdLocalization.Instance.Register(OdModuleStrings.Resources);
+        OdLocalization.Instance.Register(OdWebStrings.Resources);
     }
 }

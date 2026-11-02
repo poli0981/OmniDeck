@@ -4,6 +4,8 @@
     <TargetFramework>net10.0-windows</TargetFramework>
     <!-- The web runner hosts WebView2's WPF control (docs/ARCHITECTURE.md §3). -->
     <UseWPF>true</UseWPF>
+    <!-- Resources/Strings.resx is English; the resource manager never probes for an "en" satellite. -->
+    <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
   <!-- The web runner: the catalog, profiles, navigation policy and the WebView2 host. It depends on
@@ -18,6 +20,14 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OmniDeck.Core\OmniDeck.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WPF-UI" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4314.35" />
   </ItemGroup>
 
 </Project>

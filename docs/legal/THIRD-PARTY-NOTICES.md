@@ -24,12 +24,12 @@ OmniDeck is licensed under GPL-3.0. This file lists the third-party components O
 | SQLite (the `e_sqlite3` native library) | bundled with SQLitePCLRaw 2.1.13 | public domain | local database engine |
 | Ical.Net | 5.2.3 | MIT | calendar repeats and .ics import/export |
 | NodaTime (with the IANA time zone database, public domain) | 3.2.2 | Apache-2.0 | time zones for Ical.Net |
+| Microsoft.Web.WebView2 (Core, WPF and WinForms bindings, WebView2Loader) | 1.0.4314.35 | BSD-3-Clause | web app engine bindings; the WebView2 Runtime itself is not bundled (§3) |
 
 ## 2. Planned components (bundled from the version that introduces them)
 
 | Component | License | Role | Phase |
 |---|---|---|---|
-| Microsoft.Web.WebView2 (SDK) | BSD-3-Clause (Microsoft) | web app engine bindings | P2 |
 | LibVLCSharp.WPF | LGPL-2.1-or-later | media bindings | P2 |
 | libVLC (`VideoLAN.LibVLC.Windows`) | LGPL-2.1-or-later core; some plugins GPL-2.0-or-later | media engine | P2 |
 | ScottPlot.WPF (+ SkiaSharp, OpenTK) | MIT | stock charts | P3 |
@@ -277,6 +277,38 @@ Applies to these components in §1, with their copyright notices:
       of your accepting any such warranty or additional liability.
 
    END OF TERMS AND CONDITIONS
+```
+
+### BSD 3-Clause License
+
+Applies to Microsoft.Web.WebView2: Copyright (C) Microsoft Corporation. All rights reserved.
+
+```
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+   * Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+   * Redistributions in binary form must reproduce the above
+copyright notice, this list of conditions and the following disclaimer
+in the documentation and/or other materials provided with the
+distribution.
+   * The name of Microsoft Corporation, or the names of its contributors 
+may not be used to endorse or promote products derived from this
+software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
 ### BSD 2-Clause License

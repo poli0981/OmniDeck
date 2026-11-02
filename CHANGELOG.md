@@ -16,12 +16,18 @@ All notable changes to OmniDeck are documented here. The format follows
   is running. Import and export .ics files; repeats written by other calendar apps are kept as they
   are. One date of a series can be deleted without touching the rest.
 - OmniDeck keeps its list of web apps up to date: once a day it checks the list in this repository and,
-  when there is a newer valid one, uses it from the next start. The web apps themselves arrive with
-  the web runner, later in this release.
+  when there is a newer valid one, uses it from the next start.
+- Web apps: Spotify, Discord, YouTube, Gmail, Google Calendar, Google Drive, Google Maps and Facebook
+  open inside OmniDeck like the built-in modules. The Google apps share one sign-in; every other app
+  keeps its own. A link to another site opens in your default browser, while sign-in popups stay in
+  the app. A web app that sleeps or is closed down to save memory comes back on the page it showed;
+  one whose page crashes reloads by itself. Notifications, site permissions and downloads for web
+  apps come later in this release.
 
 ### Changed
 - Clicking a notification opens the module that raised it: a finished timer opens Timer.
-- Quitting closes every open module first, so each one can save its state before OmniDeck exits.
+- Quitting closes every open module first, so each one can save its state before OmniDeck exits. With
+  web apps open, it also waits a moment for the browser to save its cookies, so you stay signed in.
 - OmniDeck re-styles its windows only when Windows' dark or light mode, accent color, High Contrast or
   animation setting changes, not on every settings broadcast from Windows.
 

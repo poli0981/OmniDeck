@@ -8,11 +8,11 @@ using Serilog;
 namespace OmniDeck.Web.Catalog;
 
 /// <summary>
-/// Which web apps this session can run (docs/WEBAPP-CATALOG.md): the newer of the catalog bundled
-/// with the build and the last one fetched from the repository, each checked against the catalog's
-/// rules. Once a day it fetches <c>main</c>'s copy (docs/legal/PRIVACY.md §2: "the daily web-app
-/// catalog refresh"); a valid one is kept and applies from the next start, so the running set of
-/// modules never changes under the user.
+/// Which web apps this session can run (docs/WEBAPP-CATALOG.md): <see cref="LoadInstalled"/> picks the
+/// newer of the catalog bundled with the build and the last one fetched from the repository, each
+/// checked against the catalog's rules, before the app builds its modules. Once a day the service
+/// fetches <c>main</c>'s copy (docs/legal/PRIVACY.md §2: "the daily web-app catalog refresh"); a valid
+/// one is kept and applies from the next start, so the running set of modules never changes under the user.
 /// </summary>
 public sealed class OdCatalogService : IDisposable
 {
@@ -27,32 +27,56 @@ public sealed class OdCatalogService : IDisposable
 
     private readonly HttpClient _http;
     private readonly IOdAppMeta _meta;
-    private readonly string _bundledPath;
     private readonly string _savedPath;
     private readonly TimeProvider _time;
     private readonly ILogger _log;
     private ITimer? _timer;
 
-    public OdCatalogService(HttpClient http, IOdAppMeta meta, OdDataRoot dataRoot, TimeProvider time, ILogger log)
-        : this(http, meta, Path.Combine(AppContext.BaseDirectory, "catalog", "webapps.json"), dataRoot?.CatalogFile ?? "", time, log)
+    public OdCatalogService(HttpClient http, IOdAppMeta meta, OdDataRoot dataRoot, OdCatalog current, TimeProvider time, ILogger log)
+        : this(http, meta, dataRoot?.CatalogFile ?? "", current, time, log)
     {
     }
 
-    internal OdCatalogService(HttpClient http, IOdAppMeta meta, string bundledPath, string savedPath, TimeProvider time, ILogger log)
+    internal OdCatalogService(HttpClient http, IOdAppMeta meta, string savedPath, OdCatalog current, TimeProvider time, ILogger log)
     {
         _http = http;
         _meta = meta;
-        _bundledPath = bundledPath;
         _savedPath = savedPath;
         _time = time;
         _log = log.ForContext<OdCatalogService>();
-        Current = Load();
+        Current = current;
     }
 
     /// <summary>The catalog in effect until the next start.</summary>
     public OdCatalog Current { get; }
 
     private DateOnly Today => DateOnly.FromDateTime(_time.GetUtcNow().UtcDateTime);
+
+    /// <summary>The catalog for this session: the newer of the bundled and the last fetched copy.</summary>
+    public static OdCatalog LoadInstalled(OdDataRoot dataRoot, TimeProvider time, ILogger log)
+    {
+        ArgumentNullException.ThrowIfNull(dataRoot);
+        ArgumentNullException.ThrowIfNull(time);
+        return Load(Path.Combine(AppContext.BaseDirectory, "catalog", "webapps.json"), dataRoot.CatalogFile, DateOnly.FromDateTime(time.GetUtcNow().UtcDateTime), log);
+    }
+
+    /// <summary>The newer (by <c>updated</c>) of two catalogs that pass the rules; one with no apps when neither does.</summary>
+    internal static OdCatalog Load(string bundledPath, string savedPath, DateOnly today, ILogger log)
+    {
+        ArgumentNullException.ThrowIfNull(log);
+        log = log.ForContext<OdCatalogService>();
+        var bundled = Read(bundledPath, "bundled", today, log);
+        var saved = Read(savedPath, "fetched", today, log);
+        var chosen = (bundled, saved) switch
+        {
+            ({ } fromBuild, { } fetched) => string.CompareOrdinal(fetched.Updated, fromBuild.Updated) > 0 ? fetched : fromBuild,
+            ({ } fromBuild, null) => fromBuild,
+            (null, { } fetched) => fetched,
+            _ => OdCatalog.Empty,
+        };
+        log.Information("Web app catalog {Updated} in use ({Count} apps)", chosen.Updated, chosen.Apps.Count);
+        return chosen;
+    }
 
     /// <summary>Starts the daily check: a minute after startup, or a day after the last check.</summary>
     public void Start()
@@ -128,22 +152,7 @@ public sealed class OdCatalogService : IDisposable
         }
     }
 
-    private OdCatalog Load()
-    {
-        var bundled = Read(_bundledPath, "bundled");
-        var saved = Read(_savedPath, "fetched");
-        var chosen = (bundled, saved) switch
-        {
-            ({ } fromBuild, { } fetched) => string.CompareOrdinal(fetched.Updated, fromBuild.Updated) > 0 ? fetched : fromBuild,
-            ({ } fromBuild, null) => fromBuild,
-            (null, { } fetched) => fetched,
-            _ => OdCatalog.Empty,
-        };
-        _log.Information("Web app catalog {Updated} in use ({Count} apps)", chosen.Updated, chosen.Apps.Count);
-        return chosen;
-    }
-
-    private OdCatalog? Read(string path, string kind)
+    private static OdCatalog? Read(string path, string kind, DateOnly today, ILogger log)
     {
         if (!File.Exists(path))
         {
@@ -153,17 +162,17 @@ public sealed class OdCatalogService : IDisposable
         try
         {
             var catalog = OdCatalogJson.Parse(File.ReadAllText(path));
-            var problems = OdCatalogValidator.Problems(catalog, Today);
+            var problems = OdCatalogValidator.Problems(catalog, today);
             if (problems.Count == 0)
             {
                 return catalog;
             }
 
-            _log.Warning("The {Kind} web app catalog is not valid: {Problems}", kind, problems);
+            log.Warning("The {Kind} web app catalog is not valid: {Problems}", kind, problems);
         }
         catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException)
         {
-            _log.Warning(ex, "The {Kind} web app catalog could not be read", kind);
+            log.Warning(ex, "The {Kind} web app catalog could not be read", kind);
         }
 
         return null;

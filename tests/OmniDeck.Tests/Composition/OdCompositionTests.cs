@@ -10,6 +10,8 @@ using OmniDeck.Core.Storage;
 using OmniDeck.Modules;
 using OmniDeck.Tests.TestSupport;
 using OmniDeck.Web;
+using OmniDeck.Web.Catalog;
+using OmniDeck.Web.Runtime;
 using Serilog.Core;
 
 namespace OmniDeck.Tests.Composition;
@@ -23,7 +25,7 @@ public sealed class OdCompositionTests
         var services = new ServiceCollection()
             .AddOmniDeckCore(new OdDataRoot(temp.Path), Logger.None)
             .AddOmniDeckModules()
-            .AddOmniDeckWeb()
+            .AddOmniDeckWeb(OdCatalog.Empty, new OdWebOptions())
             .AddOmniDeckApp();
 
         using var provider = services.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
@@ -32,6 +34,25 @@ public sealed class OdCompositionTests
         Assert.StartsWith("OmniDeck/", provider.GetRequiredService<HttpClient>().DefaultRequestHeaders.UserAgent.ToString(), StringComparison.Ordinal);
         Assert.Same(provider.GetRequiredService<OdTrayNotifier>(), provider.GetRequiredService<IOdNotifier>());
         Assert.Equal(new[] { "clock", "timer", "calculator", "weather", "calendar" }, provider.GetRequiredService<OdModuleHost>().Modules.Select(m => m.Info.Id), StringComparer.Ordinal);
+    }
+
+    [Fact]
+    public void EachCatalogApp_BecomesAModule_AfterTheBuiltInOnes()
+    {
+        using var temp = new OdTempDirectory();
+        var catalog = OdCatalogService.Load(Path.Combine(OdRepository.Root, "catalog", "webapps.json"), temp.Combine("none.json"), new DateOnly(2026, 11, 2), Logger.None);
+        using var provider = new ServiceCollection()
+            .AddOmniDeckCore(new OdDataRoot(temp.Path), Logger.None)
+            .AddOmniDeckModules()
+            .AddOmniDeckWeb(catalog, new OdWebOptions())
+            .AddOmniDeckApp()
+            .BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
+
+        var modules = provider.GetRequiredService<OdModuleHost>().Modules;
+
+        Assert.Equal(5 + catalog.Apps.Count, modules.Count);
+        Assert.Equal(catalog.Apps.Select(app => app.Id), modules.Skip(5).Select(module => module.Info.Id), StringComparer.Ordinal);
+        Assert.Equal("Gmail", modules.Single(module => string.Equals(module.Info.Id, "gmail", StringComparison.Ordinal)).Info.Title);
     }
 
     [Fact]

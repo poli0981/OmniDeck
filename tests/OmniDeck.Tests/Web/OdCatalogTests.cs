@@ -98,19 +98,19 @@ public sealed class OdCatalogTests : IDisposable
         var saved = Path.Combine(_temp.Path, "saved", "webapps.json");
         File.WriteAllText(bundled, RepositoryCatalog);
 
-        Assert.Equal("2026-11-02", NewService(bundled, saved).Current.Updated);
+        Assert.Equal("2026-11-02", OdCatalogService.Load(bundled, saved, Today, Logger.None).Updated);
 
         Directory.CreateDirectory(Path.GetDirectoryName(saved)!);
         File.WriteAllText(saved, Changed(root => root["updated"] = "2026-11-03"));
-        Assert.Equal("2026-11-03", NewService(bundled, saved).Current.Updated);
+        Assert.Equal("2026-11-03", OdCatalogService.Load(bundled, saved, Today, Logger.None).Updated);
 
         File.WriteAllText(saved, Changed(root => root["updated"] = "2026-10-01"));
-        Assert.Equal("2026-11-02", NewService(bundled, saved).Current.Updated);
+        Assert.Equal("2026-11-02", OdCatalogService.Load(bundled, saved, Today, Logger.None).Updated);
 
         File.WriteAllText(saved, "{ broken");
-        Assert.Equal("2026-11-02", NewService(bundled, saved).Current.Updated);
+        Assert.Equal("2026-11-02", OdCatalogService.Load(bundled, saved, Today, Logger.None).Updated);
 
-        Assert.Empty(NewService(_temp.Combine("missing.json"), _temp.Combine("missing-too.json")).Current.Apps);
+        Assert.Empty(OdCatalogService.Load(_temp.Combine("missing.json"), _temp.Combine("missing-too.json"), Today, Logger.None).Apps);
     }
 
     [Fact]
@@ -119,7 +119,7 @@ public sealed class OdCatalogTests : IDisposable
         var saved = Path.Combine(_temp.Path, "saved", "webapps.json");
         var next = Changed(root => root["updated"] = "2026-11-03");
         var http = new OdFakeHttp(request => request.Headers.IfNoneMatch.Count > 0 ? new HttpResponseMessage(HttpStatusCode.NotModified) : Ok(next, "\"v2\""));
-        using var service = NewService(_temp.Combine("missing.json"), saved, http);
+        using var service = NewService(saved, http);
 
         Assert.Equal(OdCatalogCheck.Updated, await service.CheckAsync(Token));
         Assert.Equal(next, await File.ReadAllTextAsync(saved, Token));
@@ -142,7 +142,7 @@ public sealed class OdCatalogTests : IDisposable
             () => throw new HttpRequestException("No such host is known."),
             () => new HttpResponseMessage(HttpStatusCode.TooManyRequests),
         ]);
-        using var service = NewService(_temp.Combine("missing.json"), saved, new OdFakeHttp(_ => answers.Dequeue()()));
+        using var service = NewService(saved, new OdFakeHttp(_ => answers.Dequeue()()));
 
         Assert.Equal(OdCatalogCheck.Rejected, await service.CheckAsync(Token));
         Assert.Equal(OdCatalogCheck.Failed, await service.CheckAsync(Token));
@@ -156,7 +156,7 @@ public sealed class OdCatalogTests : IDisposable
     {
         var http = new OdFakeHttp(_ => new HttpResponseMessage(HttpStatusCode.NotModified));
         _meta.Set(OdAppMetaKeys.CatalogCheckedAt, _time.GetUtcNow().AddHours(-2).ToString("O", System.Globalization.CultureInfo.InvariantCulture));
-        using var service = NewService(_temp.Combine("missing.json"), _temp.Combine("saved.json"), http);
+        using var service = NewService(_temp.Combine("saved.json"), http);
 
         service.Start();
         _time.Advance(TimeSpan.FromHours(21));
@@ -196,8 +196,8 @@ public sealed class OdCatalogTests : IDisposable
         return response;
     }
 
-    private OdCatalogService NewService(string bundled, string saved, HttpMessageHandler? handler = null) =>
-        new(new HttpClient(handler ?? new OdFakeHttp(_ => throw new HttpRequestException("offline"))), _meta, bundled, saved, _time, Logger.None);
+    private OdCatalogService NewService(string saved, HttpMessageHandler handler) =>
+        new(new HttpClient(handler), _meta, saved, OdCatalog.Empty, _time, Logger.None);
 
     /// <summary>Answers requests without the network and remembers them.</summary>
     private sealed class OdFakeHttp(Func<HttpRequestMessage, HttpResponseMessage> answer) : HttpMessageHandler
