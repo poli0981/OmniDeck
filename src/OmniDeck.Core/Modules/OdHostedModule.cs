@@ -19,6 +19,9 @@ public sealed class OdHostedModule
     /// <summary>The module's view; <see langword="null"/> before the first open and after hibernation or closing.</summary>
     public FrameworkElement? View { get; internal set; }
 
+    /// <summary>Whether the module shows in a window of its own (a pop-out) rather than in the main window.</summary>
+    public bool IsPoppedOut { get; internal set; }
+
     /// <summary>When the module was last visible: the governor measures how long it has been hidden from here.</summary>
     public DateTimeOffset LastActive { get; internal set; }
 

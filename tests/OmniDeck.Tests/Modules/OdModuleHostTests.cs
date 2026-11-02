@@ -218,6 +218,72 @@ public sealed class OdModuleHostTests : IDisposable
         Assert.Same(database, _clock.Context.Database);
     });
 
+    [Fact]
+    public void PopOut_KeepsTheModuleActive_BesideTheMainWindowsModule() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        await host.ShowAsync("clock");
+
+        var view = await host.PopOutAsync("timer");
+
+        var timer = host.Find("timer")!;
+        Assert.Same(timer.View, view);
+        Assert.True(timer.IsPoppedOut);
+        Assert.Equal(OdModuleState.Active, timer.State);
+        Assert.Same(host.Find("clock"), host.Current);
+        Assert.Equal(new[] { "init", "view", "activate" }, _timer.Calls, StringComparer.Ordinal);
+        Assert.False(await host.SuspendAsync("timer", OdSuspendReason.MemoryPressure));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => host.ShowAsync("timer"));
+    });
+
+    [Fact]
+    public void PopOut_OfTheMainWindowsModule_LeavesTheMainWindowEmpty() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        var shown = await host.ShowAsync("clock");
+
+        var view = await host.PopOutAsync("clock");
+
+        Assert.Same(shown, view);
+        Assert.Null(host.Current);
+        Assert.Equal(OdModuleState.Active, host.Find("clock")?.State);
+        Assert.Equal(new[] { "init", "view", "activate" }, _clock.Calls, StringComparer.Ordinal);
+    });
+
+    [Fact]
+    public void Dock_HidesTheModule_AndTheLadderAppliesAgain() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        var view = await host.PopOutAsync("clock");
+        _time.Advance(TimeSpan.FromMinutes(5));
+
+        await host.DockAsync("clock");
+        await host.DockAsync("clock");
+
+        var clock = host.Find("clock")!;
+        Assert.False(clock.IsPoppedOut);
+        Assert.Equal(OdModuleState.Idle, clock.State);
+        Assert.Equal(Start.AddMinutes(5), clock.LastActive);
+        Assert.True(await host.SuspendAsync("clock", OdSuspendReason.Hidden));
+        Assert.Same(view, await host.ShowAsync("clock"));
+    });
+
+    [Fact]
+    public void Close_EndsAPopOut() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        await host.PopOutAsync("clock");
+        _time.Advance(TimeSpan.FromMinutes(2));
+
+        await host.CloseAsync("clock");
+
+        var clock = host.Find("clock")!;
+        Assert.False(clock.IsPoppedOut);
+        Assert.Null(clock.View);
+        Assert.Equal(OdModuleState.Closed, clock.State);
+        Assert.Equal(Start.AddMinutes(2), clock.LastActive);
+    });
+
     private OdModuleHost NewHost(params IOdModule[] more) => new(
         [_clock, _timer, .. more],
         new OdDatabase(_temp.Combine("omnideck.db"), pooling: false),

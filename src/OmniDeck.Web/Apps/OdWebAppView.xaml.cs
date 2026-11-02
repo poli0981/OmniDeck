@@ -3,6 +3,7 @@ using System.Windows;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
 using OmniDeck.Core.Localization;
+using OmniDeck.Core.Modules;
 using OmniDeck.Web.Navigation;
 using OmniDeck.Web.Runtime;
 
@@ -11,7 +12,7 @@ namespace OmniDeck.Web.Apps;
 /// <summary>
 /// A web app's screen (docs/ARCHITECTURE.md §3): WebView2 on the app's catalog profile, with the
 /// browser settings, the navigation policy, sign-in popups, notifications, permission questions,
-/// crash recovery and the console capture.
+/// full screen, crash recovery and the console capture.
 /// </summary>
 public partial class OdWebAppView : IOdWebSurface
 {
@@ -137,6 +138,7 @@ public partial class OdWebAppView : IOdWebSurface
         core.NewWindowRequested += OnNewWindowRequested;
         core.NavigationCompleted += OnNavigationCompleted;
         core.ProcessFailed += OnProcessFailed;
+        core.ContainsFullScreenElementChanged += OnFullScreenElementChanged;
         core.NotificationReceived += OnNotificationReceived;
         core.PermissionRequested += OnPermissionRequested;
         _ = CaptureConsoleAsync(core);
@@ -227,6 +229,37 @@ public partial class OdWebAppView : IOdWebSurface
         catch (Exception ex) when (ex is not OutOfMemoryException)
         {
             _module.Log.Warning(ex, "The web app's sign-in health could not be checked");
+        }
+    }
+
+    // A page's full screen (a video's, say) fills the monitor: the window covers it (OdFullscreen).
+    private void OnFullScreenElementChanged(object? sender, object e)
+    {
+        if (sender is CoreWebView2 core)
+        {
+            OdFullscreen.Request(this, core.ContainsFullScreenElement);
+        }
+    }
+
+    /// <summary>The window left full screen on its own (Esc, another module): the page leaves it too.</summary>
+    protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+    {
+        base.OnPropertyChanged(e);
+        if (e.Property == OdFullscreen.IsActiveProperty && e.NewValue is false && _browser?.CoreWebView2 is { ContainsFullScreenElement: true } core)
+        {
+            _ = LeavePageFullScreenAsync(core);
+        }
+    }
+
+    private async Task LeavePageFullScreenAsync(CoreWebView2 core)
+    {
+        try
+        {
+            await core.ExecuteScriptAsync("if (document.fullscreenElement) { document.exitFullscreen().catch(() => {}); }");
+        }
+        catch (Exception ex) when (ex is COMException or InvalidOperationException)
+        {
+            _module.Log.Debug(ex, "The page could not leave full screen");
         }
     }
 

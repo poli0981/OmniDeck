@@ -12,6 +12,8 @@ The governor is the feature that makes "many apps in one" viable. It moves every
 | Hibernated | hidden ≥ `HibernateAfter`, or cap pressure | `HibernateAsync`: view + everything released, tiny state blob kept | `Dispose()`; only `{url}` kept, session lives in profile cookies | 0. Disposing the *last* web app also ends the shared processes |
 | Closed | user closes | released | released | 0 |
 
+A module in a window of its own (a pop-out) is visible while that window is open, so it stays Active whatever the main window shows; closing the window puts it back on the ladder as a hidden module.
+
 Reactivation from Suspended is instant. From Hibernated it is a cold open (view rebuild and page reload, about 0.6–2.5 s); that is acceptable because the profile keeps the user signed in. After the last web app has been hibernated, the next one also restarts the browser process (about 160 ms).
 
 ## 2. Defaults (all configurable in Settings → Memory)

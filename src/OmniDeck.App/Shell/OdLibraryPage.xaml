@@ -70,6 +70,14 @@
                                                Content="{res:OdLoc Shell_Open}" />
                                     <ui:Button Margin="{DynamicResource Od.Padding.Control}"
                                                Appearance="Transparent"
+                                               AutomationProperties.Name="{res:OdLoc Shell_PopOut}"
+                                               Command="{Binding DataContext.PopOutCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                               CommandParameter="{Binding}"
+                                               ToolTip="{res:OdLoc Shell_PopOut}">
+                                        <ui:SymbolIcon Symbol="WindowNew24" />
+                                    </ui:Button>
+                                    <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                               Appearance="Transparent"
                                                Command="{Binding DataContext.TogglePinCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                CommandParameter="{Binding}">
                                         <ui:Button.Style>

@@ -10,6 +10,10 @@ public sealed partial class OdModuleItemViewModel(OdModuleInfo info) : Observabl
     [ObservableProperty]
     private bool _isPinned;
 
+    /// <summary>Shown in a window of its own rather than in the main window.</summary>
+    [ObservableProperty]
+    private bool _isPoppedOut;
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsOpen))]
     private OdModuleState _state = OdModuleState.Created;

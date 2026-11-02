@@ -11,10 +11,10 @@ using OmniDeck.Core.Settings;
 namespace OmniDeck.App.Shell;
 
 /// <summary>
-/// The shell's state: what the sidebar lists, what is showing (a module or the library page) and the
-/// view on the module stage. The navigation view is chrome only (docs/WPFUI-CONVENTIONS.md §5): every
-/// navigation comes through <see cref="NavigateAsync"/> and the module host runs the module. Used from
-/// the UI thread.
+/// The shell's state: what the sidebar lists, what is showing (a module or the library page), the
+/// view on the module stage, and which modules show in windows of their own. The navigation view is
+/// chrome only (docs/WPFUI-CONVENTIONS.md §5): every navigation comes through <see cref="NavigateAsync"/>
+/// and the module host runs the module. Used from the UI thread.
 /// </summary>
 public sealed partial class OdShellViewModel : ObservableObject, IDisposable
 {
@@ -57,6 +57,15 @@ public sealed partial class OdShellViewModel : ObservableObject, IDisposable
 
     /// <summary>Raised when a settings tab should come to the front, such as the palette's "Running modules".</summary>
     public event EventHandler<OdSettingsSectionEventArgs>? SettingsSectionRequested;
+
+    /// <summary>A module moved into a window of its own, which shows <see cref="OdPopOutEventArgs.View"/>.</summary>
+    public event EventHandler<OdPopOutEventArgs>? PopOutOpened;
+
+    /// <summary>A module in a window of its own was asked for: that window comes to the front.</summary>
+    public event EventHandler<OdPopOutEventArgs>? PopOutActivationRequested;
+
+    /// <summary>A module's own window must let go of the view and close: the module returns to the main window, or closed.</summary>
+    public event EventHandler<OdPopOutEventArgs>? PopOutCloseRequested;
 
     /// <summary>Every module, in registration order: the library page.</summary>
     public IReadOnlyList<OdModuleItemViewModel> Library { get; }
@@ -111,7 +120,10 @@ public sealed partial class OdShellViewModel : ObservableObject, IDisposable
         return position >= 0 && position < visible.Count ? visible[position].Id : null;
     }
 
-    /// <summary>Shows <paramref name="target"/>: a module id, or one of the shell's own pages. Other targets are ignored.</summary>
+    /// <summary>
+    /// Shows <paramref name="target"/>: a module id, or one of the shell's own pages. A module in a window of
+    /// its own stays there, and its window comes to the front. Other targets are ignored.
+    /// </summary>
     public async Task NavigateAsync(string target)
     {
         ArgumentNullException.ThrowIfNull(target);
@@ -121,8 +133,14 @@ public sealed partial class OdShellViewModel : ObservableObject, IDisposable
             CurrentView = null;
             CurrentTarget = target;
         }
-        else if (_items.ContainsKey(target))
+        else if (_items.TryGetValue(target, out var item))
         {
+            if (item.IsPoppedOut)
+            {
+                PopOutActivationRequested?.Invoke(this, new OdPopOutEventArgs(item));
+                return;
+            }
+
             CurrentView = await _host.ShowAsync(target);
             CurrentTarget = target;
         }
@@ -142,6 +160,13 @@ public sealed partial class OdShellViewModel : ObservableObject, IDisposable
         ];
     }
 
+    /// <summary>The user closed a module's own window: the module goes back to the main window, hidden.</summary>
+    public Task DockAsync(OdModuleItemViewModel item)
+    {
+        ArgumentNullException.ThrowIfNull(item);
+        return _host.DockAsync(item.Id);
+    }
+
     public void Dispose()
     {
         _host.StateChanged -= OnModuleStateChanged;
@@ -154,6 +179,40 @@ public sealed partial class OdShellViewModel : ObservableObject, IDisposable
 
     [RelayCommand]
     private Task CloseAsync(OdModuleItemViewModel item) => _host.CloseAsync(item.Id);
+
+    /// <summary>Moves a module into a window of its own; a main window that showed it shows the library instead.</summary>
+    [RelayCommand]
+    private async Task PopOutAsync(OdModuleItemViewModel item)
+    {
+        if (item.IsPoppedOut)
+        {
+            PopOutActivationRequested?.Invoke(this, new OdPopOutEventArgs(item));
+            return;
+        }
+
+        if (string.Equals(item.Id, CurrentTarget, StringComparison.Ordinal))
+        {
+            // A view is in one window at a time: the main window lets go of it first.
+            await NavigateAsync(LibraryTarget);
+        }
+
+        var view = await _host.PopOutAsync(item.Id);
+        PopOutOpened?.Invoke(this, new OdPopOutEventArgs(item, view));
+    }
+
+    /// <summary>Brings a module back from its own window and shows it in the main window.</summary>
+    [RelayCommand]
+    private async Task PopInAsync(OdModuleItemViewModel item)
+    {
+        if (!item.IsPoppedOut)
+        {
+            return;
+        }
+
+        PopOutCloseRequested?.Invoke(this, new OdPopOutEventArgs(item));
+        await _host.DockAsync(item.Id);
+        await NavigateAsync(item.Id);
+    }
 
     [RelayCommand]
     private void TogglePin(OdModuleItemViewModel item) => _settings.Update(s => s with
@@ -178,11 +237,18 @@ public sealed partial class OdShellViewModel : ObservableObject, IDisposable
             return;
         }
 
+        var wasPoppedOut = item.IsPoppedOut;
         item.State = e.Module.State;
+        item.IsPoppedOut = e.Module.IsPoppedOut;
         if (!item.IsOpen)
         {
             _openOrder.Remove(item);
-            if (string.Equals(item.Id, CurrentTarget, StringComparison.Ordinal))
+            if (wasPoppedOut)
+            {
+                // Closed in its own window: the window goes too.
+                PopOutCloseRequested?.Invoke(this, new OdPopOutEventArgs(item));
+            }
+            else if (string.Equals(item.Id, CurrentTarget, StringComparison.Ordinal))
             {
                 // Closed while showing: the library takes its place.
                 CurrentView = null;
