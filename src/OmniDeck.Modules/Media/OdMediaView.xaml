@@ -47,77 +47,90 @@
                 <Border Grid.Row="1"
                         Padding="{DynamicResource Od.Padding.Card}"
                         Background="{DynamicResource SolidBackgroundFillColorSecondaryBrush}">
-                    <DockPanel>
-                        <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
-                            <ui:Button AutomationProperties.Name="{res:OdLoc Media_Previous}"
-                                       Command="{Binding PreviousCommand}"
-                                       Icon="{ui:SymbolIcon Previous24}"
-                                       ToolTip="{res:OdLoc Media_Previous}" />
-                            <ui:Button Margin="{DynamicResource Od.Padding.Control}"
-                                       AutomationProperties.Name="{res:OdLoc Media_PlayPause}"
-                                       Command="{Binding PlayPauseCommand}"
-                                       Icon="{ui:SymbolIcon Play24}"
-                                       ToolTip="{res:OdLoc Media_PlayPause}" />
-                            <ui:Button AutomationProperties.Name="{res:OdLoc Media_Next}"
-                                       Command="{Binding NextCommand}"
-                                       Icon="{ui:SymbolIcon Next24}"
-                                       ToolTip="{res:OdLoc Media_Next}" />
-                            <ui:Button Margin="{DynamicResource Od.Padding.Control}"
-                                       AutomationProperties.Name="{res:OdLoc Media_Stop}"
-                                       Command="{Binding StopCommand}"
-                                       Icon="{ui:SymbolIcon Stop24}"
-                                       ToolTip="{res:OdLoc Media_Stop}" />
-                        </StackPanel>
-                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                            <ui:Button AutomationProperties.Name="{res:OdLoc Media_Mute}"
+                    <!--  The seek bar has a row of its own, so it keeps its length beside the queue; when the bar is narrow, the volume slider gives way first.  -->
+                    <StackPanel>
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Right"
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                       Text="{Binding TimeText}" />
+                            <TextBlock FontWeight="SemiBold"
+                                       Text="{Binding Title}"
+                                       TextTrimming="CharacterEllipsis" />
+                        </DockPanel>
+                        <Slider AutomationProperties.Name="{res:OdLoc Media_Seek}"
+                                IsMoveToPointEnabled="True"
+                                Maximum="{Binding Length}"
+                                Minimum="0"
+                                Value="{Binding Position, Delay=150}" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="3*"
+                                                  MinWidth="64"
+                                                  MaxWidth="136" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                <ui:Button AutomationProperties.Name="{res:OdLoc Media_Previous}"
+                                           Command="{Binding PreviousCommand}"
+                                           Icon="{ui:SymbolIcon Previous24}"
+                                           ToolTip="{res:OdLoc Media_Previous}" />
+                                <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                           AutomationProperties.Name="{res:OdLoc Media_PlayPause}"
+                                           Command="{Binding PlayPauseCommand}"
+                                           Icon="{ui:SymbolIcon Play24}"
+                                           ToolTip="{res:OdLoc Media_PlayPause}" />
+                                <ui:Button AutomationProperties.Name="{res:OdLoc Media_Next}"
+                                           Command="{Binding NextCommand}"
+                                           Icon="{ui:SymbolIcon Next24}"
+                                           ToolTip="{res:OdLoc Media_Next}" />
+                                <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                           AutomationProperties.Name="{res:OdLoc Media_Stop}"
+                                           Command="{Binding StopCommand}"
+                                           Icon="{ui:SymbolIcon Stop24}"
+                                           ToolTip="{res:OdLoc Media_Stop}" />
+                            </StackPanel>
+                            <ui:Button Grid.Column="2"
+                                       AutomationProperties.Name="{res:OdLoc Media_Mute}"
                                        Command="{Binding ToggleMuteCommand}"
                                        Icon="{ui:SymbolIcon Speaker224}"
                                        ToolTip="{res:OdLoc Media_Mute}" />
-                            <Slider Width="120"
+                            <!--  MinWidth: WPF-UI's style asks for 104 px, which a narrow column would clip, thumb and all.  -->
+                            <Slider Grid.Column="3"
+                                    MinWidth="0"
                                     Margin="{DynamicResource Od.Padding.Control}"
                                     VerticalAlignment="Center"
                                     AutomationProperties.Name="{res:OdLoc Media_Volume}"
                                     Maximum="100"
                                     Minimum="0"
                                     Value="{Binding Volume}" />
-                            <ui:Button Margin="{DynamicResource Od.Padding.Control}"
-                                       AutomationProperties.Name="{res:OdLoc Media_More}"
-                                       Click="OnMoreClick"
-                                       Icon="{ui:SymbolIcon MoreHorizontal24}"
-                                       ToolTip="{res:OdLoc Media_More}" />
-                            <ui:Button Margin="{DynamicResource Od.Padding.Control}"
-                                       AutomationProperties.Name="{res:OdLoc Media_Fullscreen}"
-                                       Click="OnFullscreenClick"
-                                       Icon="{ui:SymbolIcon FullScreenMaximize24}"
-                                       ToolTip="{res:OdLoc Media_Fullscreen}"
-                                       Visibility="{Binding IsWindowed, Converter={StaticResource Visible}}" />
-                            <ui:Button Margin="{DynamicResource Od.Padding.Control}"
-                                       AutomationProperties.Name="{res:OdLoc Media_ExitFullscreen}"
-                                       Click="OnFullscreenClick"
-                                       Icon="{ui:SymbolIcon FullScreenMinimize24}"
-                                       ToolTip="{res:OdLoc Media_ExitFullscreen}"
-                                       Visibility="{Binding IsFullscreen, Converter={StaticResource Visible}}" />
-                            <ui:Button AutomationProperties.Name="{res:OdLoc Media_Queue}"
-                                       Command="{Binding ToggleQueueCommand}"
-                                       Icon="{ui:SymbolIcon TextBulletListLtr24}"
-                                       ToolTip="{res:OdLoc Media_Queue}" />
-                        </StackPanel>
-                        <StackPanel Margin="{DynamicResource Od.Padding.Control}" VerticalAlignment="Center">
-                            <DockPanel>
-                                <TextBlock DockPanel.Dock="Right"
-                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                           Text="{Binding TimeText}" />
-                                <TextBlock FontWeight="SemiBold"
-                                           Text="{Binding Title}"
-                                           TextTrimming="CharacterEllipsis" />
-                            </DockPanel>
-                            <Slider AutomationProperties.Name="{res:OdLoc Media_Seek}"
-                                    IsMoveToPointEnabled="True"
-                                    Maximum="{Binding Length}"
-                                    Minimum="0"
-                                    Value="{Binding Position, Delay=150}" />
-                        </StackPanel>
-                    </DockPanel>
+                            <StackPanel Grid.Column="4" Orientation="Horizontal">
+                                <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                           AutomationProperties.Name="{res:OdLoc Media_More}"
+                                           Click="OnMoreClick"
+                                           Icon="{ui:SymbolIcon MoreHorizontal24}"
+                                           ToolTip="{res:OdLoc Media_More}" />
+                                <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                           AutomationProperties.Name="{res:OdLoc Media_Fullscreen}"
+                                           Click="OnFullscreenClick"
+                                           Icon="{ui:SymbolIcon FullScreenMaximize24}"
+                                           ToolTip="{res:OdLoc Media_Fullscreen}"
+                                           Visibility="{Binding IsWindowed, Converter={StaticResource Visible}}" />
+                                <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                           AutomationProperties.Name="{res:OdLoc Media_ExitFullscreen}"
+                                           Click="OnFullscreenClick"
+                                           Icon="{ui:SymbolIcon FullScreenMinimize24}"
+                                           ToolTip="{res:OdLoc Media_ExitFullscreen}"
+                                           Visibility="{Binding IsFullscreen, Converter={StaticResource Visible}}" />
+                                <ui:Button AutomationProperties.Name="{res:OdLoc Media_Queue}"
+                                           Command="{Binding ToggleQueueCommand}"
+                                           Icon="{ui:SymbolIcon TextBulletListLtr24}"
+                                           ToolTip="{res:OdLoc Media_Queue}" />
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
                 </Border>
             </Grid>
         </vlc:VideoView>

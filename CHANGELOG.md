@@ -18,6 +18,9 @@ All notable changes to OmniDeck are documented here. The format follows
 ### Fixed
 - Media: in full screen the picture started a few pixels from the left edge of the screen. It now
   fills the screen.
+- Media: beside the queue, the seek bar shrank to almost nothing, and at the window's default size
+  the queue button was cut off. The seek bar now has a row of its own, and the volume slider gets
+  shorter before anything is cut off.
 
 ## [0.2.0-alpha.2] — 2026-11-02
 
