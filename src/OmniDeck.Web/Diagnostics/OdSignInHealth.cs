@@ -47,5 +47,8 @@ public sealed class OdSignInHealth(IOdAppMeta meta, ILogger log)
         _log.Information("Web profile {Profile} closed with {Count} cookies", profile, count);
     }
 
+    /// <summary>After the profile's data was cleared on purpose: coming back with no cookies is expected.</summary>
+    public void Forget(string profile) => meta.Set(Key(profile), "0");
+
     private static string Key(string profile) => "web.cookies." + profile;
 }

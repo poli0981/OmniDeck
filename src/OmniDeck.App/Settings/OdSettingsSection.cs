@@ -6,6 +6,7 @@ public enum OdSettingsSection
     General,
     Appearance,
     Memory,
+    WebApps,
     Data,
     About,
 }

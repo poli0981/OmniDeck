@@ -28,7 +28,7 @@ OmniDeck deliberately does **not** allow arbitrary user-added URLs in v1: the cu
 | `navAllow` | string[] | domains the main frame may navigate to; anything else opens in the system default browser |
 | `navAllowSets` | string[], optional | names of top-level `navAllowSets` whose domains this entry's main frame may also navigate to; for lists too long to repeat in each entry |
 | `popupAllow` | string[] | domains whose `window.open` popups open **in-app on the same profile** (SSO flows); all other popups go to the default browser |
-| `notifications` | bool | whether web notifications are bridged to Windows toasts (user can still disable per app) |
+| `notifications` | bool | whether web notifications are bridged to Windows toasts by default; the user can switch it per app in Settings → Web apps. An app with notifications on stays running while hidden (RAM-GOVERNOR.md §3) |
 | `audioPin` | bool | if true, the governor treats the app as pinned while it is playing audio |
 
 **Domain matching.** `navAllow` and `popupAllow` entries are lowercase domains or subdomains — no scheme, port, path, or wildcard. A host matches an entry when it equals it or ends with `.` + the entry, on whole DNS labels: `google.com` matches `mail.google.com`, never `evilgoogle.com`. `navAllow` governs **top-level (main-frame) navigations only**; subresource requests (scripts, images, media, API calls to CDNs) are never filtered by it, so a CDN belongs in `navAllow` only when the app really navigates the main frame there (a file download or a media viewer, for example). The `startUrl` host must be covered by `navAllow`, and every `popupAllow` entry by `navAllow` or the entry's sets.

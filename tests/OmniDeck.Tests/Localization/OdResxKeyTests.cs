@@ -15,6 +15,7 @@ using OmniDeck.Modules.Timer;
 using OmniDeck.Modules.Weather;
 using OmniDeck.Tests.Modules;
 using OmniDeck.Tests.TestSupport;
+using OmniDeck.Web.Apps;
 using OmniDeck.Web.Resources;
 
 namespace OmniDeck.Tests.Localization;
@@ -100,8 +101,10 @@ public sealed partial class OdResxKeyTests
         }
         else if (IsWeb(table))
         {
-            // Each web app's module names its category by key (OdWebAppModule).
+            // Each web app's module names its category by key (OdWebAppModule); the permission questions
+            // and the names of the kinds are built from the kinds OmniDeck asks about (OdWebPermissions).
             keys.Add("Category_Web");
+            keys.UnionWith(OdWebPermissions.Asked.SelectMany(kind => new[] { "Web_Ask" + kind, "Web_Kind" + kind }));
         }
         else
         {

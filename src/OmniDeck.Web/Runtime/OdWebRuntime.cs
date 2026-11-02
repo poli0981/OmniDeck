@@ -99,6 +99,34 @@ public sealed class OdWebRuntime(OdDataRoot dataRoot, OdWebOptions options, ILog
         return pages;
     }
 
+    /// <summary>
+    /// Deletes everything the catalog profile <paramref name="profile"/> keeps: cookies, so every
+    /// sign-in, site storage, the cache and the history. Close its apps first. A hidden browser in
+    /// <paramref name="window"/> does the work.
+    /// </summary>
+    public async Task ClearProfileAsync(string profile, nint window)
+    {
+        var environment = await OpenAsync();
+        try
+        {
+            var controller = await environment.CreateCoreWebView2ControllerAsync(window, ControllerOptions(environment, profile));
+            try
+            {
+                controller.IsVisible = false;
+                await controller.CoreWebView2.Profile.ClearBrowsingDataAsync();
+                _log.Information("Cleared the data of web profile {Profile}", profile);
+            }
+            finally
+            {
+                controller.Close();
+            }
+        }
+        finally
+        {
+            Close();
+        }
+    }
+
     /// <summary>Options that open a browser on the catalog profile <paramref name="profile"/>.</summary>
     public static CoreWebView2ControllerOptions ControllerOptions(CoreWebView2Environment environment, string profile)
     {

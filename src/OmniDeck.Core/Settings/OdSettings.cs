@@ -42,6 +42,9 @@ public sealed record OdSettings
     /// <summary>The RAM governor's thresholds and the modules it must keep running.</summary>
     public OdMemorySettings Memory { get; init; } = new();
 
+    /// <summary>The user's choices for each web app: notifications and site permissions.</summary>
+    public OdWebSettings Web { get; init; } = new();
+
     internal const string DefaultPreset = "Standard";
 
     internal static readonly string[] KnownPresets = ["Dynamic", "Standard", "Comfort"];
@@ -70,9 +73,12 @@ public sealed record OdSettings
         AccentColor = IsHexColor(AccentColor) ? AccentColor.ToUpperInvariant() : "",
         PinnedModules = DistinctIds(PinnedModules),
         Memory = Repair(Memory),
+        Web = Repair(Web),
     };
 
     private static OdMemorySettings Repair(OdMemorySettings? memory) => (memory ?? new OdMemorySettings()).Normalized();
+
+    private static OdWebSettings Repair(OdWebSettings? web) => (web ?? new OdWebSettings()).Normalized();
 
     private static bool IsHexColor(string? value) =>
         value is { Length: 7 } && value[0] == '#' && !value.AsSpan(1).ContainsAnyExcept(HexDigits);

@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using System.Windows;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
@@ -9,7 +10,8 @@ namespace OmniDeck.Web.Apps;
 
 /// <summary>
 /// A web app's screen (docs/ARCHITECTURE.md §3): WebView2 on the app's catalog profile, with the
-/// browser settings, the navigation policy, sign-in popups, crash recovery and the console capture.
+/// browser settings, the navigation policy, sign-in popups, notifications, permission questions,
+/// crash recovery and the console capture.
 /// </summary>
 public partial class OdWebAppView : IOdWebSurface
 {
@@ -17,6 +19,7 @@ public partial class OdWebAppView : IOdWebSurface
     private static readonly Uri RuntimeDownload = new("https://developer.microsoft.com/microsoft-edge/webview2/");
 
     private readonly OdWebAppModule _module;
+    private readonly Queue<OdPermissionQuestion> _questions = new();
     private WebView2? _browser;
     private bool _starting;
     private bool _loadedOnce;
@@ -134,6 +137,8 @@ public partial class OdWebAppView : IOdWebSurface
         core.NewWindowRequested += OnNewWindowRequested;
         core.NavigationCompleted += OnNavigationCompleted;
         core.ProcessFailed += OnProcessFailed;
+        core.NotificationReceived += OnNotificationReceived;
+        core.PermissionRequested += OnPermissionRequested;
         _ = CaptureConsoleAsync(core);
     }
 
@@ -253,6 +258,110 @@ public partial class OdWebAppView : IOdWebSurface
         }
     }
 
+    private void OnNotificationReceived(object? sender, CoreWebView2NotificationReceivedEventArgs e)
+    {
+        // OmniDeck shows the notification itself, or not at all: never in WebView2's own window.
+        e.Handled = true;
+        var notification = e.Notification;
+        if (!_module.Notify(notification.Title, notification.Body, () => ReportClicked(notification)))
+        {
+            return;
+        }
+
+        try
+        {
+            notification.ReportShown();
+        }
+        catch (Exception ex) when (ex is COMException or InvalidOperationException)
+        {
+            _module.Log.Debug(ex, "A web notification could not be reported as shown");
+        }
+    }
+
+    private void ReportClicked(CoreWebView2Notification notification)
+    {
+        try
+        {
+            notification.ReportClicked();
+        }
+        catch (Exception ex) when (ex is COMException or InvalidOperationException)
+        {
+            // The page is gone: opening the app was all there was to do.
+            _module.Log.Debug(ex, "A web notification's click could not be reported");
+        }
+    }
+
+    private async void OnPermissionRequested(object? sender, CoreWebView2PermissionRequestedEventArgs e)
+    {
+        // OmniDeck keeps the answers (settings.json), so the profile does not, and asks each time.
+        e.SavesInProfile = false;
+        if (_module.Decide(e.PermissionKind) is { } state)
+        {
+            e.State = state;
+            return;
+        }
+
+        var deferral = e.GetDeferral();
+        try
+        {
+            e.State = await AskAsync(e.PermissionKind) ? CoreWebView2PermissionState.Allow : CoreWebView2PermissionState.Deny;
+            deferral.Complete();
+        }
+        catch (Exception ex) when (ex is COMException or InvalidOperationException)
+        {
+            // The browser closed while the question was open.
+            _module.Log.Debug(ex, "A permission request outlived its browser");
+        }
+    }
+
+    /// <summary>Asks the user, one question at a time; false when the browser closes first.</summary>
+    private Task<bool> AskAsync(CoreWebView2PermissionKind kind)
+    {
+        var question = new OdPermissionQuestion(kind);
+        _questions.Enqueue(question);
+        if (_questions.Count == 1)
+        {
+            ShowQuestion();
+        }
+
+        return question.Answer.Task;
+    }
+
+    private void ShowQuestion()
+    {
+        // Another request for a kind just answered takes the same answer.
+        while (_questions.TryPeek(out var next) && _module.Decide(next.Kind) is { } state)
+        {
+            _questions.Dequeue().Answer.TrySetResult(state == CoreWebView2PermissionState.Allow);
+        }
+
+        if (_questions.TryPeek(out var question))
+        {
+            Question.Message = OdWebPermissions.Question(question.Kind, _module.Entry.Name);
+            QuestionPanel.Visibility = Visibility.Visible;
+        }
+        else
+        {
+            QuestionPanel.Visibility = Visibility.Collapsed;
+        }
+    }
+
+    private void OnAllow(object sender, RoutedEventArgs e) => Answer(allowed: true);
+
+    private void OnBlock(object sender, RoutedEventArgs e) => Answer(allowed: false);
+
+    private void Answer(bool allowed)
+    {
+        if (!_questions.TryDequeue(out var question))
+        {
+            return;
+        }
+
+        _module.RememberAnswer(question.Kind, allowed);
+        question.Answer.TrySetResult(allowed);
+        ShowQuestion();
+    }
+
     private void Leave(Uri target, OdNavDecision decision)
     {
         if (decision == OdNavDecision.OpenExternally)
@@ -281,6 +390,12 @@ public partial class OdWebAppView : IOdWebSurface
         }
 
         _browser = null;
+        while (_questions.TryDequeue(out var question))
+        {
+            question.Answer.TrySetResult(false);
+        }
+
+        QuestionPanel.Visibility = Visibility.Collapsed;
         if (browser.CoreWebView2 is { } core)
         {
             _module.Runtime.Forget(core);

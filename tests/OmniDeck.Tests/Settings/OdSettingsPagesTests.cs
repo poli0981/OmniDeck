@@ -10,6 +10,9 @@ using OmniDeck.Tests.Governor;
 using OmniDeck.Tests.Modules;
 using OmniDeck.Tests.TestSupport;
 using OmniDeck.Tests.Updates;
+using OmniDeck.Web.Apps;
+using OmniDeck.Web.Catalog;
+using OmniDeck.Web.Diagnostics;
 using Serilog.Core;
 
 namespace OmniDeck.Tests.Settings;
@@ -260,7 +263,17 @@ public sealed class OdSettingsPagesTests : IDisposable
         var host = new OdModuleHost([], new OdDatabase(_temp.Combine("omnideck.db"), pooling: false), Logger.None, _time, new OdFakeNotifier(), OdTestHttp.Client);
         var governor = new OdRamGovernor(host, _settings, new OdFakeMemory(), [], _time, new OdFakeNotifier(), Logger.None);
         var memory = new OdMemoryViewModel(host, governor, _settings, _time);
-        return new OdSettingsViewModel(_settings, _startup, new OdDataRoot(_temp.Path), memory, new OdAboutViewModel(_updates, _openedLinks.Add), _openedFolders.Add);
+        var meta = NewMeta();
+        var webApps = new OdWebAppsViewModel(
+            new OdCatalogService(OdTestHttp.Client, meta, _temp.Combine("catalog.json"), OdCatalog.Empty, _time, Logger.None),
+            new OdWebPreferences(_settings),
+            _settings,
+            host,
+            new OdSignInHealth(meta, Logger.None),
+            _ => Task.CompletedTask,
+            _ => Task.FromResult(false),
+            Logger.None);
+        return new OdSettingsViewModel(_settings, _startup, new OdDataRoot(_temp.Path), memory, webApps, new OdAboutViewModel(_updates, _openedLinks.Add), _openedFolders.Add);
     }
 
     private sealed class OdFakeStartup : IOdStartupRegistration

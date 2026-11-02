@@ -21,6 +21,7 @@ public static class OdWebServiceCollectionExtensions
         services.AddSingleton<OdWebRuntime>();
         services.AddSingleton<IOdMemoryReporter, OdWebMemoryReporter>();
         services.AddSingleton<OdSignInHealth>();
+        services.AddSingleton<OdWebPreferences>();
 
         // After the built-in modules, in catalog order: that is the library's order.
         foreach (var entry in catalog.Apps)
@@ -30,6 +31,7 @@ public static class OdWebServiceCollectionExtensions
                 catalog,
                 provider.GetRequiredService<OdWebRuntime>(),
                 provider.GetRequiredService<OdSignInHealth>(),
+                provider.GetRequiredService<OdWebPreferences>(),
                 provider.GetRequiredService<TimeProvider>()));
         }
 

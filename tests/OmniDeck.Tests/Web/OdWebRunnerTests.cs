@@ -2,8 +2,11 @@ using System.Globalization;
 using System.Text.Json;
 using System.Windows.Controls;
 using Microsoft.Extensions.Time.Testing;
+using Microsoft.Web.WebView2.Core;
 using OmniDeck.Core.Modules;
+using OmniDeck.Core.Settings;
 using OmniDeck.Core.Storage;
+using OmniDeck.Tests.Modules;
 using OmniDeck.Tests.TestSupport;
 using OmniDeck.Web.Apps;
 using OmniDeck.Web.Catalog;
@@ -23,12 +26,14 @@ public sealed class OdWebRunnerTests : IDisposable
     private readonly OdTempDirectory _temp = new();
     private readonly FakeTimeProvider _time = new(new DateTimeOffset(2026, 11, 2, 3, 0, 0, TimeSpan.Zero));
     private readonly OdAppMeta _meta;
+    private readonly OdWebPreferences _preferences;
 
     public OdWebRunnerTests()
     {
         var database = new OdDatabase(_temp.Combine("omnideck.db"), pooling: false);
         database.Migrate(OdCoreMigrations.All);
         _meta = new OdAppMeta(database);
+        _preferences = new OdWebPreferences(new OdSettingsService(new OdDataRoot(_temp.Path), Logger.None));
     }
 
     public void Dispose() => _temp.Dispose();
@@ -158,6 +163,49 @@ public sealed class OdWebRunnerTests : IDisposable
     });
 
     [Fact]
+    public void AnAppWithNotificationsOn_StaysResident_AndNotifiesUnderItsName() => OdSta.Run(async () =>
+    {
+        var discord = NewModule("discord", new OdSignInHealth(_meta, Logger.None), []);
+        var notifier = new OdFakeNotifier();
+        using var host = new OdModuleHost([discord], new OdDatabase(_temp.Combine("host.db"), pooling: false), Logger.None, _time, notifier, OdTestHttp.Client);
+        await host.ShowAsync("discord");
+        var clicked = false;
+
+        Assert.True(discord.StaysResident);
+        Assert.True(discord.Notify("Alice", "hi", () => clicked = true));
+        var shown = Assert.Single(notifier.Raised);
+        Assert.Equal(("Discord: Alice", "hi", "discord"), (shown.Title, shown.Message, shown.Target));
+        shown.Clicked?.Invoke();
+        Assert.True(clicked);
+        Assert.Equal(CoreWebView2PermissionState.Allow, discord.Decide(CoreWebView2PermissionKind.Notifications));
+
+        _preferences.SetNotifications(discord.Entry, on: false);
+        Assert.False(discord.StaysResident);
+        Assert.False(discord.Notify("Alice", "again", () => { }));
+        Assert.Single(notifier.Raised);
+        Assert.Equal(CoreWebView2PermissionState.Deny, discord.Decide(CoreWebView2PermissionKind.Notifications));
+        Assert.False(NewModule("gmaps", new OdSignInHealth(_meta, Logger.None), []).StaysResident);
+    });
+
+    [Fact]
+    public void Permissions_AreAskedOncePerApp_UntilReset()
+    {
+        var discord = NewModule("discord", new OdSignInHealth(_meta, Logger.None), []);
+        var spotify = NewModule("spotify", new OdSignInHealth(_meta, Logger.None), []);
+
+        Assert.Null(discord.Decide(CoreWebView2PermissionKind.Microphone));
+        discord.RememberAnswer(CoreWebView2PermissionKind.Microphone, allowed: true);
+        discord.RememberAnswer(CoreWebView2PermissionKind.Camera, allowed: false);
+
+        Assert.Equal(CoreWebView2PermissionState.Allow, discord.Decide(CoreWebView2PermissionKind.Microphone));
+        Assert.Equal(CoreWebView2PermissionState.Deny, discord.Decide(CoreWebView2PermissionKind.Camera));
+        Assert.Null(spotify.Decide(CoreWebView2PermissionKind.Microphone));
+
+        _preferences.ResetPermissions("discord");
+        Assert.Null(discord.Decide(CoreWebView2PermissionKind.Microphone));
+    }
+
+    [Fact]
     public void AnAppPinnedForAudio_StaysWhilePlaying() => OdSta.Run(async () =>
     {
         var surfaces = new List<OdFakeSurface>();
@@ -187,6 +235,7 @@ public sealed class OdWebRunnerTests : IDisposable
         Catalog,
         new OdWebRuntime(new OdDataRoot(_temp.Path), new OdWebOptions(), Logger.None),
         health,
+        _preferences,
         _time,
         _ => { },
         _ =>

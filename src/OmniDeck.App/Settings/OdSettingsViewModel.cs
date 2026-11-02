@@ -8,7 +8,7 @@ using OmniDeck.Core.Storage;
 namespace OmniDeck.App.Settings;
 
 /// <summary>
-/// The settings page (docs/SPEC.md §2): General, Appearance, Memory, Data and About. Every change is
+/// The settings page (docs/SPEC.md §2): General, Appearance, Memory, Web apps, Data and About. Every change is
 /// saved at once through <see cref="IOdSettingsService"/>, and the page follows changes made
 /// elsewhere (the tray, an import). Used from the UI thread.
 /// </summary>
@@ -71,6 +71,7 @@ public sealed partial class OdSettingsViewModel : ObservableObject, IDisposable
         IOdStartupRegistration startup,
         OdDataRoot dataRoot,
         OdMemoryViewModel memory,
+        OdWebAppsViewModel webApps,
         OdAboutViewModel about,
         Action<string> openFolder)
     {
@@ -80,6 +81,7 @@ public sealed partial class OdSettingsViewModel : ObservableObject, IDisposable
         _startup = startup;
         _openFolder = openFolder;
         Memory = memory;
+        WebApps = webApps;
         About = about;
         DataFolder = dataRoot.Root;
         Load(settings.Current);
@@ -101,6 +103,8 @@ public sealed partial class OdSettingsViewModel : ObservableObject, IDisposable
     public IReadOnlyList<string> AccentSwatches { get; } = ["#0067C0", "#8764B8", "#C239B3", "#E74856", "#CA5010", "#10893E"];
 
     public OdMemoryViewModel Memory { get; }
+
+    public OdWebAppsViewModel WebApps { get; }
 
     public OdAboutViewModel About { get; }
 
@@ -141,6 +145,10 @@ public sealed partial class OdSettingsViewModel : ObservableObject, IDisposable
         if (value == (int)OdSettingsSection.About)
         {
             _ = About.CheckOnOpenAsync();
+        }
+        else if (value == (int)OdSettingsSection.WebApps)
+        {
+            WebApps.Refresh();
         }
     }
 

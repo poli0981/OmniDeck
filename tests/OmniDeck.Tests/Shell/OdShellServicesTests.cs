@@ -31,6 +31,20 @@ public sealed class OdShellServicesTests
     }
 
     [Fact]
+    public void ClickingANotification_OpensItsTarget_ThenRunsItsOwnClick()
+    {
+        var notifier = new OdTrayNotifier(Logger.None);
+        var order = new List<string>();
+        notifier.Attach((_, _) => { });
+        notifier.Clicked += (_, e) => order.Add("open " + e.Target);
+
+        notifier.Notify(new OdNotification("Discord: Alice", "hi", "discord", () => order.Add("page")));
+        notifier.OnClicked();
+
+        Assert.Equal(new[] { "open discord", "page" }, order, StringComparer.Ordinal);
+    }
+
+    [Fact]
     public void TrayNotifier_OnlyLogsUntilTheIconIsAttached()
     {
         var notifier = new OdTrayNotifier(Logger.None);
