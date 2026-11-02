@@ -8,8 +8,9 @@
     CI runs this script on every pull request. Checks (docs/WEBAPP-CATALOG.md §1–§2):
       - the file matches catalog/webapps.schema.json (types, required fields, formats, HTTPS);
       - app ids and names are unique;
-      - the startUrl host and every popupAllow entry are covered by navAllow, matching whole DNS
-        labels (google.com covers mail.google.com, never evilgoogle.com);
+      - every navAllowSets name an app uses exists, and every set is used;
+      - the startUrl host is covered by navAllow, and every popupAllow entry by navAllow or the app's
+        sets, matching whole DNS labels (google.com covers mail.google.com, never evilgoogle.com);
       - updated is a real date and not in the future.
     Exits with code 1 and one line per problem when anything fails.
 
@@ -84,6 +85,16 @@ else {
             $problems.Add("updated: $updatedText is in the future")
         }
 
+        $sets = @{}
+        $unusedSets = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+        $setsProperty = [System.Text.Json.JsonElement]::new()
+        if ($root.TryGetProperty('navAllowSets', [ref] $setsProperty)) {
+            foreach ($set in $setsProperty.EnumerateObject()) {
+                $sets[$set.Name] = [string[]] @($set.Value.EnumerateArray() | ForEach-Object { $_.GetString() })
+                [void] $unusedSets.Add($set.Name)
+            }
+        }
+
         $ids = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
         $names = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
         foreach ($app in $root.GetProperty('apps').EnumerateArray()) {
@@ -98,12 +109,30 @@ else {
             if (-not (Test-DomainCover $startHost $navAllow)) {
                 $problems.Add("apps[$id]: startUrl host '$startHost' is not covered by navAllow")
             }
-            foreach ($popup in $app.GetProperty('popupAllow').EnumerateArray()) {
-                $popupDomain = $popup.GetString()
-                if (-not (Test-DomainCover $popupDomain $navAllow)) {
-                    $problems.Add("apps[$id]: popupAllow '$popupDomain' is not covered by navAllow")
+
+            $allowed = [System.Collections.Generic.List[string]]::new($navAllow)
+            $appSets = [System.Text.Json.JsonElement]::new()
+            if ($app.TryGetProperty('navAllowSets', [ref] $appSets)) {
+                foreach ($setName in @($appSets.EnumerateArray() | ForEach-Object { $_.GetString() })) {
+                    if ($sets.ContainsKey($setName)) {
+                        $allowed.AddRange($sets[$setName])
+                        [void] $unusedSets.Remove($setName)
+                    }
+                    else {
+                        $problems.Add("apps[$id]: navAllowSets '$setName' is not defined")
+                    }
                 }
             }
+
+            foreach ($popup in $app.GetProperty('popupAllow').EnumerateArray()) {
+                $popupDomain = $popup.GetString()
+                if (-not (Test-DomainCover $popupDomain $allowed.ToArray())) {
+                    $problems.Add("apps[$id]: popupAllow '$popupDomain' is not covered by navAllow or its navAllowSets")
+                }
+            }
+        }
+        foreach ($unused in $unusedSets) {
+            $problems.Add("navAllowSets[$unused]: no app uses this set")
         }
     }
     finally {
