@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Time.Testing;
 using OmniDeck.App.Diagnostics;
 using OmniDeck.Core.Storage;
 using OmniDeck.Tests.TestSupport;
@@ -52,6 +53,64 @@ public sealed class OdDiagnosticsTests
 
         Assert.Single(presenter.Messages);
         Assert.Equal(2, sink.Events.Count);
+    }
+
+    [Fact]
+    public void ARepeatingFailure_IsReportedOncePerWindow_WithItsRepeatCount()
+    {
+        var sink = new ListSink();
+        var presenter = new RecordingPresenter();
+        var time = new FakeTimeProvider();
+        var handler = new OdCrashHandler(new LoggerConfigurationFor(sink).Logger, presenter, time);
+
+        for (var i = 0; i < 1_000; i++)
+        {
+            handler.HandleUiException(new InvalidOperationException("A generic error occurred in GDI+."));
+        }
+
+        Assert.Single(presenter.Messages);
+        Assert.Single(sink.Events);
+
+        time.Advance(OdCrashHandler.RepeatWindow);
+        handler.HandleUiException(new InvalidOperationException("A generic error occurred in GDI+."));
+
+        Assert.Equal(2, presenter.Messages.Count);
+        Assert.Equal(2, sink.Events.Count);
+        Assert.Equal(999, Assert.IsType<ScalarValue>(sink.Events[1].Properties["Repeats"]).Value);
+    }
+
+    [Fact]
+    public void ADifferentFailure_IsReportedAtOnce()
+    {
+        var sink = new ListSink();
+        var presenter = new RecordingPresenter();
+        var handler = new OdCrashHandler(new LoggerConfigurationFor(sink).Logger, presenter, new FakeTimeProvider());
+
+        handler.HandleUiException(new InvalidOperationException("first"));
+        handler.HandleUiException(new InvalidOperationException("first"));
+        handler.HandleUiException(new TimeoutException("second"));
+
+        Assert.Equal(2, presenter.Messages.Count);
+        Assert.Equal(2, sink.Events.Count);
+    }
+
+    [Fact]
+    public void RepeatedUnobservedExceptions_AreLoggedOncePerWindow()
+    {
+        var sink = new ListSink();
+        var time = new FakeTimeProvider();
+        var handler = new OdCrashHandler(new LoggerConfigurationFor(sink).Logger, new RecordingPresenter(), time);
+
+        for (var i = 0; i < 50; i++)
+        {
+            handler.HandleUnobserved(new TimeoutException("late"));
+        }
+
+        time.Advance(OdCrashHandler.RepeatWindow);
+        handler.HandleUnobserved(new TimeoutException("late"));
+
+        Assert.Equal(2, sink.Events.Count);
+        Assert.Equal(49, Assert.IsType<ScalarValue>(sink.Events[1].Properties["Repeats"]).Value);
     }
 
     [Fact]
