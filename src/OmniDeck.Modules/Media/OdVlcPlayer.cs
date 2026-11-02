@@ -44,6 +44,38 @@ internal sealed class OdVlcPlayer : IOdMediaPlayer
 
     public bool HasVideo => Native.VideoTrackCount > 0;
 
+    public IReadOnlyList<OdMediaTrack> AudioTracks => [.. Native.AudioTrackDescription.Select(track => new OdMediaTrack(track.Id, track.Name))];
+
+    public IReadOnlyList<OdMediaTrack> SubtitleTracks => [.. Native.SpuDescription.Select(track => new OdMediaTrack(track.Id, track.Name))];
+
+    public int AudioTrack
+    {
+        get => Native.AudioTrack;
+        set => Native.SetAudioTrack(value);
+    }
+
+    public int SubtitleTrack
+    {
+        get => Native.Spu;
+        set => Native.SetSpu(value);
+    }
+
+    public float Rate
+    {
+        get => Native.Rate;
+        set => Native.SetRate(value);
+    }
+
+    // libVLC lists its own "Default", with no id; the menu has "Windows default" for that.
+    public IReadOnlyList<OdMediaDevice> AudioDevices =>
+        [.. Native.AudioOutputDeviceEnum.Where(device => !string.IsNullOrEmpty(device.DeviceIdentifier)).Select(device => new OdMediaDevice(device.DeviceIdentifier, device.Description))];
+
+    public string? AudioDevice
+    {
+        get => Native.OutputDevice;
+        set => Native.SetOutputDevice(value ?? "");
+    }
+
     public int Volume
     {
         get => Native.Volume;
@@ -56,17 +88,28 @@ internal sealed class OdVlcPlayer : IOdMediaPlayer
         set => Native.Mute = value;
     }
 
-    public void Open(string path, TimeSpan from, bool play)
+    public void Open(string path, OdMediaOpening opening)
     {
+        ArgumentNullException.ThrowIfNull(opening);
         var media = new VlcMedia(_libVlc, path, FromType.FromPath);
-        if (from > TimeSpan.Zero)
+        if (opening.From > TimeSpan.Zero)
         {
-            media.AddOption(":start-time=" + from.TotalSeconds.ToString("0.###", CultureInfo.InvariantCulture));
+            media.AddOption(":start-time=" + opening.From.TotalSeconds.ToString("0.###", CultureInfo.InvariantCulture));
         }
 
-        if (!play)
+        if (!opening.Play)
         {
             media.AddOption(":start-paused");
+        }
+
+        if (opening.SubtitleEncoding.Length > 0)
+        {
+            media.AddOption(":subsdec-encoding=" + opening.SubtitleEncoding);
+        }
+
+        if (opening.Subtitle is { } subtitle)
+        {
+            media.AddSlave(MediaSlaveType.Subtitle, 4, new Uri(subtitle).AbsoluteUri);
         }
 
         _media?.Dispose();
@@ -82,6 +125,10 @@ internal sealed class OdVlcPlayer : IOdMediaPlayer
     public void Stop() => Native.Stop();
 
     public void Seek(TimeSpan time) => Native.Time = (long)time.TotalMilliseconds;
+
+    public bool AddSubtitle(string path) => Native.AddSlave(MediaSlaveType.Subtitle, new Uri(path).AbsoluteUri, select: true);
+
+    public bool TakeSnapshot(string path) => Native.TakeSnapshot(0, path, 0, 0);
 
     public void Dispose()
     {

@@ -21,13 +21,39 @@ internal interface IOdMediaPlayer : IDisposable
     /// <summary>Whether the file has a picture; an audio file has none.</summary>
     bool HasVideo { get; }
 
+    /// <summary>The file's audio tracks, libVLC's "Disable" among them.</summary>
+    IReadOnlyList<OdMediaTrack> AudioTracks { get; }
+
+    /// <summary>The file's subtitle tracks, and the ones added from files, libVLC's "Disable" among them.</summary>
+    IReadOnlyList<OdMediaTrack> SubtitleTracks { get; }
+
+    /// <summary>The audio track in use, by id.</summary>
+    int AudioTrack { get; set; }
+
+    /// <summary>The subtitle track shown, by id; -1 shows none.</summary>
+    int SubtitleTrack { get; set; }
+
+    /// <summary>The playback speed; 1 is normal.</summary>
+    float Rate { get; set; }
+
+    IReadOnlyList<OdMediaDevice> AudioDevices { get; }
+
+    /// <summary>The audio output device, by libVLC's id; null leaves Windows' default.</summary>
+    string? AudioDevice { get; set; }
+
     /// <summary>From 0 to 100.</summary>
     int Volume { get; set; }
 
     bool Muted { get; set; }
 
-    /// <summary>Opens a file and plays it from <paramref name="from"/>, or stands paused there when <paramref name="play"/> is false.</summary>
-    void Open(string path, TimeSpan from, bool play);
+    /// <summary>Opens a file, as <paramref name="opening"/> says.</summary>
+    void Open(string path, OdMediaOpening opening);
+
+    /// <summary>Shows a subtitle file with the file playing; false when libVLC cannot take it.</summary>
+    bool AddSubtitle(string path);
+
+    /// <summary>Saves the picture on screen as a PNG; false when there is none.</summary>
+    bool TakeSnapshot(string path);
 
     void Play();
 

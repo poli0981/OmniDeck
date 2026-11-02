@@ -520,4 +520,82 @@
   <data name="Media_PlaylistFilter" xml:space="preserve">
     <value>Playlists (*.m3u, *.m3u8)|*.m3u;*.m3u8</value>
   </data>
+  <data name="Media_More" xml:space="preserve">
+    <value>More</value>
+  </data>
+  <data name="Media_AudioTrack" xml:space="preserve">
+    <value>Audio track</value>
+  </data>
+  <data name="Media_Subtitles" xml:space="preserve">
+    <value>Subtitles</value>
+  </data>
+  <data name="Media_AddSubtitle" xml:space="preserve">
+    <value>Add a subtitle file…</value>
+  </data>
+  <data name="Media_SubtitleFilter" xml:space="preserve">
+    <value>Subtitles (*.srt, *.ass, *.ssa, *.vtt, *.sub)|*.srt;*.ass;*.ssa;*.vtt;*.sub</value>
+  </data>
+  <data name="Media_SubtitleFailed" xml:space="preserve">
+    <value>{0} could not be added as subtitles.</value>
+  </data>
+  <data name="Media_SubtitleEncoding" xml:space="preserve">
+    <value>Subtitle encoding</value>
+  </data>
+  <data name="Media_Speed" xml:space="preserve">
+    <value>Speed</value>
+  </data>
+  <data name="Media_AudioDevice" xml:space="preserve">
+    <value>Audio device</value>
+  </data>
+  <data name="Media_DefaultDevice" xml:space="preserve">
+    <value>Windows default</value>
+  </data>
+  <data name="Media_Snapshot" xml:space="preserve">
+    <value>Take a snapshot</value>
+  </data>
+  <data name="Media_SnapshotSaved" xml:space="preserve">
+    <value>Saved {0}</value>
+  </data>
+  <data name="Media_SnapshotFailed" xml:space="preserve">
+    <value>There is no picture to take a snapshot of.</value>
+  </data>
+  <data name="Media_EncodingAuto" xml:space="preserve">
+    <value>Automatic</value>
+  </data>
+  <data name="Media_EncodingUtf8" xml:space="preserve">
+    <value>Unicode (UTF-8)</value>
+  </data>
+  <data name="Media_EncodingWestern" xml:space="preserve">
+    <value>Western European (Windows-1252)</value>
+  </data>
+  <data name="Media_EncodingCentral" xml:space="preserve">
+    <value>Central European (Windows-1250)</value>
+  </data>
+  <data name="Media_EncodingCyrillic" xml:space="preserve">
+    <value>Cyrillic (Windows-1251)</value>
+  </data>
+  <data name="Media_EncodingGreek" xml:space="preserve">
+    <value>Greek (Windows-1253)</value>
+  </data>
+  <data name="Media_EncodingTurkish" xml:space="preserve">
+    <value>Turkish (Windows-1254)</value>
+  </data>
+  <data name="Media_EncodingVietnamese" xml:space="preserve">
+    <value>Vietnamese (Windows-1258)</value>
+  </data>
+  <data name="Media_EncodingThai" xml:space="preserve">
+    <value>Thai (Windows-874)</value>
+  </data>
+  <data name="Media_EncodingJapanese" xml:space="preserve">
+    <value>Japanese (Shift_JIS)</value>
+  </data>
+  <data name="Media_EncodingChineseSimplified" xml:space="preserve">
+    <value>Chinese, Simplified (GB18030)</value>
+  </data>
+  <data name="Media_EncodingChineseTraditional" xml:space="preserve">
+    <value>Chinese, Traditional (Big5)</value>
+  </data>
+  <data name="Media_EncodingKorean" xml:space="preserve">
+    <value>Korean (EUC-KR)</value>
+  </data>
 </root>
