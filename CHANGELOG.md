@@ -6,6 +6,13 @@ All notable changes to OmniDeck are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.1] — 2026-11-02
+
+A fix release for 0.1.0. Picking accent colors, or Windows changing a theme setting, could make
+OmniDeck run out of Windows graphics handles, show "A generic error occurred in GDI+" over and over,
+and stop drawing its window. Installed copies find this update in Settings → About, and say so in a
+notification within a day.
+
 ### Fixed
 - Changing the accent color no longer ends in "Something went wrong… A generic error occurred in
   GDI+". The notification-area icon leaked a Windows graphics handle every time it was redrawn in a
@@ -133,7 +140,8 @@ user-facing features yet: the window only shows the version.
 - Supported platform narrowed to Windows 11 (24H2 or later), x64.
 - App data moves to `%LocalAppData%\OmniDeck.Data`, outside Velopack's install folder.
 
-[Unreleased]: https://github.com/poli0981/OmniDeck/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/poli0981/OmniDeck/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/poli0981/OmniDeck/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/poli0981/OmniDeck/compare/v0.1.0-alpha.2...v0.1.0
 [0.1.0-alpha.2]: https://github.com/poli0981/OmniDeck/compare/v0.1.0-alpha.1...v0.1.0-alpha.2
 [0.1.0-alpha.1]: https://github.com/poli0981/OmniDeck/compare/v0.0.1-alpha.1...v0.1.0-alpha.1
