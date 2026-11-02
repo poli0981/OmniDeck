@@ -64,6 +64,15 @@ public interface IOdModule
 
 `OdModuleHost` runs the contract. It initializes a module on first open, builds its view when it has none (first open, or after hibernation), keeps the view of the visible module, and moves hidden ones down the ladder when the shell or the governor asks; it refuses to suspend or hibernate a module whose `CanSuspendAsync` returns false. Calls run one at a time on the UI thread. The shell's navigation view is chrome only: every module item navigates to one shared stage page, whose content is the view the host hands back, so the control never creates or caches module views.
 
+A view asks for full screen with `OdFullscreen.Request(view, on)`, a bubbling routed event raised from the view itself, since content it hosts in a window of its own (a video overlay) is outside the main window's tree. The main window then:
+
+- covers the monitor it is on (`OdMonitors.BoundsOf`);
+- hides the title bar;
+- folds the navigation pane to zero width. Changing its display mode would re-template the navigation view and re-create the stage, and with it any native child window;
+- sets `OdFullscreen.IsActive` on the stage, which views inherit.
+
+Esc, hiding to the tray, or showing another module ends it. A module that plays media implements `IOdMediaControls`, which the tray menu uses while something is loaded.
+
 Native modules run in-process. True RAM release for them means honoring `SuspendAsync`/`HibernateAsync`: dispose charts, bitmaps, timers, caches; the governor follows up with a GC. Web modules get real process-level release for free because WebView2 is out-of-process by design.
 
 ## 3. Web runner internals

@@ -20,13 +20,16 @@
         <!--  The video is a native window; its WPF content is drawn in an overlay window above it (docs/spikes/06-libvlcsharp.md).  -->
         <vlc:VideoView x:Name="Video" Grid.Column="0">
             <!--  Opaque where there is no picture: libVLC's video window is blank until a video plays, and stays so for audio.  -->
-            <Grid>
+            <Grid Focusable="True"
+                  KeyDown="OnVideoKeyDown"
+                  MouseLeftButtonDown="OnVideoMouseDown">
                 <Grid.Style>
                     <Style TargetType="Grid">
                         <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorBaseBrush}" />
                         <Style.Triggers>
+                            <!--  Not quite transparent: a click on a fully clear pixel of the overlay window falls through to the video window.  -->
                             <DataTrigger Binding="{Binding ShowsVideo}" Value="True">
-                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="Background" Value="#01000000" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -82,6 +85,18 @@
                                        Click="OnMoreClick"
                                        Icon="{ui:SymbolIcon MoreHorizontal24}"
                                        ToolTip="{res:OdLoc Media_More}" />
+                            <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                       AutomationProperties.Name="{res:OdLoc Media_Fullscreen}"
+                                       Click="OnFullscreenClick"
+                                       Icon="{ui:SymbolIcon FullScreenMaximize24}"
+                                       ToolTip="{res:OdLoc Media_Fullscreen}"
+                                       Visibility="{Binding IsWindowed, Converter={StaticResource Visible}}" />
+                            <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                       AutomationProperties.Name="{res:OdLoc Media_ExitFullscreen}"
+                                       Click="OnFullscreenClick"
+                                       Icon="{ui:SymbolIcon FullScreenMinimize24}"
+                                       ToolTip="{res:OdLoc Media_ExitFullscreen}"
+                                       Visibility="{Binding IsFullscreen, Converter={StaticResource Visible}}" />
                             <ui:Button AutomationProperties.Name="{res:OdLoc Media_Queue}"
                                        Command="{Binding ToggleQueueCommand}"
                                        Icon="{ui:SymbolIcon TextBulletListLtr24}"
@@ -109,7 +124,7 @@
 
         <DockPanel Grid.Column="1"
                    Width="300"
-                   Visibility="{Binding QueueVisible, Converter={StaticResource Visible}}">
+                   Visibility="{Binding ShowsQueue, Converter={StaticResource Visible}}">
             <WrapPanel Margin="{DynamicResource Od.Padding.Control}" DockPanel.Dock="Top">
                 <ui:Button Margin="{DynamicResource Od.Padding.Control}"
                            Click="OnAddFiles"

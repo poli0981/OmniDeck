@@ -4,6 +4,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using Microsoft.Win32;
 using OmniDeck.Core.Localization;
+using OmniDeck.Core.Modules;
 
 namespace OmniDeck.Modules.Media;
 
@@ -18,6 +19,16 @@ public partial class OdMediaView
 
     private OdMediaViewModel? ViewModel => DataContext as OdMediaViewModel;
 
+    /// <summary>The window covers the screen, or stops: the screen follows.</summary>
+    protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+    {
+        base.OnPropertyChanged(e);
+        if (e.Property == OdFullscreen.IsActiveProperty && ViewModel is { } model)
+        {
+            model.IsFullscreen = (bool)e.NewValue;
+        }
+    }
+
     private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
         if (e.OldValue is OdMediaViewModel old)
@@ -28,6 +39,7 @@ public partial class OdMediaView
         if (e.NewValue is OdMediaViewModel model)
         {
             model.PlayerChanged += OnPlayerChanged;
+            model.IsFullscreen = OdFullscreen.GetIsActive(this);
             ShowPlayer(model);
         }
     }
@@ -78,6 +90,29 @@ public partial class OdMediaView
         if (Queue.SelectedItem is OdMediaItem item)
         {
             ViewModel?.PlayItemCommand.Execute(item);
+        }
+    }
+
+    // The overlay lives in a window of its own: requests go out from the view itself.
+    private void OnFullscreenClick(object sender, RoutedEventArgs e) => OdFullscreen.Request(this, !OdFullscreen.GetIsActive(this));
+
+    private void OnVideoMouseDown(object sender, MouseButtonEventArgs e)
+    {
+        // Esc works once the picture was clicked: the overlay is a window of its own.
+        Keyboard.Focus((IInputElement)sender);
+        if (e.ClickCount == 2)
+        {
+            e.Handled = true;
+            OdFullscreen.Request(this, !OdFullscreen.GetIsActive(this));
+        }
+    }
+
+    private void OnVideoKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Escape && OdFullscreen.GetIsActive(this))
+        {
+            e.Handled = true;
+            OdFullscreen.Request(this, on: false);
         }
     }
 

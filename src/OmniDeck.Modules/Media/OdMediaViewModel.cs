@@ -45,7 +45,14 @@ public sealed partial class OdMediaViewModel : ObservableObject, IDisposable
     private bool _muted;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowsQueue))]
     private bool _queueVisible;
+
+    /// <summary>Whether the window covers the screen for the player; the queue steps aside meanwhile.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowsQueue))]
+    [NotifyPropertyChangedFor(nameof(IsWindowed))]
+    private bool _isFullscreen;
 
     [ObservableProperty]
     private string _message = "";
@@ -74,6 +81,10 @@ public sealed partial class OdMediaViewModel : ObservableObject, IDisposable
     public event EventHandler? PlayerChanged;
 
     public ObservableCollection<OdMediaItem> Items { get; } = [];
+
+    public bool ShowsQueue => QueueVisible && !IsFullscreen;
+
+    public bool IsWindowed => !IsFullscreen;
 
     internal IOdMediaPlayer? Player => _session.Player;
 

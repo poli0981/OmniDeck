@@ -80,7 +80,8 @@ All mini-apps implement the module contract in [ARCHITECTURE](ARCHITECTURE.md) a
     - the audio device (Windows' default, or one libVLC lists);
     - a snapshot of the picture, saved in Pictures\OmniDeck.
   - Speed, encoding and device live in the module's settings document.
-  - Fullscreen and the tray controls follow.
+  - Full screen: the button in the overlay, or a double-click on the picture, makes the main window cover its monitor (chrome hidden, square corners, topmost). Esc, or showing another module, puts it back. The player never moves, so its video window stays the same. The overlay is not fully transparent over a picture (alpha 1), because a click on a fully clear pixel of a layered window falls through to libVLC's window.
+  - While a player has a file loaded, the tray menu shows the file with Play or Pause, Next and Previous (`IOdMediaControls`). Without a player there is nothing to control: starting one while the view is away could make libVLC open a video window of its own.
 
 ## 4. Web runner
 
