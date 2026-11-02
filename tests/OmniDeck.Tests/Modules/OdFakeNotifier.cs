@@ -5,7 +5,11 @@ namespace OmniDeck.Tests.Modules;
 /// <summary>Collects notifications instead of showing them.</summary>
 public sealed class OdFakeNotifier : IOdNotifier
 {
-    public IList<(string Title, string Message)> Shown { get; } = [];
+    /// <summary>Every notification, as raised.</summary>
+    public IList<OdNotification> Raised { get; } = [];
 
-    public void Notify(string title, string message) => Shown.Add((title, message));
+    /// <summary>The title and message of each notification.</summary>
+    public IList<(string Title, string Message)> Shown => [.. Raised.Select(n => (n.Title, n.Message))];
+
+    public void Notify(OdNotification notification) => Raised.Add(notification);
 }

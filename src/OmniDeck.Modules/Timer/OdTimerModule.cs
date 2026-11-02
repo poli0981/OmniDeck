@@ -10,10 +10,13 @@ namespace OmniDeck.Modules.Timer;
 /// </summary>
 public sealed class OdTimerModule(OdTimerService service) : IOdModule
 {
+    /// <summary>The module's id, which its notifications open when clicked.</summary>
+    internal const string Id = "timer";
+
     private TimeProvider _time = TimeProvider.System;
     private OdTimerViewModel? _viewModel;
 
-    public OdModuleInfo Info { get; } = new("timer", "Timer_Name", nameof(SymbolRegular.Timer24), "Category_Time", OdRamClass.Light);
+    public OdModuleInfo Info { get; } = new(Id, "Timer_Name", nameof(SymbolRegular.Timer24), "Category_Time", OdRamClass.Light);
 
     public Task InitializeAsync(IOdModuleContext context)
     {

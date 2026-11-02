@@ -6,6 +6,32 @@ All notable changes to OmniDeck are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+- Clicking a notification opens the module that raised it: a finished timer opens Timer.
+- Quitting closes every open module first, so each one can save its state before OmniDeck exits.
+- OmniDeck re-styles its windows only when Windows' dark or light mode, accent color, High Contrast or
+  animation setting changes, not on every settings broadcast from Windows.
+
+## [0.1.1] — 2026-11-02
+
+A fix release for 0.1.0. Picking accent colors, or Windows changing a theme setting, could make
+OmniDeck run out of Windows graphics handles, show "A generic error occurred in GDI+" over and over,
+and stop drawing its window. Installed copies find this update in Settings → About, and say so in a
+notification within a day.
+
+### Fixed
+- Changing the accent color no longer ends in "Something went wrong… A generic error occurred in
+  GDI+". The notification-area icon leaked a Windows graphics handle every time it was redrawn in a
+  new color, and each change redrew it more often than the last, so after enough color or theme
+  changes OmniDeck ran out of handles and could stop drawing its window. The icon is now drawn by
+  OmniDeck itself and redrawn only when the color actually changes.
+- Toggle switches take a newly picked accent color at once. Before, they kept the previous color
+  until the next change.
+- An error that keeps repeating is now reported once a minute, with a count of the repeats, instead
+  of every time, so a single fault can no longer stack error dialogs or fill the logs.
+- Logs are kept for seven days, as the privacy policy says. Before, a burst of errors could push out
+  the whole week of logs before it.
+
 ## [0.1.0] — 2026-10-30
 
 The first installable OmniDeck, closing phase P1. It brings the shell with its sidebar, module
@@ -120,7 +146,8 @@ user-facing features yet: the window only shows the version.
 - Supported platform narrowed to Windows 11 (24H2 or later), x64.
 - App data moves to `%LocalAppData%\OmniDeck.Data`, outside Velopack's install folder.
 
-[Unreleased]: https://github.com/poli0981/OmniDeck/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/poli0981/OmniDeck/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/poli0981/OmniDeck/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/poli0981/OmniDeck/compare/v0.1.0-alpha.2...v0.1.0
 [0.1.0-alpha.2]: https://github.com/poli0981/OmniDeck/compare/v0.1.0-alpha.1...v0.1.0-alpha.2
 [0.1.0-alpha.1]: https://github.com/poli0981/OmniDeck/compare/v0.0.1-alpha.1...v0.1.0-alpha.1

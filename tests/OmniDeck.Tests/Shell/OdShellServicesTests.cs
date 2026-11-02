@@ -1,7 +1,11 @@
 using System.Globalization;
 using System.Windows.Controls;
 using System.Windows.Data;
+using Microsoft.Extensions.Time.Testing;
 using OmniDeck.App.Shell;
+using OmniDeck.Core.Modules;
+using OmniDeck.Core.Storage;
+using OmniDeck.Tests.Modules;
 using OmniDeck.Tests.TestSupport;
 using Serilog.Core;
 using Wpf.Ui;
@@ -39,15 +43,38 @@ public sealed class OdShellServicesTests
     }
 
     [Fact]
-    public void Lifetime_RemembersThatTheUserQuit()
+    public void TrayNotifier_ReportsWhatTheClickedNotificationOpens()
     {
-        var lifetime = new OdAppLifetime();
+        var notifier = new OdTrayNotifier(Logger.None);
+        var opened = new List<string?>();
+        notifier.Attach((_, _) => { });
+        notifier.Clicked += (_, e) => opened.Add(e.Target);
+
+        notifier.Notify(new OdNotification("Timer finished", "Tea is done.", "timer"));
+        notifier.OnClicked();
+        notifier.Notify("Update", "OmniDeck 0.2.0 is out");
+        notifier.OnClicked();
+
+        Assert.Equal(new[] { "timer", null }, opened, StringComparer.Ordinal);
+    }
+
+    [Fact]
+    public void Lifetime_ClosesTheModulesOnce_ThenRemembersThatTheUserQuit() => OdSta.Run(async () =>
+    {
+        using var temp = new OdTempDirectory();
+        var clock = new OdFakeModule("clock");
+        using var host = new OdModuleHost([clock], new OdDatabase(temp.Combine("omnideck.db"), pooling: false), Logger.None, new FakeTimeProvider(), new OdFakeNotifier(), OdTestHttp.Client);
+        await host.ShowAsync("clock");
+        var lifetime = new OdAppLifetime(host);
 
         Assert.False(lifetime.IsQuitting);
-        lifetime.Quit();
+        await lifetime.QuitAsync();
+        await lifetime.QuitAsync();
 
         Assert.True(lifetime.IsQuitting);
-    }
+        Assert.Equal(OdModuleState.Closed, host.Find("clock")?.State);
+        Assert.Single(clock.Calls, call => string.Equals(call, "close", StringComparison.Ordinal));
+    });
 
     [Fact]
     public void Dialogs_NeedAHost_AndCountOpenDialogs() => OdSta.Run(async () =>

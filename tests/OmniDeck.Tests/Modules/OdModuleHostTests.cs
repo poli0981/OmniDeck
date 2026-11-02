@@ -150,6 +150,38 @@ public sealed class OdModuleHostTests : IDisposable
     });
 
     [Fact]
+    public void Show_LeavesThePreviousModuleShown_WhenTheNewOneFailsToActivate() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        await host.ShowAsync("clock");
+        _timer.ThrowOnActivate = true;
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => host.ShowAsync("timer"));
+
+        Assert.Same(host.Find("clock"), host.Current);
+        Assert.Equal(OdModuleState.Active, host.Find("clock")?.State);
+        Assert.NotEqual(OdModuleState.Active, host.Find("timer")?.State);
+    });
+
+    [Fact]
+    public void CloseAll_ClosesEveryOpenModule_EvenWhenOneFails() => OdSta.Run(async () =>
+    {
+        var notes = new OdFakeModule("notes");
+        using var host = NewHost(notes);
+        await host.ShowAsync("clock");
+        await host.ShowAsync("timer");
+        _clock.ThrowOnClose = true;
+
+        await host.CloseAllAsync();
+
+        Assert.Equal(OdModuleState.Idle, host.Find("clock")?.State);
+        Assert.Equal(OdModuleState.Closed, host.Find("timer")?.State);
+        Assert.Equal(OdModuleState.Created, host.Find("notes")?.State);
+        Assert.Null(host.Current);
+        Assert.DoesNotContain("close", notes.Calls, StringComparer.Ordinal);
+    });
+
+    [Fact]
     public void RepeatedIds_AreRejected()
     {
         Assert.Throws<ArgumentException>(() => new OdModuleHost(
@@ -157,7 +189,8 @@ public sealed class OdModuleHostTests : IDisposable
             new OdDatabase(_temp.Combine("omnideck.db"), pooling: false),
             Logger.None,
             _time,
-            new OdFakeNotifier()));
+            new OdFakeNotifier(),
+            OdTestHttp.Client));
     }
 
     [Fact]
@@ -166,23 +199,27 @@ public sealed class OdModuleHostTests : IDisposable
         var database = new OdDatabase(_temp.Combine("omnideck.db"), pooling: false);
         database.Migrate(OdCoreMigrations.All);
         var notifier = new OdFakeNotifier();
-        using var host = new OdModuleHost([_clock, _timer], database, Logger.None, _time, notifier);
+        using var host = new OdModuleHost([_clock, _timer], database, Logger.None, _time, notifier, OdTestHttp.Client);
         var zones = (JsonTypeInfo<string[]>)JsonSerializerOptions.Default.GetTypeInfo(typeof(string[]));
 
         await host.ShowAsync("clock");
         await host.ShowAsync("timer");
         _clock.Context!.Settings.Set(["Asia/Ho_Chi_Minh"], zones);
         _clock.Context.Notifier.Notify("Timer", "Done");
+        _clock.Context.Notifier.Notify(new OdNotification("Alarm", "Elsewhere", "timer"));
 
         Assert.Equal(new[] { "Asia/Ho_Chi_Minh" }, _clock.Context.Settings.Get(zones));
         Assert.Null(_timer.Context!.Settings.Get(zones));
-        Assert.Equal(new[] { ("Timer", "Done") }, notifier.Shown);
+        Assert.Equal(new[] { new OdNotification("Timer", "Done", "clock"), new OdNotification("Alarm", "Elsewhere", "timer") }, notifier.Raised);
+        Assert.Same(OdTestHttp.Client, _clock.Context.Http);
+        Assert.Same(database, _clock.Context.Database);
     });
 
-    private OdModuleHost NewHost() => new(
-        [_clock, _timer],
+    private OdModuleHost NewHost(params IOdModule[] more) => new(
+        [_clock, _timer, .. more],
         new OdDatabase(_temp.Combine("omnideck.db"), pooling: false),
         Logger.None,
         _time,
-        new OdFakeNotifier());
+        new OdFakeNotifier(),
+        OdTestHttp.Client);
 }

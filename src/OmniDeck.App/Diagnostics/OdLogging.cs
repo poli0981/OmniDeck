@@ -6,8 +6,9 @@ namespace OmniDeck.App.Diagnostics;
 
 /// <summary>
 /// Serilog to rolling files under the data root's <c>logs\</c> folder, kept for seven days
-/// (docs/SPEC.md §5). Nothing leaves the machine; bug reports attach a tail of these files only when
-/// the user asks for one.
+/// (docs/SPEC.md §5). The age limit decides what goes: a count limit alone would let a burst of
+/// errors, which rolls a new file every 10 MB, push out the week before it. Nothing leaves the
+/// machine; bug reports attach a tail of these files only when the user asks for one.
 /// </summary>
 internal static class OdLogging
 {
@@ -24,7 +25,8 @@ internal static class OdLogging
             .WriteTo.File(
                 System.IO.Path.Combine(dataRoot.LogsDirectory, "omnideck-.log"),
                 rollingInterval: RollingInterval.Day,
-                retainedFileCountLimit: 7,
+                retainedFileCountLimit: 31,
+                retainedFileTimeLimit: TimeSpan.FromDays(7),
                 fileSizeLimitBytes: 10 * 1024 * 1024,
                 rollOnFileSizeLimit: true,
                 outputTemplate: Template,

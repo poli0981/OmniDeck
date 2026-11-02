@@ -257,7 +257,7 @@ public sealed class OdSettingsPagesTests : IDisposable
 
     private OdSettingsViewModel NewSettingsPage()
     {
-        var host = new OdModuleHost([], new OdDatabase(_temp.Combine("omnideck.db"), pooling: false), Logger.None, _time, new OdFakeNotifier());
+        var host = new OdModuleHost([], new OdDatabase(_temp.Combine("omnideck.db"), pooling: false), Logger.None, _time, new OdFakeNotifier(), OdTestHttp.Client);
         var governor = new OdRamGovernor(host, _settings, new OdFakeMemory(), _time, new OdFakeNotifier(), Logger.None);
         var memory = new OdMemoryViewModel(host, governor, _settings, _time);
         return new OdSettingsViewModel(_settings, _startup, new OdDataRoot(_temp.Path), memory, new OdAboutViewModel(_updates, _openedLinks.Add), _openedFolders.Add);

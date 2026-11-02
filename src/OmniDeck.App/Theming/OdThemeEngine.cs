@@ -20,6 +20,7 @@ public sealed class OdThemeEngine : IDisposable
     private readonly ILogger _log;
     private Application? _app;
     private OdSettings? _applied;
+    private OdSystemLook? _systemLook;
     private double _textScale = 1.0;
 
     public OdThemeEngine(IOdSettingsService settings, ILogger log)
@@ -41,6 +42,7 @@ public sealed class OdThemeEngine : IDisposable
         ArgumentNullException.ThrowIfNull(app);
         _app = app;
         _applied = _settings.Current;
+        _systemLook = OdSystemLook.Read();
         _textScale = OdTextScale.Read();
         ApplyTheme();
         ApplyTokens();
@@ -57,6 +59,21 @@ public sealed class OdThemeEngine : IDisposable
             _textScale = now;
             ApplyTokens();
         }
+    }
+
+    /// <summary>
+    /// Records Windows' look as it is <paramref name="now"/>; true when it differs from the look the
+    /// theme was last applied for.
+    /// </summary>
+    internal bool NoteSystemLook(OdSystemLook now)
+    {
+        if (_systemLook == now)
+        {
+            return false;
+        }
+
+        _systemLook = now;
+        return true;
     }
 
     public void Dispose()
@@ -83,26 +100,59 @@ public sealed class OdThemeEngine : IDisposable
         Applied?.Invoke(this, EventArgs.Empty);
     }
 
+    /// <summary>
+    /// What <see cref="ApplyTheme"/> applies: whether the theme follows Windows, the theme the user's
+    /// accent is worked out for, and that accent, or null to use the Windows one.
+    /// </summary>
+    internal static (bool FollowSystem, ApplicationTheme Theme, Color? Accent) Choose(
+        OdThemeMode mode,
+        string accentColor,
+        bool highContrast,
+        Func<ApplicationTheme> systemTheme)
+    {
+        // High Contrast: palette tokens, the user's accent included, defer to the system entirely (docs/UI-MODES.md §4).
+        var followSystem = mode == OdThemeMode.System || highContrast;
+        Color? accent = !highContrast && accentColor.Length > 0 && ColorConverter.ConvertFromString(accentColor) is Color parsed ? parsed : null;
+        var theme = mode switch
+        {
+            OdThemeMode.Light when !highContrast => ApplicationTheme.Light,
+            OdThemeMode.Dark when !highContrast => ApplicationTheme.Dark,
+            _ => systemTheme(),
+        };
+        return (followSystem, theme, accent);
+    }
+
+    private static ApplicationTheme SystemAppTheme()
+    {
+        SystemThemeManager.UpdateSystemThemeCache();
+        return SystemThemeManager.GetCachedSystemTheme() switch
+        {
+            SystemTheme.Dark or SystemTheme.CapturedMotion or SystemTheme.Glow => ApplicationTheme.Dark,
+            SystemTheme.HC1 or SystemTheme.HC2 or SystemTheme.HCBlack or SystemTheme.HCWhite => ApplicationTheme.HighContrast,
+            _ => ApplicationTheme.Light,
+        };
+    }
+
     private void ApplyTheme()
     {
         var settings = _settings.Current;
+        var (followSystem, theme, accent) = Choose(settings.Theme, settings.AccentColor, SystemParameters.HighContrast, SystemAppTheme);
 
-        // High Contrast: palette tokens, the user's accent included, defer to the system entirely (docs/UI-MODES.md §4).
-        var highContrast = SystemParameters.HighContrast;
-        var systemAccent = settings.AccentColor.Length == 0 || highContrast;
-        if (settings.Theme == OdThemeMode.System || highContrast)
+        // The user's accent goes first, as WPF-UI applies the Windows one: the theme dictionaries' accent
+        // brushes (the toggle switches', for one) take the accent colors as they load, so an accent
+        // applied after them showed up one pick late.
+        if (accent is { } color)
         {
-            ApplicationThemeManager.ApplySystemTheme(updateAccent: systemAccent);
+            ApplicationAccentColorManager.Apply(color, theme);
+        }
+
+        if (followSystem)
+        {
+            ApplicationThemeManager.ApplySystemTheme(updateAccent: accent is null);
         }
         else
         {
-            var theme = settings.Theme == OdThemeMode.Light ? ApplicationTheme.Light : ApplicationTheme.Dark;
-            ApplicationThemeManager.Apply(theme, WindowBackdropType.Mica, updateAccent: systemAccent);
-        }
-
-        if (!systemAccent && ColorConverter.ConvertFromString(settings.AccentColor) is Color accent)
-        {
-            ApplicationAccentColorManager.Apply(accent, ApplicationThemeManager.GetAppTheme());
+            ApplicationThemeManager.Apply(theme, WindowBackdropType.Mica, updateAccent: accent is null);
         }
     }
 
@@ -126,11 +176,17 @@ public sealed class OdThemeEngine : IDisposable
     {
         if (e.Category is UserPreferenceCategory.General or UserPreferenceCategory.Color or UserPreferenceCategory.Accessibility or UserPreferenceCategory.VisualStyle)
         {
+            // Windows sends this for many unrelated settings, and applying the theme again re-styles every
+            // window, so it happens only when the look OmniDeck follows has changed.
             _ = _app?.Dispatcher.InvokeAsync(() =>
             {
-                ApplyTheme();
+                if (NoteSystemLook(OdSystemLook.Read()))
+                {
+                    ApplyTheme();
+                    ApplyTokens();
+                }
+
                 RefreshTextScale();
-                ApplyTokens();
             });
         }
     }

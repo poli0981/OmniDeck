@@ -94,6 +94,6 @@ public sealed class OdBuiltInModulesTests : IDisposable
     {
         var database = new OdDatabase(_temp.Combine("omnideck.db"), pooling: false);
         database.Migrate(OdCoreMigrations.All);
-        return new OdModuleHost(modules, database, Logger.None, _time, new OdFakeNotifier());
+        return new OdModuleHost(modules, database, Logger.None, _time, new OdFakeNotifier(), OdTestHttp.Client);
     }
 }

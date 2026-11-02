@@ -29,7 +29,7 @@ public sealed partial class OdMemoryRowViewModel(OdHostedModule hosted) : Observ
 
     public string Id => hosted.Info.Id;
 
-    public string Title => OdLocalization.Get(hosted.Info.NameKey);
+    public string Title => hosted.Info.Title;
 
     /// <summary>Re-reads the module's state; <paramref name="now"/> dates the last-used text.</summary>
     public void Refresh(DateTimeOffset now, bool keepRunning)

@@ -235,12 +235,22 @@ public sealed class OdShellViewModelTests : IDisposable
         return Task.CompletedTask;
     });
 
+    [Fact]
+    public void ABrandName_IsShownAsWritten()
+    {
+        var item = new OdModuleItemViewModel(new OdModuleInfo("gmail", "Module_gmail", "Mail24", "Test", OdRamClass.Heavy, DisplayName: "Gmail"));
+
+        Assert.Equal("Gmail", item.Title);
+        Assert.Equal("Gmail", item.ToString());
+    }
+
     private OdModuleHost NewHost() => new(
         [new OdFakeModule("clock"), new OdFakeModule("timer"), new OdFakeModule("calc")],
         new OdDatabase(_temp.Combine("omnideck.db"), pooling: false),
         Logger.None,
         new FakeTimeProvider(),
-        new OdFakeNotifier());
+        new OdFakeNotifier(),
+        OdTestHttp.Client);
 
     private OdShellViewModel NewShell(OdModuleHost host) => new(host, _settings, _lifetime);
 
@@ -248,6 +258,10 @@ public sealed class OdShellViewModelTests : IDisposable
     {
         public bool IsQuitting { get; private set; }
 
-        public void Quit() => IsQuitting = true;
+        public Task QuitAsync()
+        {
+            IsQuitting = true;
+            return Task.CompletedTask;
+        }
     }
 }

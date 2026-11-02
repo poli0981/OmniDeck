@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OmniDeck.Core.Governor;
 using OmniDeck.Core.Legal;
 using OmniDeck.Core.Modules;
+using OmniDeck.Core.Net;
 using OmniDeck.Core.Settings;
 using OmniDeck.Core.Storage;
 
@@ -20,6 +21,7 @@ public static class OdCoreServiceCollectionExtensions
         services.AddSingleton<OdDatabase>();
         services.AddSingleton<IOdAppMeta, OdAppMeta>();
         services.AddSingleton<OdLegalGate>();
+        services.AddSingleton(_ => OdHttp.Create(OdVersionInfo.FromAssembly(typeof(OdHttp).Assembly)));
 
         // Modules register as IOdModule; the app supplies IOdNotifier (the tray).
         services.AddSingleton<OdModuleHost>();

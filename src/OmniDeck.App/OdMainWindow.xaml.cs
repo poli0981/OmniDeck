@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media;
 using H.NotifyIcon.Core;
 using OmniDeck.App.Legal;
 using OmniDeck.App.Settings;
@@ -12,6 +13,7 @@ using OmniDeck.App.Shell;
 using OmniDeck.App.Theming;
 using OmniDeck.Core.Legal;
 using OmniDeck.Core.Localization;
+using OmniDeck.Core.Modules;
 using OmniDeck.Core.Settings;
 using OmniDeck.Core.Storage;
 using OmniDeck.Core.Theming;
@@ -44,6 +46,7 @@ public partial class OdMainWindow : INavigationViewPageProvider
     private readonly OdModuleStage _stage;
     private readonly Dictionary<string, NavigationViewItem> _moduleItems = new(StringComparer.Ordinal);
     private readonly NavigationViewItemSeparator _pinnedSeparator = new();
+    private readonly OdTrayIcon _trayIcon = new();
     private bool? _navLabels;
     private int _navMax = -1;
 
@@ -83,10 +86,17 @@ public partial class OdMainWindow : INavigationViewPageProvider
         snackbars.SetSnackbarPresenter(RootSnackbar);
 
         // Created now, so the icon exists even if the window never shows; no Efficiency Mode, which
-        // would throttle the whole process while timers run in the background.
+        // would throttle the whole process while timers run in the background. The image comes first,
+        // so the icon never appears blank.
+        UpdateTrayIcon();
         TrayIcon.ForceCreate(enablesEfficiencyMode: false);
         notifier.Attach((title, message) => _ = Dispatcher.InvokeAsync(() => TrayIcon.ShowNotification(title, message, NotificationIcon.Info)));
-        Closed += (_, _) => TrayIcon.Dispose();
+        notifier.Clicked += OnNotificationClicked;
+        Closed += (_, _) =>
+        {
+            notifier.Clicked -= OnNotificationClicked;
+            TrayIcon.Dispose();
+        };
 
         SetUpNavigation(theme);
 
@@ -200,7 +210,20 @@ public partial class OdMainWindow : INavigationViewPageProvider
 
     private int NavMaxVisibleItems => TryFindResource(OdTokenKeys.NavMaxVisibleItems) is int max ? max : 0;
 
-    private void OnThemeApplied(object? sender, EventArgs e) => ApplyNavTokens();
+    private void OnThemeApplied(object? sender, EventArgs e)
+    {
+        ApplyNavTokens();
+        UpdateTrayIcon();
+    }
+
+    /// <summary>Redraws the tray icon when the accent changed; the taskbar icon disposes the one it replaces.</summary>
+    private void UpdateTrayIcon()
+    {
+        if (_trayIcon.Update(TryFindResource("AccentFillColorDefaultBrush") as Brush, TryFindResource("TextOnAccentFillColorPrimaryBrush") as Brush) is { } icon)
+        {
+            TrayIcon.Icon = icon;
+        }
+    }
 
     /// <summary>
     /// Follows the preset's sidebar tokens (docs/UI-MODES.md §2): labels or icons only, and how many modules
@@ -335,7 +358,19 @@ public partial class OdMainWindow : INavigationViewPageProvider
 
     private void OnTrayOpen(object sender, RoutedEventArgs e) => Present();
 
-    private void OnTrayQuit(object sender, RoutedEventArgs e) => _lifetime.Quit();
+    private void OnTrayNotificationClicked(object sender, RoutedEventArgs e) => _notifier.OnClicked();
+
+    /// <summary>A click on a notification brings the window up, on the module that raised it.</summary>
+    private async void OnNotificationClicked(object? sender, OdNotificationClickedEventArgs e)
+    {
+        Present();
+        if (e.Target is { } target)
+        {
+            await _shell.NavigateAsync(target);
+        }
+    }
+
+    private async void OnTrayQuit(object sender, RoutedEventArgs e) => await _lifetime.QuitAsync();
 
     private void OnTrayQuickTimer(object sender, RoutedEventArgs e) => _quickTimer.StartQuick(TimeSpan.FromMinutes(5));
 }

@@ -18,7 +18,7 @@ public sealed partial class OdModuleItemViewModel(OdModuleInfo info) : Observabl
 
     public string Id => Info.Id;
 
-    public string Title => OdLocalization.Get(Info.NameKey);
+    public string Title => Info.Title;
 
     public string Category => OdLocalization.Get(Info.CategoryKey);
 

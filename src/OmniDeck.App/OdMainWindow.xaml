@@ -65,18 +65,16 @@
                               Grid.Row="0"
                               Grid.RowSpan="2" />
 
-        <!--  The tray icon lives as long as this window, which closing only hides (docs/SPEC.md §2).  -->
+        <!--
+            The tray icon lives as long as this window, which closing only hides (docs/SPEC.md §2).
+            Its image is drawn in code (OdTrayIcon), never with GeneratedIconSource.
+        -->
         <tb:TaskbarIcon x:Name="TrayIcon"
                         Grid.Row="0"
                         NoLeftClickDelay="True"
                         ToolTipText="{res:OdLoc App_Name}"
+                        TrayBalloonTipClicked="OnTrayNotificationClicked"
                         TrayLeftMouseUp="OnTrayOpen">
-            <tb:TaskbarIcon.IconSource>
-                <tb:GeneratedIconSource Background="{DynamicResource AccentFillColorDefaultBrush}"
-                                        FontWeight="Bold"
-                                        Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
-                                        Text="O" />
-            </tb:TaskbarIcon.IconSource>
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu>
                     <MenuItem Click="OnTrayOpen" Header="{res:OdLoc Tray_Open}" />
