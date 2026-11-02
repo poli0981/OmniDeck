@@ -266,6 +266,50 @@ public sealed class OdMediaTests : IDisposable
     });
 
     [Fact]
+    public void TheTray_ControlsALoadedPlayer_AndNothingElse() => OdSta.Run(async () =>
+    {
+        var module = new OdMediaModule(_ => _engine);
+        IOdMediaControls tray = module;
+        var time = new FakeTimeProvider(new DateTimeOffset(2026, 11, 2, 3, 0, 0, TimeSpan.Zero));
+        using var host = new OdModuleHost([module], _database, Logger.None, time, new OdFakeNotifier(), OdTestHttp.Client);
+
+        Assert.Null(tray.NowPlaying);
+        tray.PlayPause();
+        Assert.Empty(_engine.Players);
+
+        await host.ShowAsync("media");
+        module.Session!.Add([@"C:\Music\01 one.mp3", @"C:\Music\02 two.mp3"], play: true);
+        Assert.Equal("01 one", tray.NowPlaying);
+        Assert.True(tray.IsPlaying);
+
+        tray.PlayPause();
+        Assert.False(tray.IsPlaying);
+        tray.Next();
+        Assert.Equal("02 two", tray.NowPlaying);
+        tray.Previous();
+        Assert.Equal("01 one", tray.NowPlaying);
+
+        module.Session.Release();
+        Assert.Null(tray.NowPlaying);
+    });
+
+    [Fact]
+    public void InFullScreen_TheQueueStepsAside() => OdSta.Run(() =>
+    {
+        using var session = NewSession();
+        using var screen = new OdMediaViewModel(session, new OdMediaSettings(), _ => { }, TimeProvider.System);
+        Assert.True(screen.ShowsQueue);
+
+        screen.IsFullscreen = true;
+        Assert.False(screen.ShowsQueue);
+
+        screen.IsFullscreen = false;
+        screen.ToggleQueueCommand.Execute(null);
+        Assert.False(screen.ShowsQueue);
+        return Task.CompletedTask;
+    });
+
+    [Fact]
     public void LibVlcNoise_StaysOutOfTheLog()
     {
         Assert.False(OdVlcLog.Keep("main libvlc: option quiet does not exist"));

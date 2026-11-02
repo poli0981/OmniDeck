@@ -1,3 +1,4 @@
+using System.IO;
 using System.Windows;
 using OmniDeck.Core.Modules;
 using Serilog;
@@ -11,7 +12,7 @@ namespace OmniDeck.Modules.Media;
 /// pinned; suspending lets the player go, and hibernating lets libVLC go too, since playback holds
 /// 280–520 MB (docs/spikes/06-libvlcsharp.md).
 /// </summary>
-public sealed class OdMediaModule : IOdModule
+public sealed class OdMediaModule : IOdModule, IOdMediaControls
 {
     private readonly Func<ILogger, IOdMediaEngine> _engines;
     private IOdModuleContext? _context;
@@ -32,6 +33,38 @@ public sealed class OdMediaModule : IOdModule
     public OdModuleInfo Info { get; } = new("media", "Media_Name", nameof(SymbolRegular.MoviesAndTv24), "Category_Media", OdRamClass.Heavy);
 
     internal OdMediaSession? Session => _session;
+
+    /// <summary>
+    /// The file loaded in a live player. Without a player there is nothing for the tray to control: starting
+    /// one while the view is away could make libVLC open a video window of its own.
+    /// </summary>
+    public string? NowPlaying => _session is { Player: not null, Queue.CurrentItem: { } path } ? Path.GetFileNameWithoutExtension(path) : null;
+
+    public bool IsPlaying => _session?.IsPlaying == true;
+
+    public void PlayPause()
+    {
+        if (NowPlaying is not null)
+        {
+            _session!.Toggle();
+        }
+    }
+
+    public void Next()
+    {
+        if (NowPlaying is not null)
+        {
+            _session!.Next();
+        }
+    }
+
+    public void Previous()
+    {
+        if (NowPlaying is not null)
+        {
+            _session!.Previous();
+        }
+    }
 
     public Task InitializeAsync(IOdModuleContext context)
     {

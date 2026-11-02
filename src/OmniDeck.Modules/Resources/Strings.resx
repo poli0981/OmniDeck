@@ -598,4 +598,10 @@
   <data name="Media_EncodingKorean" xml:space="preserve">
     <value>Korean (EUC-KR)</value>
   </data>
+  <data name="Media_Fullscreen" xml:space="preserve">
+    <value>Full screen (double-click the video; Esc leaves)</value>
+  </data>
+  <data name="Media_ExitFullscreen" xml:space="preserve">
+    <value>Leave full screen (Esc)</value>
+  </data>
 </root>

@@ -12,7 +12,9 @@ All notable changes to OmniDeck are documented here. The format follows
   .m3u. OmniDeck keeps the player running while something plays, and frees its memory once it has
   been paused and out of sight for a while. Its More menu picks the audio and subtitle tracks, adds
   a subtitle file and sets its encoding, plays from a quarter to four times the speed, sends the
-  sound to another device, and saves a snapshot of the picture in Pictures\OmniDeck.
+  sound to another device, and saves a snapshot of the picture in Pictures\OmniDeck. A double-click
+  on the video, or its full-screen button, fills the screen, and Esc goes back. While something is
+  loaded, the tray menu names it and offers play or pause, next and previous.
 - Report a bug from Settings → About, or from the dialog that shows an error. OmniDeck shows the
   issue text first, then saves a report on this PC: the issue text, the version and Windows build,
   the modules and the memory they use, the end of the log and, for a web app, its console. It then

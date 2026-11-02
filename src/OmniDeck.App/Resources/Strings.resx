@@ -454,4 +454,16 @@ Support code: {0}
   <data name="Report_Save" xml:space="preserve">
     <value>Save and open GitHub</value>
   </data>
+  <data name="Tray_Play" xml:space="preserve">
+    <value>Play</value>
+  </data>
+  <data name="Tray_Pause" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="Tray_Next" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="Tray_Previous" xml:space="preserve">
+    <value>Previous</value>
+  </data>
 </root>
