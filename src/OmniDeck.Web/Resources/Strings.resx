@@ -34,4 +34,76 @@
   <data name="Web_Dismiss" xml:space="preserve">
     <value>Dismiss</value>
   </data>
+  <data name="Web_NotificationTitle" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+  <data name="Web_NotificationFallback" xml:space="preserve">
+    <value>New notification</value>
+  </data>
+  <data name="Web_Allow" xml:space="preserve">
+    <value>Allow</value>
+  </data>
+  <data name="Web_Block" xml:space="preserve">
+    <value>Block</value>
+  </data>
+  <data name="Web_AskMicrophone" xml:space="preserve">
+    <value>{0} wants to use your microphone.</value>
+  </data>
+  <data name="Web_AskCamera" xml:space="preserve">
+    <value>{0} wants to use your camera.</value>
+  </data>
+  <data name="Web_AskGeolocation" xml:space="preserve">
+    <value>{0} wants to know your location.</value>
+  </data>
+  <data name="Web_AskClipboardRead" xml:space="preserve">
+    <value>{0} wants to read what you copied.</value>
+  </data>
+  <data name="Web_AskOtherSensors" xml:space="preserve">
+    <value>{0} wants to use your device's motion sensors.</value>
+  </data>
+  <data name="Web_AskMultipleAutomaticDownloads" xml:space="preserve">
+    <value>{0} wants to download several files at once.</value>
+  </data>
+  <data name="Web_AskFileReadWrite" xml:space="preserve">
+    <value>{0} wants to open and change files on this PC.</value>
+  </data>
+  <data name="Web_AskLocalFonts" xml:space="preserve">
+    <value>{0} wants to use the fonts installed on this PC.</value>
+  </data>
+  <data name="Web_AskMidiSystemExclusiveMessages" xml:space="preserve">
+    <value>{0} wants full control of your MIDI devices.</value>
+  </data>
+  <data name="Web_AskWindowManagement" xml:space="preserve">
+    <value>{0} wants to place windows on your screens.</value>
+  </data>
+  <data name="Web_KindMicrophone" xml:space="preserve">
+    <value>Microphone</value>
+  </data>
+  <data name="Web_KindCamera" xml:space="preserve">
+    <value>Camera</value>
+  </data>
+  <data name="Web_KindGeolocation" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="Web_KindClipboardRead" xml:space="preserve">
+    <value>Clipboard</value>
+  </data>
+  <data name="Web_KindOtherSensors" xml:space="preserve">
+    <value>Motion sensors</value>
+  </data>
+  <data name="Web_KindMultipleAutomaticDownloads" xml:space="preserve">
+    <value>Several downloads</value>
+  </data>
+  <data name="Web_KindFileReadWrite" xml:space="preserve">
+    <value>Files</value>
+  </data>
+  <data name="Web_KindLocalFonts" xml:space="preserve">
+    <value>Fonts</value>
+  </data>
+  <data name="Web_KindMidiSystemExclusiveMessages" xml:space="preserve">
+    <value>MIDI devices</value>
+  </data>
+  <data name="Web_KindWindowManagement" xml:space="preserve">
+    <value>Window placement</value>
+  </data>
 </root>

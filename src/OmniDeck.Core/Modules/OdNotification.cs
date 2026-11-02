@@ -7,4 +7,5 @@ namespace OmniDeck.Core.Modules;
 /// What clicking the notification opens: the id of the module that raised it, or null to just show
 /// the window. A module's notifications get its id unless they name something else.
 /// </param>
-public sealed record OdNotification(string Title, string Message, string? Target = null);
+/// <param name="Clicked">Run after the target opens, when the notification is clicked: a web app tells its page.</param>
+public sealed record OdNotification(string Title, string Message, string? Target = null, Action? Clicked = null);

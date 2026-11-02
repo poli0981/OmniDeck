@@ -373,4 +373,61 @@ Support code: {0}
   <data name="Dialog_OK" xml:space="preserve">
     <value>OK</value>
   </data>
+  <data name="Dialog_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Settings_WebApps" xml:space="preserve">
+    <value>Web apps</value>
+  </data>
+  <data name="WebApps_Intro" xml:space="preserve">
+    <value>Choose which web apps may show notifications. An app with notifications on keeps running while hidden, so that it can notify you; it is closed only when OmniDeck runs short of memory.</value>
+  </data>
+  <data name="WebApps_Notifications" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="WebApps_NoPermissions" xml:space="preserve">
+    <value>No permissions asked yet</value>
+  </data>
+  <data name="WebApps_Allowed" xml:space="preserve">
+    <value>{0} allowed</value>
+  </data>
+  <data name="WebApps_Blocked" xml:space="preserve">
+    <value>{0} blocked</value>
+  </data>
+  <data name="WebApps_ResetPermissions" xml:space="preserve">
+    <value>Ask again</value>
+  </data>
+  <data name="WebApps_DataTitle" xml:space="preserve">
+    <value>Sign-in data</value>
+  </data>
+  <data name="WebApps_DataIntro" xml:space="preserve">
+    <value>The apps in a group share one sign-in. Clearing a group's data signs you out of all of them and closes them.</value>
+  </data>
+  <data name="WebApps_ClearData" xml:space="preserve">
+    <value>Clear data</value>
+  </data>
+  <data name="WebApps_ClearTitle" xml:space="preserve">
+    <value>Clear sign-in data?</value>
+  </data>
+  <data name="WebApps_ClearMessage" xml:space="preserve">
+    <value>You will be signed out of {0}. Their cookies, site data and cached pages are deleted.</value>
+  </data>
+  <data name="WebApps_ClearConfirm" xml:space="preserve">
+    <value>Clear data</value>
+  </data>
+  <data name="WebApps_Cleared" xml:space="preserve">
+    <value>Cleared the data of {0}.</value>
+  </data>
+  <data name="WebApps_ClearFailed" xml:space="preserve">
+    <value>The data could not be cleared. Try again after restarting OmniDeck.</value>
+  </data>
+  <data name="WebApps_Catalog" xml:space="preserve">
+    <value>Web app catalog of {0}, with {1} apps.</value>
+  </data>
+  <data name="WebApps_Checked" xml:space="preserve">
+    <value>Last checked for a newer catalog on {0}.</value>
+  </data>
+  <data name="WebApps_NotChecked" xml:space="preserve">
+    <value>Not checked for a newer catalog yet.</value>
+  </data>
 </root>

@@ -1,4 +1,5 @@
 using System.Windows;
+using OmniDeck.Core.Localization;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 
@@ -25,6 +26,25 @@ public sealed class OdDialogs(IContentDialogService service)
         ArgumentNullException.ThrowIfNull(host);
         service.SetDialogHost(host);
         _hostReady = true;
+    }
+
+    /// <summary>Asks before something that cannot be undone; false when declined, or when no dialog can show.</summary>
+    public async Task<bool> ConfirmAsync(string title, string message, string confirm)
+    {
+        if (!CanShow)
+        {
+            return false;
+        }
+
+        var result = await ShowAsync(new ContentDialog
+        {
+            Title = title,
+            Content = message,
+            PrimaryButtonText = confirm,
+            CloseButtonText = OdLocalization.Get("Dialog_Cancel"),
+            DefaultButton = ContentDialogButton.Close,
+        });
+        return result == ContentDialogResult.Primary;
     }
 
     public async Task<ContentDialogResult> ShowAsync(ContentDialog dialog)

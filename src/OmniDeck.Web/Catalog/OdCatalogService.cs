@@ -78,11 +78,15 @@ public sealed class OdCatalogService : IDisposable
         return chosen;
     }
 
+    /// <summary>When <c>main</c>'s copy was last checked; null before the first check.</summary>
+    public DateTimeOffset? LastChecked =>
+        DateTimeOffset.TryParse(_meta.Get(OdAppMetaKeys.CatalogCheckedAt), CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var checkedAt) ? checkedAt : null;
+
     /// <summary>Starts the daily check: a minute after startup, or a day after the last check.</summary>
     public void Start()
     {
         var due = FirstCheckDelay;
-        if (DateTimeOffset.TryParse(_meta.Get(OdAppMetaKeys.CatalogCheckedAt), CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var last))
+        if (LastChecked is { } last)
         {
             var untilNext = last + CheckEvery - _time.GetUtcNow();
             due = untilNext > due ? untilNext : due;

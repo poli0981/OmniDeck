@@ -166,6 +166,94 @@
                 </DockPanel>
             </TabItem>
 
+            <TabItem Header="{res:OdLoc Settings_WebApps}">
+                <ScrollViewer DataContext="{Binding WebApps}" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="{DynamicResource Od.Padding.Control}">
+                        <TextBlock Margin="{DynamicResource Od.Margin.Item}"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                   Text="{res:OdLoc WebApps_Intro}"
+                                   TextWrapping="Wrap" />
+                        <ItemsControl Focusable="False"
+                                      Grid.IsSharedSizeScope="True"
+                                      ItemsSource="{Binding Apps}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type settings:OdWebAppRowViewModel}">
+                                    <ui:Card Margin="{DynamicResource Od.Margin.Item}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" SharedSizeGroup="Reset" />
+                                                <ColumnDefinition Width="Auto" SharedSizeGroup="Notify" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                                <TextBlock FontWeight="SemiBold"
+                                                           Text="{Binding Name}"
+                                                           TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                           Text="{Binding PermissionsText}"
+                                                           TextWrapping="Wrap" />
+                                            </StackPanel>
+                                            <ui:Button Grid.Column="1"
+                                                       Margin="{DynamicResource Od.Padding.Control}"
+                                                       VerticalAlignment="Center"
+                                                       Command="{Binding DataContext.ResetPermissionsCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                       CommandParameter="{Binding}"
+                                                       Content="{res:OdLoc WebApps_ResetPermissions}"
+                                                       IsEnabled="{Binding HasPermissions}" />
+                                            <ui:ToggleSwitch Grid.Column="2"
+                                                             Margin="{DynamicResource Od.Padding.Control}"
+                                                             VerticalAlignment="Center"
+                                                             Command="{Binding DataContext.ToggleNotificationsCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                             CommandParameter="{Binding}"
+                                                             Content="{res:OdLoc WebApps_Notifications}"
+                                                             IsChecked="{Binding Notifications, Mode=OneWay}" />
+                                        </Grid>
+                                    </ui:Card>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <TextBlock Margin="{DynamicResource Od.Margin.Item}"
+                                   FontSize="{DynamicResource Od.Font.H2}"
+                                   FontWeight="SemiBold"
+                                   Text="{res:OdLoc WebApps_DataTitle}" />
+                        <TextBlock Margin="{DynamicResource Od.Margin.Item}"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                   Text="{res:OdLoc WebApps_DataIntro}"
+                                   TextWrapping="Wrap" />
+                        <ItemsControl Focusable="False" ItemsSource="{Binding Profiles}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type settings:OdWebProfileGroup}">
+                                    <ui:Card Margin="{DynamicResource Od.Margin.Item}">
+                                        <DockPanel>
+                                            <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                                       VerticalAlignment="Center"
+                                                       Command="{Binding DataContext.ClearDataCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                       CommandParameter="{Binding}"
+                                                       Content="{res:OdLoc WebApps_ClearData}"
+                                                       DockPanel.Dock="Right" />
+                                            <TextBlock VerticalAlignment="Center"
+                                                       Text="{Binding AppNames}"
+                                                       TextWrapping="Wrap" />
+                                        </DockPanel>
+                                    </ui:Card>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBlock Margin="{DynamicResource Od.Padding.Control}"
+                                   Text="{Binding Message}"
+                                   TextWrapping="Wrap" />
+
+                        <TextBlock Margin="{DynamicResource Od.Padding.Control}"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                   Text="{Binding CatalogText}" />
+                        <TextBlock Margin="{DynamicResource Od.Padding.Control}"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                   Text="{Binding CheckedText}" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
             <TabItem Header="{res:OdLoc Settings_Data}">
                 <StackPanel Margin="{DynamicResource Od.Padding.Control}">
                     <ui:CardControl Margin="{DynamicResource Od.Margin.Item}" Header="{res:OdLoc Settings_DataFolder}">

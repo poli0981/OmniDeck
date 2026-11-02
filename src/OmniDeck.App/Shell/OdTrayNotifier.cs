@@ -15,6 +15,7 @@ public sealed class OdTrayNotifier(ILogger log) : IOdNotifier
     private readonly ILogger _log = log.ForContext<OdTrayNotifier>();
     private Action<string, string>? _show;
     private string? _lastTarget;
+    private Action? _lastClicked;
 
     /// <summary>The user clicked the latest notification.</summary>
     public event EventHandler<OdNotificationClickedEventArgs>? Clicked;
@@ -35,9 +36,14 @@ public sealed class OdTrayNotifier(ILogger log) : IOdNotifier
         }
 
         _lastTarget = notification.Target;
+        _lastClicked = notification.Clicked;
         _show(notification.Title, notification.Message);
     }
 
-    /// <summary>Called by the tray icon when its balloon is clicked.</summary>
-    public void OnClicked() => Clicked?.Invoke(this, new OdNotificationClickedEventArgs(_lastTarget));
+    /// <summary>Called by the tray icon when its balloon is clicked: opens what it names, then runs its own click.</summary>
+    public void OnClicked()
+    {
+        Clicked?.Invoke(this, new OdNotificationClickedEventArgs(_lastTarget));
+        _lastClicked?.Invoke();
+    }
 }

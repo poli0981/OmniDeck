@@ -21,8 +21,14 @@ All notable changes to OmniDeck are documented here. The format follows
   open inside OmniDeck like the built-in modules. The Google apps share one sign-in; every other app
   keeps its own. A link to another site opens in your default browser, while sign-in popups stay in
   the app. A web app that sleeps or is closed down to save memory comes back on the page it showed;
-  one whose page crashes reloads by itself. Notifications, site permissions and downloads for web
-  apps come later in this release.
+  one whose page crashes reloads by itself. Downloads go to your Downloads folder.
+- Web app notifications appear as Windows notifications under the app's name. Clicking one opens the
+  app on what it was about. Settings → Web apps turns them on or off for each app. An app with
+  notifications on keeps running while hidden, so it can still notify you; OmniDeck closes it only
+  when memory runs short, and tells you when it does.
+- When a web app asks for your camera, microphone, location, clipboard or a similar permission,
+  OmniDeck asks you above the app and remembers your answer for that app. Settings → Web apps lists
+  the answers, lets an app ask again, and clears a group of apps' sign-in data.
 
 ### Changed
 - Clicking a notification opens the module that raised it: a finished timer opens Timer.
