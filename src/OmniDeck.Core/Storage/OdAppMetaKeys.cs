@@ -16,4 +16,10 @@ public static class OdAppMetaKeys
 
     /// <summary>Set once the user was told that closing the window keeps OmniDeck in the tray.</summary>
     public const string TrayHintShown = "shell.tray_hint_shown";
+
+    /// <summary>The ETag of the last web-app catalog fetched, so an unchanged one is not downloaded again.</summary>
+    public const string CatalogETag = "catalog.etag";
+
+    /// <summary>When the web-app catalog was last checked, as an ISO 8601 UTC timestamp.</summary>
+    public const string CatalogCheckedAt = "catalog.checked_at";
 }

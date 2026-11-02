@@ -19,6 +19,8 @@ using OmniDeck.Core.Storage;
 using OmniDeck.Modules;
 using OmniDeck.Modules.Calendar;
 using OmniDeck.Modules.Resources;
+using OmniDeck.Web;
+using OmniDeck.Web.Catalog;
 using Serilog;
 
 namespace OmniDeck.App;
@@ -78,6 +80,7 @@ public partial class OdApp
         _services = new ServiceCollection()
             .AddOmniDeckCore(dataRoot, Log.Logger)
             .AddOmniDeckModules()
+            .AddOmniDeckWeb()
             .AddOmniDeckApp()
             .BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
         _services.GetRequiredService<OdCrashHandler>().Hook(this);
@@ -117,6 +120,7 @@ public partial class OdApp
         _services.GetRequiredService<OdRamGovernor>().Start();
         _services.GetRequiredService<OdUpdateWatcher>().Start();
         _services.GetRequiredService<OdReminderService>().Start();
+        _services.GetRequiredService<OdCatalogService>().Start();
     }
 
     /// <summary>The main window, created once. It owns the tray icon, so it exists even while hidden.</summary>

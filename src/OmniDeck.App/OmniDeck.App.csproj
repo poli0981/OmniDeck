@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\OmniDeck.Core\OmniDeck.Core.csproj" />
     <ProjectReference Include="..\OmniDeck.Modules\OmniDeck.Modules.csproj" />
+    <ProjectReference Include="..\OmniDeck.Web\OmniDeck.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,6 +45,11 @@
   <ItemGroup>
     <None Include="..\..\LICENSE" Link="legal\LICENSE.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <None Include="..\..\docs\legal\*.md" Link="legal\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- The web-app catalog as of this build; a newer one fetched from main replaces it (docs/WEBAPP-CATALOG.md). -->
+  <ItemGroup>
+    <None Include="..\..\catalog\webapps.json" Link="catalog\webapps.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
   <!-- A self-contained publish redistributes the .NET and Windows Desktop runtimes: their license

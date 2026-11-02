@@ -9,6 +9,7 @@ using OmniDeck.Core.Modules;
 using OmniDeck.Core.Storage;
 using OmniDeck.Modules;
 using OmniDeck.Tests.TestSupport;
+using OmniDeck.Web;
 using Serilog.Core;
 
 namespace OmniDeck.Tests.Composition;
@@ -22,6 +23,7 @@ public sealed class OdCompositionTests
         var services = new ServiceCollection()
             .AddOmniDeckCore(new OdDataRoot(temp.Path), Logger.None)
             .AddOmniDeckModules()
+            .AddOmniDeckWeb()
             .AddOmniDeckApp();
 
         using var provider = services.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
@@ -41,6 +43,18 @@ public sealed class OdCompositionTests
         Assert.DoesNotContain("Velopack", references, StringComparer.Ordinal);
         Assert.DoesNotContain("Wpf.Ui", references, StringComparer.Ordinal);
         Assert.DoesNotContain(typeof(OdModulesServiceCollectionExtensions).Assembly.GetName().Name, references, StringComparer.Ordinal);
+        Assert.DoesNotContain(typeof(OdWebServiceCollectionExtensions).Assembly.GetName().Name, references, StringComparer.Ordinal);
+    }
+
+    [Fact]
+    public void TheWebRunner_DependsOnCore_NeverOnTheShellOrTheModules()
+    {
+        var references = typeof(OdWebServiceCollectionExtensions).Assembly.GetReferencedAssemblies().Select(a => a.Name).ToList();
+
+        Assert.Contains(typeof(OdDataRoot).Assembly.GetName().Name, references, StringComparer.Ordinal);
+        Assert.DoesNotContain(typeof(OdApp).Assembly.GetName().Name, references, StringComparer.Ordinal);
+        Assert.DoesNotContain(typeof(OdModulesServiceCollectionExtensions).Assembly.GetName().Name, references, StringComparer.Ordinal);
+        Assert.DoesNotContain("Velopack", references, StringComparer.Ordinal);
     }
 
     [Fact]
