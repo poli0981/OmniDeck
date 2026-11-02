@@ -40,6 +40,9 @@ public sealed class OdDataRoot
 
     public string WebView2Directory => Path.Combine(Root, "WebView2");
 
+    /// <summary>The last web-app catalog fetched from the repository (docs/WEBAPP-CATALOG.md).</summary>
+    public string CatalogFile => Path.Combine(Root, "catalog", "webapps.json");
+
     /// <summary>Creates the root and the folders the app writes to from the first second.</summary>
     public void EnsureCreated()
     {

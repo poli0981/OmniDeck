@@ -15,6 +15,9 @@ All notable changes to OmniDeck are documented here. The format follows
   weekly, monthly or yearly, every so many, until a date) and reminders, which appear while OmniDeck
   is running. Import and export .ics files; repeats written by other calendar apps are kept as they
   are. One date of a series can be deleted without touching the rest.
+- OmniDeck keeps its list of web apps up to date: once a day it checks the list in this repository and,
+  when there is a newer valid one, uses it from the next start. The web apps themselves arrive with
+  the web runner, later in this release.
 
 ### Changed
 - Clicking a notification opens the module that raised it: a finished timer opens Timer.

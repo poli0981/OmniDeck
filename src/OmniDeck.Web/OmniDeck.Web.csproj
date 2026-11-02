@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <!-- The web runner hosts WebView2's WPF control (docs/ARCHITECTURE.md §3). -->
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <!-- The web runner: the catalog, profiles, navigation policy and the WebView2 host. It depends on
+       Core's contract only, never on the shell or the built-in modules. -->
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="OmniDeck.Tests" />
+    <!-- UseWPF drops System.IO from the implicit usings (Shapes.Path clash). -->
+    <Using Include="System.IO" />
+    <Using Include="System.Net.Http" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OmniDeck.Core\OmniDeck.Core.csproj" />
+  </ItemGroup>
+
+</Project>

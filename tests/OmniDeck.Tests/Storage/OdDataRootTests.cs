@@ -20,7 +20,7 @@ public sealed class OdDataRootTests
         var root = new OdDataRoot(temp.Path);
 
         Assert.All(
-            [root.SettingsFile, root.DatabaseFile, root.LogsDirectory, root.ReportsDirectory, root.WebView2Directory],
+            [root.SettingsFile, root.DatabaseFile, root.LogsDirectory, root.ReportsDirectory, root.WebView2Directory, root.CatalogFile],
             path => Assert.StartsWith(temp.Path, path, StringComparison.OrdinalIgnoreCase));
     }
 

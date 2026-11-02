@@ -3,6 +3,7 @@
     <Project Path="src/OmniDeck.App/OmniDeck.App.csproj" />
     <Project Path="src/OmniDeck.Core/OmniDeck.Core.csproj" />
     <Project Path="src/OmniDeck.Modules/OmniDeck.Modules.csproj" />
+    <Project Path="src/OmniDeck.Web/OmniDeck.Web.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/OmniDeck.Tests/OmniDeck.Tests.csproj" />
