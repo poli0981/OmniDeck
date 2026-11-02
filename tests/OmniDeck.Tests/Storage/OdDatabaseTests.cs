@@ -24,7 +24,7 @@ public sealed class OdDatabaseTests
         var versions = OdCoreMigrations.All.Select(m => m.Version).ToList();
 
         Assert.Equal(Enumerable.Range(1, versions.Count), versions);
-        Assert.Equal(new[] { "app_meta", "module_settings" }, OdCoreMigrations.All.Select(m => m.Name), StringComparer.Ordinal);
+        Assert.Equal(new[] { "app_meta", "module_settings", "weather_cache" }, OdCoreMigrations.All.Select(m => m.Name), StringComparer.Ordinal);
     }
 
     [Fact]

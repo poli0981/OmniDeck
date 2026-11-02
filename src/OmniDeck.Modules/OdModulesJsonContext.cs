@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using OmniDeck.Modules.Calculator;
 using OmniDeck.Modules.Clock;
+using OmniDeck.Modules.Weather;
 
 namespace OmniDeck.Modules;
 
@@ -8,4 +9,5 @@ namespace OmniDeck.Modules;
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
 [JsonSerializable(typeof(OdClockSettings))]
 [JsonSerializable(typeof(OdCalculatorSettings))]
+[JsonSerializable(typeof(OdWeatherSettings))]
 internal sealed partial class OdModulesJsonContext : JsonSerializerContext;

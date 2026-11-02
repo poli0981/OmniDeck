@@ -10,6 +10,7 @@ using OmniDeck.Modules.Calculator;
 using OmniDeck.Modules.Clock;
 using OmniDeck.Modules.Resources;
 using OmniDeck.Modules.Timer;
+using OmniDeck.Modules.Weather;
 using OmniDeck.Tests.Modules;
 using OmniDeck.Tests.TestSupport;
 
@@ -87,7 +88,7 @@ public sealed partial class OdResxKeyTests
         {
             // Names and categories travel as keys in OdModuleInfo; the shell resolves them.
             using var timers = new OdTimerService(TimeProvider.System, new OdFakeNotifier());
-            IOdModule[] modules = [new OdClockModule(), new OdTimerModule(timers), new OdCalculatorModule()];
+            IOdModule[] modules = [new OdClockModule(), new OdTimerModule(timers), new OdCalculatorModule(), new OdWeatherModule()];
             keys.UnionWith(modules.SelectMany(module => new[] { module.Info.NameKey, module.Info.CategoryKey }));
         }
 
