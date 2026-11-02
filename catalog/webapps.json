@@ -1,7 +1,7 @@
 {
   "$schema": "./webapps.schema.json",
   "schemaVersion": 2,
-  "updated": "2026-11-02",
+  "updated": "2026-11-03",
   "navAllowSets": {
     "google-account-domains": [
       "accounts.google.ad",
@@ -198,7 +198,8 @@
       "name": "Spotify",
       "startUrl": "https://open.spotify.com/",
       "profile": "spotify",
-      "navAllow": ["spotify.com", "spotifycdn.com", "scdn.co"],
+      "navAllow": ["spotify.com", "spotifycdn.com", "scdn.co", "accounts.google.com", "www.facebook.com", "appleid.apple.com"],
+      "navAllowSets": ["google-account-domains"],
       "popupAllow": ["accounts.spotify.com"],
       "notifications": false,
       "audioPin": true
@@ -211,7 +212,7 @@
       "navAllow": ["discord.com", "discordapp.com", "discord.gg", "discordapp.net"],
       "popupAllow": ["discord.com"],
       "notifications": true,
-      "audioPin": false
+      "audioPin": true
     },
     {
       "id": "youtube",
@@ -276,7 +277,7 @@
       "navAllow": ["facebook.com", "fbcdn.net", "fbsbx.com"],
       "popupAllow": ["facebook.com"],
       "notifications": true,
-      "audioPin": false
+      "audioPin": true
     }
   ]
 }
