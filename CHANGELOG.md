@@ -6,6 +6,19 @@ All notable changes to OmniDeck are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+- Any module can open in a window of its own: choose "Open in new window" in its sidebar menu, or the
+  window button on its library tile. It runs there beside whatever the main window shows, and OmniDeck
+  never puts it to sleep while its window is open. Closing the window puts it back in the sidebar;
+  "Return to main window" shows it there. Web apps and videos keep playing through the move, and the
+  module's window goes full screen like the main window.
+- Web apps: a video, or anything else a page shows full screen, now fills the screen, and Esc goes
+  back.
+
+### Fixed
+- Media: in full screen the picture started a few pixels from the left edge of the screen. It now
+  fills the screen.
+
 ## [0.2.0-alpha.2] — 2026-11-02
 
 Second P2 alpha: the media player and the bug report join the web apps of alpha.1. Pop-out windows
