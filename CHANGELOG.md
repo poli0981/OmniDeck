@@ -6,6 +6,19 @@ All notable changes to OmniDeck are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+- Changing the accent color no longer ends in "Something went wrong… A generic error occurred in
+  GDI+". The notification-area icon leaked a Windows graphics handle every time it was redrawn in a
+  new color, and each change redrew it more often than the last, so after enough color or theme
+  changes OmniDeck ran out of handles and could stop drawing its window. The icon is now drawn by
+  OmniDeck itself and redrawn only when the color actually changes.
+- Toggle switches take a newly picked accent color at once. Before, they kept the previous color
+  until the next change.
+- An error that keeps repeating is now reported once a minute, with a count of the repeats, instead
+  of every time, so a single fault can no longer stack error dialogs or fill the logs.
+- Logs are kept for seven days, as the privacy policy says. Before, a burst of errors could push out
+  the whole week of logs before it.
+
 ## [0.1.0] — 2026-10-30
 
 The first installable OmniDeck, closing phase P1. It brings the shell with its sidebar, module
