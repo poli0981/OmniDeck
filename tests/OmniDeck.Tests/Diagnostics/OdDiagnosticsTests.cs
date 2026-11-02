@@ -29,39 +29,39 @@ public sealed class OdDiagnosticsTests
     [Fact]
     public void UiException_IsLoggedAndShownWithItsSupportCode()
     {
-        var sink = new ListSink();
+        var log = new OdLogCapture();
         var presenter = new RecordingPresenter();
-        var handler = new OdCrashHandler(new LoggerConfigurationFor(sink).Logger, presenter, TimeProvider.System);
+        var handler = new OdCrashHandler(log.Logger, presenter, TimeProvider.System);
 
         var code = handler.HandleUiException(new InvalidOperationException("boom"));
 
         var shown = Assert.Single(presenter.Messages);
         Assert.Contains(code, shown, StringComparison.Ordinal);
         Assert.Contains("boom", shown, StringComparison.Ordinal);
-        Assert.Equal(LogEventLevel.Error, Assert.Single(sink.Events).Level);
+        Assert.Equal(LogEventLevel.Error, Assert.Single(log.Events).Level);
     }
 
     [Fact]
     public void AFailureWhileShowing_IsLoggedButNotStacked()
     {
         var presenter = new RecordingPresenter();
-        var sink = new ListSink();
-        var handler = new OdCrashHandler(new LoggerConfigurationFor(sink).Logger, presenter, TimeProvider.System);
+        var log = new OdLogCapture();
+        var handler = new OdCrashHandler(log.Logger, presenter, TimeProvider.System);
         presenter.OnShow = () => handler.HandleUiException(new InvalidOperationException("inside the dialog"));
 
         handler.HandleUiException(new InvalidOperationException("first"));
 
         Assert.Single(presenter.Messages);
-        Assert.Equal(2, sink.Events.Count);
+        Assert.Equal(2, log.Events.Count);
     }
 
     [Fact]
     public void ARepeatingFailure_IsReportedOncePerWindow_WithItsRepeatCount()
     {
-        var sink = new ListSink();
+        var log = new OdLogCapture();
         var presenter = new RecordingPresenter();
         var time = new FakeTimeProvider();
-        var handler = new OdCrashHandler(new LoggerConfigurationFor(sink).Logger, presenter, time);
+        var handler = new OdCrashHandler(log.Logger, presenter, time);
 
         for (var i = 0; i < 1_000; i++)
         {
@@ -69,37 +69,37 @@ public sealed class OdDiagnosticsTests
         }
 
         Assert.Single(presenter.Messages);
-        Assert.Single(sink.Events);
+        Assert.Single(log.Events);
 
         time.Advance(OdCrashHandler.RepeatWindow);
         handler.HandleUiException(new InvalidOperationException("A generic error occurred in GDI+."));
 
         Assert.Equal(2, presenter.Messages.Count);
-        Assert.Equal(2, sink.Events.Count);
-        Assert.Equal(999, Assert.IsType<ScalarValue>(sink.Events[1].Properties["Repeats"]).Value);
+        Assert.Equal(2, log.Events.Count);
+        Assert.Equal(999, Assert.IsType<ScalarValue>(log.Events[1].Properties["Repeats"]).Value);
     }
 
     [Fact]
     public void ADifferentFailure_IsReportedAtOnce()
     {
-        var sink = new ListSink();
+        var log = new OdLogCapture();
         var presenter = new RecordingPresenter();
-        var handler = new OdCrashHandler(new LoggerConfigurationFor(sink).Logger, presenter, new FakeTimeProvider());
+        var handler = new OdCrashHandler(log.Logger, presenter, new FakeTimeProvider());
 
         handler.HandleUiException(new InvalidOperationException("first"));
         handler.HandleUiException(new InvalidOperationException("first"));
         handler.HandleUiException(new TimeoutException("second"));
 
         Assert.Equal(2, presenter.Messages.Count);
-        Assert.Equal(2, sink.Events.Count);
+        Assert.Equal(2, log.Events.Count);
     }
 
     [Fact]
     public void RepeatedUnobservedExceptions_AreLoggedOncePerWindow()
     {
-        var sink = new ListSink();
+        var log = new OdLogCapture();
         var time = new FakeTimeProvider();
-        var handler = new OdCrashHandler(new LoggerConfigurationFor(sink).Logger, new RecordingPresenter(), time);
+        var handler = new OdCrashHandler(log.Logger, new RecordingPresenter(), time);
 
         for (var i = 0; i < 50; i++)
         {
@@ -109,20 +109,20 @@ public sealed class OdDiagnosticsTests
         time.Advance(OdCrashHandler.RepeatWindow);
         handler.HandleUnobserved(new TimeoutException("late"));
 
-        Assert.Equal(2, sink.Events.Count);
-        Assert.Equal(49, Assert.IsType<ScalarValue>(sink.Events[1].Properties["Repeats"]).Value);
+        Assert.Equal(2, log.Events.Count);
+        Assert.Equal(49, Assert.IsType<ScalarValue>(log.Events[1].Properties["Repeats"]).Value);
     }
 
     [Fact]
     public void FatalAndUnobservedExceptions_AreLogged()
     {
-        var sink = new ListSink();
-        var handler = new OdCrashHandler(new LoggerConfigurationFor(sink).Logger, new RecordingPresenter(), TimeProvider.System);
+        var log = new OdLogCapture();
+        var handler = new OdCrashHandler(log.Logger, new RecordingPresenter(), TimeProvider.System);
 
         handler.HandleUnobserved(new TimeoutException("late"));
         handler.HandleFatal(new InvalidOperationException("fatal"), terminating: false);
 
-        Assert.Equal(new[] { LogEventLevel.Error, LogEventLevel.Fatal }, sink.Events.Select(e => e.Level));
+        Assert.Equal(new[] { LogEventLevel.Error, LogEventLevel.Fatal }, log.Events.Select(e => e.Level));
     }
 
     private sealed class RecordingPresenter : IOdErrorPresenter
@@ -136,17 +136,5 @@ public sealed class OdDiagnosticsTests
             Messages.Add(message);
             OnShow?.Invoke();
         }
-    }
-
-    private sealed class ListSink : ILogEventSink
-    {
-        public List<LogEvent> Events { get; } = [];
-
-        public void Emit(LogEvent logEvent) => Events.Add(logEvent);
-    }
-
-    private sealed class LoggerConfigurationFor(ILogEventSink sink)
-    {
-        public Serilog.ILogger Logger { get; } = new Serilog.LoggerConfiguration().MinimumLevel.Verbose().WriteTo.Sink(sink).CreateLogger();
     }
 }

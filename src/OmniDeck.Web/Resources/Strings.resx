@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- The web runner's UI strings, English (neutral). Vietnamese and Japanese satellites arrive in P3. -->
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Category_Web" xml:space="preserve">
+    <value>Web apps</value>
+  </data>
+  <data name="Web_NoRuntime" xml:space="preserve">
+    <value>Web apps need the Microsoft Edge WebView2 Runtime. Windows 11 normally includes it, but this PC is missing it.</value>
+  </data>
+  <data name="Web_GetRuntime" xml:space="preserve">
+    <value>Get the WebView2 Runtime</value>
+  </data>
+  <data name="Web_Crashed" xml:space="preserve">
+    <value>{0} stopped working.</value>
+  </data>
+  <data name="Web_Reload" xml:space="preserve">
+    <value>Reload</value>
+  </data>
+  <data name="Web_LinkHeldBack" xml:space="preserve">
+    <value>{0} kept sending the same link to your browser, so OmniDeck stopped opening it for now.</value>
+  </data>
+  <data name="Web_Dismiss" xml:space="preserve">
+    <value>Dismiss</value>
+  </data>
+</root>

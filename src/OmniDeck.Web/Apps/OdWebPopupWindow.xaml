@@ -1,0 +1,22 @@
+﻿<ui:FluentWindow x:Class="OmniDeck.Web.Apps.OdWebPopupWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                 Width="520"
+                 Height="680"
+                 ExtendsContentIntoTitleBar="True"
+                 ShowInTaskbar="False"
+                 WindowBackdropType="Mica"
+                 WindowStartupLocation="CenterOwner">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <ui:TitleBar x:Name="PopupTitleBar"
+                     Grid.Row="0"
+                     ShowMaximize="False"
+                     ShowMinimize="False" />
+        <Grid x:Name="BrowserHost" Grid.Row="1" />
+    </Grid>
+</ui:FluentWindow>

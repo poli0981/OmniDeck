@@ -33,10 +33,24 @@ public sealed class OdModuleHost : IDisposable
         _time = time;
         _notifier = notifier;
         _http = http;
-        Modules = [.. modules.Select(module => new OdHostedModule(module))];
+        // A repeated id keeps the first module: two would share one settings document, and a catalog
+        // entry named like a built-in module must not stop OmniDeck from starting.
+        var hosted = new List<OdHostedModule>();
+        _byId = new Dictionary<string, OdHostedModule>(StringComparer.Ordinal);
+        foreach (var module in modules)
+        {
+            var entry = new OdHostedModule(module);
+            if (_byId.TryAdd(entry.Info.Id, entry))
+            {
+                hosted.Add(entry);
+            }
+            else
+            {
+                _log.Warning("Module {ModuleId} is registered twice; the first one is kept", entry.Info.Id);
+            }
+        }
 
-        // Throws on a repeated id: two modules would share one settings document.
-        _byId = Modules.ToDictionary(hosted => hosted.Info.Id, StringComparer.Ordinal);
+        Modules = hosted;
     }
 
     public event EventHandler<OdModuleStateChangedEventArgs>? StateChanged;

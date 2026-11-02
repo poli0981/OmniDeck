@@ -7,6 +7,7 @@ using OmniDeck.Core.Modules;
 using OmniDeck.Core.Storage;
 using OmniDeck.Tests.Modules;
 using OmniDeck.Tests.TestSupport;
+using OmniDeck.Web.Runtime;
 using Serilog.Core;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
@@ -65,7 +66,7 @@ public sealed class OdShellServicesTests
         var clock = new OdFakeModule("clock");
         using var host = new OdModuleHost([clock], new OdDatabase(temp.Combine("omnideck.db"), pooling: false), Logger.None, new FakeTimeProvider(), new OdFakeNotifier(), OdTestHttp.Client);
         await host.ShowAsync("clock");
-        var lifetime = new OdAppLifetime(host);
+        var lifetime = new OdAppLifetime(host, new OdWebRuntime(new OdDataRoot(temp.Path), new OdWebOptions(), Logger.None));
 
         Assert.False(lifetime.IsQuitting);
         await lifetime.QuitAsync();

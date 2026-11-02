@@ -21,6 +21,8 @@ using OmniDeck.Modules.Calendar;
 using OmniDeck.Modules.Resources;
 using OmniDeck.Web;
 using OmniDeck.Web.Catalog;
+using OmniDeck.Web.Resources;
+using OmniDeck.Web.Runtime;
 using Serilog;
 
 namespace OmniDeck.App;
@@ -49,9 +51,10 @@ public partial class OdApp
         ShutdownMode = ShutdownMode.OnExplicitShutdown;
         OdLocalization.Instance.Register(OdAppStrings.Resources);
         OdLocalization.Instance.Register(OdModuleStrings.Resources);
+        OdLocalization.Instance.Register(OdWebStrings.Resources);
         try
         {
-            Start(startMinimized: e.Args.Contains(OdRunKeyStartup.MinimizedArgument, StringComparer.OrdinalIgnoreCase));
+            Start(e.Args);
         }
         catch (Exception ex)
         {
@@ -70,17 +73,21 @@ public partial class OdApp
         base.OnExit(e);
     }
 
-    private void Start(bool startMinimized)
+    private void Start(string[] args)
     {
+        var startMinimized = args.Contains(OdRunKeyStartup.MinimizedArgument, StringComparer.OrdinalIgnoreCase);
         var dataRoot = OdDataRoot.Default;
         dataRoot.EnsureCreated();
         Log.Logger = OdLogging.CreateLogger(dataRoot);
         Log.ForContext<OdApp>().Information("OmniDeck {Version} starting", OdVersionInfo.FromAssembly(typeof(OdApp).Assembly).DisplayText);
 
+        // The catalog decides which web-app modules exist, so it loads before the container is built.
+        var catalog = OdCatalogService.LoadInstalled(dataRoot, TimeProvider.System, Log.Logger);
+        var webOptions = new OdWebOptions(ChromiumLogging: args.Contains(OdWebOptions.LoggingSwitch, StringComparer.OrdinalIgnoreCase));
         _services = new ServiceCollection()
             .AddOmniDeckCore(dataRoot, Log.Logger)
             .AddOmniDeckModules()
-            .AddOmniDeckWeb()
+            .AddOmniDeckWeb(catalog, webOptions)
             .AddOmniDeckApp()
             .BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
         _services.GetRequiredService<OdCrashHandler>().Hook(this);

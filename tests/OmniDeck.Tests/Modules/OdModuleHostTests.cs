@@ -182,15 +182,18 @@ public sealed class OdModuleHostTests : IDisposable
     });
 
     [Fact]
-    public void RepeatedIds_AreRejected()
+    public void ARepeatedId_KeepsTheFirstModule()
     {
-        Assert.Throws<ArgumentException>(() => new OdModuleHost(
-            [new OdFakeModule("clock"), new OdFakeModule("clock")],
+        var first = new OdFakeModule("clock");
+        using var host = new OdModuleHost(
+            [first, new OdFakeModule("clock")],
             new OdDatabase(_temp.Combine("omnideck.db"), pooling: false),
             Logger.None,
             _time,
             new OdFakeNotifier(),
-            OdTestHttp.Client));
+            OdTestHttp.Client);
+
+        Assert.Same(first, Assert.Single(host.Modules).Module);
     }
 
     [Fact]
