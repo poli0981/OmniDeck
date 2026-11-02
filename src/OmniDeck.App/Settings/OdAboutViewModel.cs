@@ -27,6 +27,9 @@ public sealed partial class OdAboutViewModel(IOdUpdateService updates, Action<Ur
 
     public bool CanDownload => State == OdUpdateState.Available;
 
+    /// <summary>Raised when the user asks to report a bug.</summary>
+    public event EventHandler? BugReportRequested;
+
     /// <summary>Raised when the user asks to read the legal documents again.</summary>
     public event EventHandler? LegalRequested;
 
@@ -82,6 +85,9 @@ public sealed partial class OdAboutViewModel(IOdUpdateService updates, Action<Ur
 
     [RelayCommand]
     private void ShowLegal() => LegalRequested?.Invoke(this, EventArgs.Empty);
+
+    [RelayCommand]
+    private void ReportBug() => BugReportRequested?.Invoke(this, EventArgs.Empty);
 
     private void Show(OdUpdateState state, string text)
     {

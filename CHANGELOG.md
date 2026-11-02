@@ -6,6 +6,18 @@ All notable changes to OmniDeck are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+- Report a bug from Settings → About, or from the dialog that shows an error. OmniDeck shows the
+  issue text first, then saves a report on this PC: the issue text, the version and Windows build,
+  the modules and the memory they use, the end of the log and, for a web app, its console. It then
+  opens a new GitHub issue in your browser with the short fields filled in. Nothing is sent: attach
+  the report yourself. Addresses keep no query, and tokens, cookies, email addresses, long ids and
+  your user name are taken out first. The ten newest reports are kept.
+
+### Fixed
+- A dialog that opened while a web app was on screen could hide behind the page. The page now steps
+  aside while a dialog is open.
+
 ## [0.2.0-alpha.1] — 2026-11-02
 
 First P2 alpha, for trying the web apps out. The eight apps of the catalog run inside OmniDeck on
