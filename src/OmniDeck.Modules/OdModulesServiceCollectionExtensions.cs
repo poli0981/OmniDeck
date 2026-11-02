@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using OmniDeck.Core.Modules;
 using OmniDeck.Modules.Calculator;
+using OmniDeck.Modules.Calendar;
 using OmniDeck.Modules.Clock;
 using OmniDeck.Modules.Timer;
 using OmniDeck.Modules.Weather;
@@ -18,10 +19,15 @@ public static class OdModulesServiceCollectionExtensions
         services.AddSingleton<OdTimerService>();
         services.AddSingleton<IOdQuickTimer>(provider => provider.GetRequiredService<OdTimerService>());
 
+        // Events outlive the Calendar module's views, and reminders fire whether or not it was opened.
+        services.AddSingleton<OdCalendarStore>();
+        services.AddSingleton<OdReminderService>();
+
         services.AddSingleton<IOdModule, OdClockModule>();
         services.AddSingleton<IOdModule, OdTimerModule>();
         services.AddSingleton<IOdModule, OdCalculatorModule>();
         services.AddSingleton<IOdModule, OdWeatherModule>();
+        services.AddSingleton<IOdModule, OdCalendarModule>();
         return services;
     }
 }

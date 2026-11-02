@@ -310,4 +310,148 @@
   <data name="Weather_DirNW" xml:space="preserve">
     <value>NW</value>
   </data>
+  <data name="Calendar_Name" xml:space="preserve">
+    <value>Calendar</value>
+  </data>
+  <data name="Calendar_New" xml:space="preserve">
+    <value>New event</value>
+  </data>
+  <data name="Calendar_Import" xml:space="preserve">
+    <value>Import an .ics file</value>
+  </data>
+  <data name="Calendar_Export" xml:space="preserve">
+    <value>Export to an .ics file</value>
+  </data>
+  <data name="Calendar_Month" xml:space="preserve">
+    <value>Month</value>
+  </data>
+  <data name="Calendar_Week" xml:space="preserve">
+    <value>Week</value>
+  </data>
+  <data name="Calendar_Agenda" xml:space="preserve">
+    <value>Agenda</value>
+  </data>
+  <data name="Calendar_Previous" xml:space="preserve">
+    <value>Previous</value>
+  </data>
+  <data name="Calendar_Today" xml:space="preserve">
+    <value>Today</value>
+  </data>
+  <data name="Calendar_Next" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="Calendar_TitleHint" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="Calendar_Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Calendar_AllDay" xml:space="preserve">
+    <value>All day</value>
+  </data>
+  <data name="Calendar_Start" xml:space="preserve">
+    <value>Starts at</value>
+  </data>
+  <data name="Calendar_End" xml:space="preserve">
+    <value>Ends at</value>
+  </data>
+  <data name="Calendar_Repeat" xml:space="preserve">
+    <value>Repeat</value>
+  </data>
+  <data name="Calendar_Every" xml:space="preserve">
+    <value>Every</value>
+  </data>
+  <data name="Calendar_Until" xml:space="preserve">
+    <value>until</value>
+  </data>
+  <data name="Calendar_RepeatNone" xml:space="preserve">
+    <value>Doesn't repeat</value>
+  </data>
+  <data name="Calendar_RepeatDaily" xml:space="preserve">
+    <value>Daily</value>
+  </data>
+  <data name="Calendar_RepeatWeekly" xml:space="preserve">
+    <value>Weekly</value>
+  </data>
+  <data name="Calendar_RepeatMonthly" xml:space="preserve">
+    <value>Monthly</value>
+  </data>
+  <data name="Calendar_RepeatYearly" xml:space="preserve">
+    <value>Yearly</value>
+  </data>
+  <data name="Calendar_RepeatCustom" xml:space="preserve">
+    <value>This event repeats as set in the file it was imported from. Picking a repeat above replaces that.</value>
+  </data>
+  <data name="Calendar_Reminder" xml:space="preserve">
+    <value>Reminder</value>
+  </data>
+  <data name="Calendar_ReminderNone" xml:space="preserve">
+    <value>No reminder</value>
+  </data>
+  <data name="Calendar_ReminderAtStart" xml:space="preserve">
+    <value>When it starts</value>
+  </data>
+  <data name="Calendar_ReminderMinutes" xml:space="preserve">
+    <value>{0} minutes before</value>
+  </data>
+  <data name="Calendar_ReminderHour" xml:space="preserve">
+    <value>1 hour before</value>
+  </data>
+  <data name="Calendar_ReminderDay" xml:space="preserve">
+    <value>1 day before</value>
+  </data>
+  <data name="Calendar_ReminderNote" xml:space="preserve">
+    <value>Reminders appear only while OmniDeck is running.</value>
+  </data>
+  <data name="Calendar_Notes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="Calendar_Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Calendar_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Calendar_Delete" xml:space="preserve">
+    <value>Delete event</value>
+  </data>
+  <data name="Calendar_DeleteOccurrence" xml:space="preserve">
+    <value>Delete this date only</value>
+  </data>
+  <data name="Calendar_NoEvents" xml:space="preserve">
+    <value>No events</value>
+  </data>
+  <data name="Calendar_Untitled" xml:space="preserve">
+    <value>Untitled event</value>
+  </data>
+  <data name="Calendar_More" xml:space="preserve">
+    <value>+{0} more</value>
+  </data>
+  <data name="Calendar_Range" xml:space="preserve">
+    <value>{0} – {1}</value>
+  </data>
+  <data name="Calendar_NeedDate" xml:space="preserve">
+    <value>Pick a date for the event.</value>
+  </data>
+  <data name="Calendar_Imported" xml:space="preserve">
+    <value>Imported {0} events.</value>
+  </data>
+  <data name="Calendar_ImportFailed" xml:space="preserve">
+    <value>That file could not be read as a calendar.</value>
+  </data>
+  <data name="Calendar_Exported" xml:space="preserve">
+    <value>Saved your calendar as {0}.</value>
+  </data>
+  <data name="Calendar_ExportFailed" xml:space="preserve">
+    <value>The calendar could not be saved there.</value>
+  </data>
+  <data name="Calendar_IcsFilter" xml:space="preserve">
+    <value>Calendar files (*.ics)|*.ics</value>
+  </data>
+  <data name="Calendar_ReminderStarts" xml:space="preserve">
+    <value>Starts {0}</value>
+  </data>
+  <data name="Calendar_ReminderAllDay" xml:space="preserve">
+    <value>{0}, all day</value>
+  </data>
 </root>

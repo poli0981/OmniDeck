@@ -1,0 +1,305 @@
+﻿<UserControl x:Class="OmniDeck.Modules.Calendar.OdCalendarView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:calendar="clr-namespace:OmniDeck.Modules.Calendar"
+             xmlns:res="clr-namespace:OmniDeck.Core.Localization;assembly=OmniDeck.Core"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="Visible" />
+        <DataTemplate x:Key="CalendarItem" DataType="{x:Type calendar:OdCalendarItem}">
+            <ui:Button HorizontalAlignment="Stretch"
+                       HorizontalContentAlignment="Left"
+                       Appearance="Transparent"
+                       AutomationProperties.Name="{Binding}"
+                       Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                       CommandParameter="{Binding}"
+                       ToolTip="{Binding Title}">
+                <TextBlock TextTrimming="CharacterEllipsis">
+                    <Run Foreground="{DynamicResource TextFillColorSecondaryBrush}" Text="{Binding Time, Mode=OneWay}" />
+                    <Run Text="{Binding Title, Mode=OneWay}" />
+                </TextBlock>
+            </ui:Button>
+        </DataTemplate>
+        <Style x:Key="DayLabel" TargetType="TextBlock">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsToday}" Value="True">
+                    <Setter Property="Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                    <Setter Property="FontWeight" Value="SemiBold" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="{DynamicResource Od.Padding.Card}">
+            <DockPanel Margin="{DynamicResource Od.Margin.Item}">
+                <StackPanel VerticalAlignment="Center"
+                            DockPanel.Dock="Right"
+                            Orientation="Horizontal">
+                    <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                               Appearance="Primary"
+                               Command="{Binding NewEventCommand}"
+                               Content="{res:OdLoc Calendar_New}"
+                               Icon="{ui:SymbolIcon Add24}" />
+                    <ui:Button Appearance="Transparent"
+                               AutomationProperties.Name="{res:OdLoc Calendar_Import}"
+                               Click="OnImport"
+                               Icon="{ui:SymbolIcon ArrowImport24}"
+                               ToolTip="{res:OdLoc Calendar_Import}" />
+                    <ui:Button Appearance="Transparent"
+                               AutomationProperties.Name="{res:OdLoc Calendar_Export}"
+                               Click="OnExport"
+                               Icon="{ui:SymbolIcon ArrowExportLtr24}"
+                               ToolTip="{res:OdLoc Calendar_Export}" />
+                </StackPanel>
+                <TextBlock FontSize="{DynamicResource Od.Font.H1}"
+                           FontWeight="SemiBold"
+                           Text="{res:OdLoc Calendar_Name}" />
+            </DockPanel>
+
+            <DockPanel Margin="{DynamicResource Od.Margin.Item}">
+                <StackPanel VerticalAlignment="Center"
+                            DockPanel.Dock="Right"
+                            Orientation="Horizontal">
+                    <RadioButton Margin="{DynamicResource Od.Padding.Control}"
+                                 Command="{Binding ShowMonthCommand}"
+                                 Content="{res:OdLoc Calendar_Month}"
+                                 GroupName="CalendarMode"
+                                 IsChecked="{Binding IsMonth, Mode=OneWay}" />
+                    <RadioButton Margin="{DynamicResource Od.Padding.Control}"
+                                 Command="{Binding ShowWeekCommand}"
+                                 Content="{res:OdLoc Calendar_Week}"
+                                 GroupName="CalendarMode"
+                                 IsChecked="{Binding IsWeek, Mode=OneWay}" />
+                    <RadioButton Margin="{DynamicResource Od.Padding.Control}"
+                                 Command="{Binding ShowAgendaCommand}"
+                                 Content="{res:OdLoc Calendar_Agenda}"
+                                 GroupName="CalendarMode"
+                                 IsChecked="{Binding IsAgenda, Mode=OneWay}" />
+                </StackPanel>
+                <ui:Button VerticalAlignment="Center"
+                           Appearance="Transparent"
+                           AutomationProperties.Name="{res:OdLoc Calendar_Previous}"
+                           Command="{Binding PreviousCommand}"
+                           Icon="{ui:SymbolIcon ChevronLeft24}"
+                           ToolTip="{res:OdLoc Calendar_Previous}" />
+                <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                           VerticalAlignment="Center"
+                           Command="{Binding GoToTodayCommand}"
+                           Content="{res:OdLoc Calendar_Today}" />
+                <ui:Button VerticalAlignment="Center"
+                           Appearance="Transparent"
+                           AutomationProperties.Name="{res:OdLoc Calendar_Next}"
+                           Command="{Binding NextCommand}"
+                           Icon="{ui:SymbolIcon ChevronRight24}"
+                           ToolTip="{res:OdLoc Calendar_Next}" />
+                <TextBlock Margin="{DynamicResource Od.Padding.Control}"
+                           VerticalAlignment="Center"
+                           FontSize="{DynamicResource Od.Font.H2}"
+                           FontWeight="SemiBold"
+                           Text="{Binding PeriodText}" />
+            </DockPanel>
+
+            <ui:InfoBar Margin="{DynamicResource Od.Margin.Item}"
+                        IsClosable="False"
+                        IsOpen="{Binding HasMessage}"
+                        Message="{Binding Message}"
+                        Severity="Informational" />
+
+            <ui:Card Margin="{DynamicResource Od.Margin.Item}" Visibility="{Binding IsEditing, Converter={StaticResource Visible}}">
+                <StackPanel>
+                    <ui:TextBox Margin="{DynamicResource Od.Margin.Item}"
+                                AutomationProperties.Name="{res:OdLoc Calendar_TitleHint}"
+                                PlaceholderText="{res:OdLoc Calendar_TitleHint}"
+                                Text="{Binding EditTitle, UpdateSourceTrigger=PropertyChanged}" />
+                    <WrapPanel Margin="{DynamicResource Od.Margin.Item}">
+                        <DatePicker Margin="{DynamicResource Od.Padding.Control}"
+                                    VerticalAlignment="Center"
+                                    AutomationProperties.Name="{res:OdLoc Calendar_Date}"
+                                    SelectedDate="{Binding EditDate}"
+                                    ToolTip="{res:OdLoc Calendar_Date}" />
+                        <CheckBox Margin="{DynamicResource Od.Padding.Control}"
+                                  VerticalAlignment="Center"
+                                  Content="{res:OdLoc Calendar_AllDay}"
+                                  IsChecked="{Binding EditAllDay}" />
+                        <ComboBox Margin="{DynamicResource Od.Padding.Control}"
+                                  VerticalAlignment="Center"
+                                  AutomationProperties.Name="{res:OdLoc Calendar_Start}"
+                                  ItemsSource="{Binding Times}"
+                                  SelectedItem="{Binding EditStart}"
+                                  ToolTip="{res:OdLoc Calendar_Start}"
+                                  Visibility="{Binding HasTimes, Converter={StaticResource Visible}}" />
+                        <ComboBox Margin="{DynamicResource Od.Padding.Control}"
+                                  VerticalAlignment="Center"
+                                  AutomationProperties.Name="{res:OdLoc Calendar_End}"
+                                  ItemsSource="{Binding Times}"
+                                  SelectedItem="{Binding EditEnd}"
+                                  ToolTip="{res:OdLoc Calendar_End}"
+                                  Visibility="{Binding HasTimes, Converter={StaticResource Visible}}" />
+                    </WrapPanel>
+                    <WrapPanel Margin="{DynamicResource Od.Margin.Item}">
+                        <ComboBox Margin="{DynamicResource Od.Padding.Control}"
+                                  VerticalAlignment="Center"
+                                  AutomationProperties.Name="{res:OdLoc Calendar_Repeat}"
+                                  ItemsSource="{Binding Repeats}"
+                                  SelectedItem="{Binding EditRepeat}"
+                                  ToolTip="{res:OdLoc Calendar_Repeat}" />
+                        <TextBlock Margin="{DynamicResource Od.Padding.Control}"
+                                   VerticalAlignment="Center"
+                                   Text="{res:OdLoc Calendar_Every}"
+                                   Visibility="{Binding IsRepeating, Converter={StaticResource Visible}}" />
+                        <ComboBox Margin="{DynamicResource Od.Padding.Control}"
+                                  VerticalAlignment="Center"
+                                  AutomationProperties.Name="{res:OdLoc Calendar_Every}"
+                                  ItemsSource="{Binding Intervals}"
+                                  SelectedItem="{Binding EditInterval}"
+                                  Visibility="{Binding IsRepeating, Converter={StaticResource Visible}}" />
+                        <TextBlock Margin="{DynamicResource Od.Padding.Control}"
+                                   VerticalAlignment="Center"
+                                   Text="{res:OdLoc Calendar_Until}"
+                                   Visibility="{Binding IsRepeating, Converter={StaticResource Visible}}" />
+                        <DatePicker Margin="{DynamicResource Od.Padding.Control}"
+                                    VerticalAlignment="Center"
+                                    AutomationProperties.Name="{res:OdLoc Calendar_Until}"
+                                    SelectedDate="{Binding EditUntil}"
+                                    Visibility="{Binding IsRepeating, Converter={StaticResource Visible}}" />
+                    </WrapPanel>
+                    <TextBlock Margin="{DynamicResource Od.Margin.Item}"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                               Text="{res:OdLoc Calendar_RepeatCustom}"
+                               TextWrapping="Wrap"
+                               Visibility="{Binding HasCustomRepeat, Converter={StaticResource Visible}}" />
+                    <ComboBox Margin="{DynamicResource Od.Margin.Item}"
+                              HorizontalAlignment="Left"
+                              AutomationProperties.Name="{res:OdLoc Calendar_Reminder}"
+                              ItemsSource="{Binding Reminders}"
+                              SelectedItem="{Binding EditReminder}"
+                              ToolTip="{res:OdLoc Calendar_Reminder}" />
+                    <TextBlock Margin="{DynamicResource Od.Margin.Item}"
+                               FontSize="{DynamicResource Od.Font.Caption}"
+                               Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                               Text="{res:OdLoc Calendar_ReminderNote}"
+                               TextWrapping="Wrap" />
+                    <ui:TextBox Margin="{DynamicResource Od.Margin.Item}"
+                                AcceptsReturn="True"
+                                AutomationProperties.Name="{res:OdLoc Calendar_Notes}"
+                                MinLines="2"
+                                PlaceholderText="{res:OdLoc Calendar_Notes}"
+                                Text="{Binding EditNotes, UpdateSourceTrigger=PropertyChanged}"
+                                TextWrapping="Wrap" />
+                    <WrapPanel>
+                        <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                   Appearance="Primary"
+                                   Command="{Binding SaveCommand}"
+                                   Content="{res:OdLoc Calendar_Save}" />
+                        <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                   Command="{Binding CancelCommand}"
+                                   Content="{res:OdLoc Calendar_Cancel}" />
+                        <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                   Command="{Binding DeleteOccurrenceCommand}"
+                                   Content="{res:OdLoc Calendar_DeleteOccurrence}"
+                                   Visibility="{Binding CanDeleteOccurrence, Converter={StaticResource Visible}}" />
+                        <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                   Appearance="Danger"
+                                   Command="{Binding DeleteCommand}"
+                                   Content="{res:OdLoc Calendar_Delete}"
+                                   Visibility="{Binding CanDelete, Converter={StaticResource Visible}}" />
+                    </WrapPanel>
+                </StackPanel>
+            </ui:Card>
+
+            <StackPanel Visibility="{Binding IsMonth, Converter={StaticResource Visible}}">
+                <ItemsControl Focusable="False" ItemsSource="{Binding WeekdayNames}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="7" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock HorizontalAlignment="Center"
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                       Text="{Binding}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <ItemsControl Focusable="False" ItemsSource="{Binding MonthDays}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="7" Rows="6" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type calendar:OdCalendarDay}">
+                            <Border MinHeight="104"
+                                    Margin="{DynamicResource Od.Margin.Tile}"
+                                    Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                    CornerRadius="{DynamicResource Od.Corner.Radius}">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsInPeriod}" Value="False">
+                                                <Setter Property="Opacity" Value="0.55" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <StackPanel>
+                                    <ui:Button HorizontalAlignment="Left"
+                                               Appearance="Transparent"
+                                               Command="{Binding DataContext.NewEventCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                               CommandParameter="{Binding}"
+                                               ToolTip="{res:OdLoc Calendar_New}">
+                                        <TextBlock Style="{StaticResource DayLabel}" Text="{Binding Label}" />
+                                    </ui:Button>
+                                    <ItemsControl Focusable="False"
+                                                  ItemTemplate="{StaticResource CalendarItem}"
+                                                  ItemsSource="{Binding Items}" />
+                                    <TextBlock Margin="{DynamicResource Od.Padding.Control}"
+                                               FontSize="{DynamicResource Od.Font.Caption}"
+                                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                               Text="{Binding More}"
+                                               Visibility="{Binding HasMore, Converter={StaticResource Visible}}" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+
+            <StackPanel Visibility="{Binding IsList, Converter={StaticResource Visible}}">
+                <TextBlock Margin="{DynamicResource Od.Margin.Item}"
+                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                           Text="{res:OdLoc Calendar_NoEvents}"
+                           Visibility="{Binding IsAgendaEmpty, Converter={StaticResource Visible}}" />
+                <ItemsControl Focusable="False" ItemsSource="{Binding ListDays}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type calendar:OdCalendarDay}">
+                            <StackPanel Margin="{DynamicResource Od.Margin.Item}">
+                                <DockPanel>
+                                    <ui:Button Appearance="Transparent"
+                                               AutomationProperties.Name="{res:OdLoc Calendar_New}"
+                                               Command="{Binding DataContext.NewEventCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                               CommandParameter="{Binding}"
+                                               DockPanel.Dock="Right"
+                                               Icon="{ui:SymbolIcon Add16}"
+                                               ToolTip="{res:OdLoc Calendar_New}" />
+                                    <TextBlock VerticalAlignment="Center"
+                                               FontWeight="SemiBold"
+                                               Style="{StaticResource DayLabel}"
+                                               Text="{Binding Label}" />
+                                </DockPanel>
+                                <TextBlock Margin="{DynamicResource Od.Padding.Control}"
+                                           Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                           Text="{res:OdLoc Calendar_NoEvents}"
+                                           Visibility="{Binding IsEmpty, Converter={StaticResource Visible}}" />
+                                <ItemsControl Focusable="False"
+                                              ItemTemplate="{StaticResource CalendarItem}"
+                                              ItemsSource="{Binding Items}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

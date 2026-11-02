@@ -22,13 +22,14 @@ OmniDeck is licensed under GPL-3.0. This file lists the third-party components O
 | Microsoft.Data.Sqlite (+ .Core) | 10.0.14 | MIT | SQLite provider |
 | SQLitePCLRaw (bundle_e_sqlite3, core, provider.e_sqlite3, lib.e_sqlite3) | 2.1.13 | Apache-2.0 | SQLite bindings |
 | SQLite (the `e_sqlite3` native library) | bundled with SQLitePCLRaw 2.1.13 | public domain | local database engine |
+| Ical.Net | 5.2.3 | MIT | calendar repeats and .ics import/export |
+| NodaTime (with the IANA time zone database, public domain) | 3.2.2 | Apache-2.0 | time zones for Ical.Net |
 
 ## 2. Planned components (bundled from the version that introduces them)
 
 | Component | License | Role | Phase |
 |---|---|---|---|
 | Microsoft.Web.WebView2 (SDK) | BSD-3-Clause (Microsoft) | web app engine bindings | P2 |
-| Ical.Net (+ NodaTime) | MIT (+ Apache-2.0) | iCalendar import/export | P2 |
 | LibVLCSharp.WPF | LGPL-2.1-or-later | media bindings | P2 |
 | libVLC (`VideoLAN.LibVLC.Windows`) | LGPL-2.1-or-later core; some plugins GPL-2.0-or-later | media engine | P2 |
 | ScottPlot.WPF (+ SkiaSharp, OpenTK) | MIT | stock charts | P3 |
@@ -66,6 +67,7 @@ Applies to the MIT-licensed components in §1, with these copyright notices:
 - Microsoft.Data.Sqlite and Microsoft.Data.Sqlite.Core: Copyright (c) .NET Foundation and Contributors
 - CommunityToolkit.Mvvm: Copyright © .NET Foundation and Contributors
 - H.NotifyIcon, H.NotifyIcon.Wpf and H.GeneratedIcons.System.Drawing: Copyright (c) 2020 havendv; they continue Hardcodet NotifyIcon for WPF, Copyright (c) Philipp Sumi (MIT)
+- Ical.Net: Copyright 2007-2026 ical-org
 
 ```
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -96,6 +98,7 @@ Applies to these components in §1, with their copyright notices:
 - Serilog and Serilog.Sinks.File: Copyright © Serilog Contributors
 - Dapper: Copyright © 2019 Stack Exchange, Inc.
 - SQLitePCLRaw: Copyright 2014-2024 SourceGear, LLC
+- NodaTime: Copyright The Noda Time Authors
 
 ```
                                  Apache License
