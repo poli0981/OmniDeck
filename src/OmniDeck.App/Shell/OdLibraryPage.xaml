@@ -5,8 +5,9 @@
              xmlns:shell="clr-namespace:OmniDeck.App.Shell"
              xmlns:theme="clr-namespace:OmniDeck.App.Theming"
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             FontSize="{DynamicResource Od.Font.Base}"
              Foreground="{DynamicResource TextFillColorPrimaryBrush}">
-    <!--  The navigation view's frame does not pass the window's text color down: pages set their own.  -->
+    <!--  The navigation view's frame does not pass the window's text color and size down: pages set their own.  -->
     <UserControl.Resources>
         <shell:OdSymbolConverter x:Key="Symbol" />
     </UserControl.Resources>

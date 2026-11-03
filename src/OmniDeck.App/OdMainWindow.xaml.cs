@@ -188,14 +188,33 @@ public partial class OdMainWindow : INavigationViewPageProvider
 
     private static Binding Localized(string key) => new($"[{key}]") { Source = OdLocalization.Instance, Mode = BindingMode.OneWay };
 
-    private static NavigationViewItem ShellItem(string target, Binding title, SymbolRegular icon, Type pageType)
+    /// <summary>A sidebar icon at the preset's size: larger in Comfort (docs/UI-MODES.md §2).</summary>
+    private static SymbolIcon NavIcon(SymbolRegular symbol)
     {
-        var item = new NavigationViewItem
+        var icon = new SymbolIcon { Symbol = symbol };
+        icon.SetResourceReference(FontSizeProperty, OdTokenKeys.NavIconSize);
+        return icon;
+    }
+
+    /// <summary>
+    /// Gives a sidebar item the preset's text size and minimum hit target (docs/UI-MODES.md §2): WPF-UI
+    /// draws its labels at 14 px and its items 40 px tall whatever the preset.
+    /// </summary>
+    private NavigationViewItem FollowPreset(NavigationViewItem item)
+    {
+        item.ContentTemplate = (DataTemplate)FindResource("NavLabel");
+        item.SetResourceReference(MinHeightProperty, OdTokenKeys.HitTargetMin);
+        return item;
+    }
+
+    private NavigationViewItem ShellItem(string target, Binding title, SymbolRegular icon, Type pageType)
+    {
+        var item = FollowPreset(new NavigationViewItem
         {
-            Icon = new SymbolIcon { Symbol = icon },
+            Icon = NavIcon(icon),
             TargetPageTag = target,
             TargetPageType = pageType,
-        };
+        });
         item.SetBinding(ContentControl.ContentProperty, title);
         item.SetBinding(AutomationProperties.NameProperty, title);
         item.SetBinding(ToolTipProperty, title);
@@ -293,13 +312,13 @@ public partial class OdMainWindow : INavigationViewPageProvider
             popOut.Command = module.IsPoppedOut ? _shell.PopInCommand : _shell.PopOutCommand;
         };
 
-        var item = new NavigationViewItem
+        var item = FollowPreset(new NavigationViewItem
         {
-            Icon = new SymbolIcon { Symbol = OdSymbolConverter.Parse(module.Info.Icon) },
+            Icon = NavIcon(OdSymbolConverter.Parse(module.Info.Icon)),
             TargetPageTag = module.Id,
             TargetPageType = typeof(OdModuleStage),
             ContextMenu = menu,
-        };
+        });
         item.SetBinding(ContentControl.ContentProperty, new Binding(nameof(OdModuleItemViewModel.Title)) { Source = module });
         item.SetBinding(AutomationProperties.NameProperty, new Binding(nameof(OdModuleItemViewModel.Title)) { Source = module });
         item.SetBinding(ToolTipProperty, new Binding(nameof(OdModuleItemViewModel.Title)) { Source = module });

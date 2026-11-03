@@ -5,4 +5,5 @@
                 VerticalContentAlignment="Stretch"
                 Content="{Binding CurrentView}"
                 Focusable="False"
+                FontSize="{DynamicResource Od.Font.Base}"
                 Foreground="{DynamicResource TextFillColorPrimaryBrush}" />

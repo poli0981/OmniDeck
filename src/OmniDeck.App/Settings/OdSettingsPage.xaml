@@ -5,8 +5,9 @@
              xmlns:settings="clr-namespace:OmniDeck.App.Settings"
              xmlns:shell="clr-namespace:OmniDeck.App.Shell"
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             FontSize="{DynamicResource Od.Font.Base}"
              Foreground="{DynamicResource TextFillColorPrimaryBrush}">
-    <!--  The navigation view's frame does not pass the window's text color down: pages set their own.  -->
+    <!--  The navigation view's frame does not pass the window's text color and size down: pages set their own.  -->
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="Visible" />
     </UserControl.Resources>
@@ -71,9 +72,7 @@
                                         <TextBlock FontSize="{DynamicResource Od.Font.H2}"
                                                    FontWeight="SemiBold"
                                                    Text="{Binding Title}" />
-                                        <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                                   Text="{Binding Hint}"
-                                                   TextWrapping="Wrap" />
+                                        <TextBlock Style="{StaticResource PresetHint}" Text="{Binding Hint}" />
                                     </StackPanel>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>

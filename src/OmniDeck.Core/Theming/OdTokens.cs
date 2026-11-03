@@ -17,7 +17,9 @@ public sealed record OdTokens(
     int MotionMilliseconds,
     double ChartLineWeight,
     int NavMaxVisibleItems,
-    bool NavShowLabels)
+    bool NavShowLabels,
+    double ContrastTarget,
+    double NavIconSize)
 {
     /// <summary>The range of the user's font-size slider (docs/UI-MODES.md §3).</summary>
     public const double MinFontScale = 0.85;
@@ -47,7 +49,9 @@ public sealed record OdTokens(
             MotionMilliseconds: motionEnabled ? preset.MotionMilliseconds : 0,
             preset.ChartLineWeight,
             preset.NavMaxVisibleItems,
-            preset.NavShowLabels);
+            preset.NavShowLabels,
+            preset.ContrastTarget,
+            preset.NavIconSize);
     }
 
     private static double Round(double value) => Math.Round(value, 2, MidpointRounding.AwayFromZero);

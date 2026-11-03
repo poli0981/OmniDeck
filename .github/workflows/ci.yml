@@ -63,18 +63,19 @@ jobs:
       - name: Verify XAML formatting (XamlStyler)
         run: dotnet xstyler -c Settings.XamlStyler -d src -r -p
 
-      - name: Design tokens only in module and web views
+      - name: Design tokens only in views
         shell: pwsh
         run: |
-          # docs/UI-MODES.md §2: module and web-runner views consume Od.* tokens, never a literal FontSize.
+          # docs/UI-MODES.md §2: views consume Od.* tokens, never a literal font size, or a literal
+          # margin, padding or corner radius other than zero.
           $hits = Get-ChildItem -Path src -Recurse -Filter *.xaml |
-            Where-Object { $_.FullName -match '[\\/]OmniDeck\.(Modules|Web)[\\/]' } |
-            Select-String -Pattern 'FontSize\s*=\s*"\s*\d'
+            Where-Object { $_.FullName -notmatch '[\\/](bin|obj)[\\/]' } |
+            Select-String -Pattern 'FontSize\s*=\s*"\s*\d', '(?<![\w.])(Margin|Padding|CornerRadius)\s*=\s*"[^"{]*[1-9]'
           if ($hits) {
-            $hits | ForEach-Object { Write-Host "::error file=$($_.Path),line=$($_.LineNumber)::Literal FontSize in a module or web view; use an Od.* token." }
+            $hits | ForEach-Object { Write-Host "::error file=$($_.Path),line=$($_.LineNumber)::Literal size in a view; use an Od.* token." }
             exit 1
           }
-          Write-Host 'No literal FontSize in module or web views.'
+          Write-Host 'No literal font sizes, margins, paddings or corner radii in views.'
 
       - name: Build (Release, warnings are errors)
         run: dotnet build OmniDeck.slnx -c Release --no-restore

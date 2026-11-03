@@ -160,6 +160,7 @@ public sealed class OdSettingsPagesTests : IDisposable
         Assert.Equal(new[] { "Dynamic", "Standard", "Comfort" }, page.Presets.Select(p => p.Name), StringComparer.Ordinal);
         Assert.Equal("Larger text and targets, no motion.", page.Presets[2].Hint);
         Assert.Equal("Comfort", page.Presets[2].ToString());
+        Assert.Null(page.Presets[2].Preview);
         Assert.Equal("Dark", page.Themes[2].ToString());
         Assert.NotNull(page.Memory);
     }
@@ -169,7 +170,7 @@ public sealed class OdSettingsPagesTests : IDisposable
     {
         var meta = NewMeta();
         Assert.True(OdOnboardingViewModel.IsNeeded(meta));
-        var onboarding = new OdOnboardingViewModel(_settings, meta);
+        var onboarding = new OdOnboardingViewModel(_settings, meta, preset => new System.Windows.ResourceDictionary { ["preset"] = preset.Name });
         var finished = 0;
         onboarding.Finished += (_, _) => finished++;
 
@@ -182,6 +183,7 @@ public sealed class OdSettingsPagesTests : IDisposable
         Assert.False(OdOnboardingViewModel.IsNeeded(meta));
         Assert.Equal(1, finished);
         Assert.Equal(3, onboarding.Presets.Count);
+        Assert.Equal("Comfort", onboarding.Presets[2].Preview!["preset"]);
         Assert.Equal(2, onboarding.Languages.Count);
     }
 

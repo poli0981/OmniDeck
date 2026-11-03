@@ -3,6 +3,7 @@
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:res="clr-namespace:OmniDeck.Core.Localization;assembly=OmniDeck.Core"
                  xmlns:settings="clr-namespace:OmniDeck.App.Settings"
+                 xmlns:theming="clr-namespace:OmniDeck.App.Theming"
                  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
                  Title="{res:OdLoc Onboarding_Title}"
                  Width="760"
@@ -53,14 +54,17 @@
                     </ListBox.ItemsPanel>
                     <ListBox.ItemTemplate>
                         <DataTemplate DataType="{x:Type settings:OdPresetOption}">
-                            <StackPanel Width="200" Margin="{DynamicResource Od.Padding.Control}">
-                                <TextBlock FontSize="{DynamicResource Od.Font.H2}"
-                                           FontWeight="SemiBold"
-                                           Text="{Binding Title}" />
-                                <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                           Text="{Binding Hint}"
-                                           TextWrapping="Wrap" />
-                            </StackPanel>
+                            <!--  The card's text has its preset's own layer: each card shows that preset's sizes and text colors.  -->
+                            <Border Width="200" Padding="{DynamicResource Od.Padding.Control}">
+                                <StackPanel theming:OdPresetPreview.Layer="{Binding Preview}">
+                                    <TextBlock FontSize="{DynamicResource Od.Font.H2}"
+                                               FontWeight="SemiBold"
+                                               Text="{Binding Title}" />
+                                    <TextBlock FontSize="{DynamicResource Od.Font.Base}"
+                                               Style="{StaticResource PresetHint}"
+                                               Text="{Binding Hint}" />
+                                </StackPanel>
+                            </Border>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>

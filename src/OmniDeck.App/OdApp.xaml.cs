@@ -106,7 +106,8 @@ public partial class OdApp
         OdLocalization.Instance.TrackWindowLanguage();
         settings.Changed += (_, e) => Dispatcher.Invoke(() => OdLocalization.Instance.SetCulture(OdLocalization.Instance.ResolveCulture(e.Settings.Language)));
 
-        _services.GetRequiredService<OdThemeEngine>().Start(this);
+        var theme = _services.GetRequiredService<OdThemeEngine>();
+        theme.Start(this);
 
         // The legal gate comes first, on the first run and after each legal update; Quit ends here.
         var legal = _services.GetRequiredService<OdLegalGate>();
@@ -120,7 +121,7 @@ public partial class OdApp
         var meta = _services.GetRequiredService<IOdAppMeta>();
         if (OdOnboardingViewModel.IsNeeded(meta))
         {
-            new OdOnboardingWindow(new OdOnboardingViewModel(settings, meta)).ShowDialog();
+            new OdOnboardingWindow(new OdOnboardingViewModel(settings, meta, theme.Preview)).ShowDialog();
         }
 
         // Only now may a second launch bring the window up: never past the gate.

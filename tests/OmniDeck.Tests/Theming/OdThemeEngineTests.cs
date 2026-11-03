@@ -2,6 +2,7 @@ using System.Windows.Media;
 using OmniDeck.App.Theming;
 using OmniDeck.Core.Settings;
 using OmniDeck.Core.Storage;
+using OmniDeck.Core.Theming;
 using OmniDeck.Tests.TestSupport;
 using Serilog.Core;
 using Wpf.Ui.Appearance;
@@ -39,6 +40,21 @@ public sealed class OdThemeEngineTests
         Assert.True(followSystem);
         Assert.Equal(ApplicationTheme.Dark, theme);
         Assert.Equal(Color.FromRgb(0x10, 0x89, 0x3E), accent);
+    }
+
+    [Fact]
+    public void APreview_HasThePresetsTokens_AtTheUsersFontScale()
+    {
+        using var temp = new OdTempDirectory();
+        var settings = new OdSettingsService(new OdDataRoot(temp.Path), Logger.None);
+        settings.Update(s => s with { Preset = "Dynamic", FontScale = 1.2 });
+        using var engine = new OdThemeEngine(settings, Logger.None);
+
+        var preview = engine.Preview(OdPreset.Comfort);
+
+        Assert.Equal("Comfort", preview[OdTokenKeys.PresetMarker]);
+        Assert.Equal(22.8, preview[OdTokenKeys.FontBase]);
+        Assert.Equal(44.0, preview[OdTokenKeys.HitTargetMin]);
     }
 
     [Fact]
