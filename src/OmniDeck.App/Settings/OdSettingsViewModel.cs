@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OmniDeck.App.Shell;
+using OmniDeck.Core;
 using OmniDeck.Core.Localization;
 using OmniDeck.Core.Settings;
 using OmniDeck.Core.Storage;
@@ -31,6 +32,10 @@ public sealed partial class OdSettingsViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     private bool _startWithWindows;
+
+    /// <summary>Whether updates include alphas and betas: the user's choice, or what the running build is.</summary>
+    [ObservableProperty]
+    private bool _receivePrereleases;
 
     [ObservableProperty]
     private OdThemeMode _theme;
@@ -156,6 +161,8 @@ public sealed partial class OdSettingsViewModel : ObservableObject, IDisposable
 
     partial void OnCloseToTrayChanged(bool value) => Apply(s => s with { CloseToTray = value });
 
+    partial void OnReceivePrereleasesChanged(bool value) => Apply(s => s with { Prereleases = value });
+
     partial void OnStartWithWindowsChanged(bool value)
     {
         if (!_loading)
@@ -215,6 +222,7 @@ public sealed partial class OdSettingsViewModel : ObservableObject, IDisposable
         {
             Language = settings.Language;
             CloseToTray = settings.CloseToTray;
+            ReceivePrereleases = OdUpdateChannel.IncludesPrereleases(settings.Prereleases, OdVersionInfo.FromAssembly(typeof(OdSettingsViewModel).Assembly).Version);
             StartWithWindows = _startup.IsEnabled;
             Theme = settings.Theme;
             Preset = settings.Preset;

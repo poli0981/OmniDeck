@@ -298,6 +298,15 @@
                                    AutomationProperties.LiveSetting="Polite"
                                    Text="{Binding StatusText}"
                                    TextWrapping="Wrap" />
+                        <ui:CardControl Margin="{DynamicResource Od.Margin.Item}" Header="{res:OdLoc About_Prereleases}">
+                            <ui:CardControl.Content>
+                                <ui:ToggleSwitch AutomationProperties.Name="{res:OdLoc About_Prereleases}" IsChecked="{Binding DataContext.ReceivePrereleases, RelativeSource={RelativeSource AncestorType=TabItem}}" />
+                            </ui:CardControl.Content>
+                        </ui:CardControl>
+                        <TextBlock Margin="{DynamicResource Od.Margin.Item}"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                   Text="{res:OdLoc About_PrereleasesNote}"
+                                   TextWrapping="Wrap" />
                         <TextBlock Margin="{DynamicResource Od.Padding.Control}"
                                    FontWeight="SemiBold"
                                    Text="{res:OdLoc About_Links}" />

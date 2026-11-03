@@ -39,6 +39,12 @@ public sealed record OdSettings
     /// </summary>
     public IReadOnlyList<string> PinnedModules { get; init; } = [];
 
+    /// <summary>
+    /// Whether the update check offers pre-releases; null leaves it to the running build
+    /// (<see cref="OdUpdateChannel"/>), so a beta keeps getting betas and 1.0 gets stable releases only.
+    /// </summary>
+    public bool? Prereleases { get; init; }
+
     /// <summary>The RAM governor's thresholds and the modules it must keep running.</summary>
     public OdMemorySettings Memory { get; init; } = new();
 

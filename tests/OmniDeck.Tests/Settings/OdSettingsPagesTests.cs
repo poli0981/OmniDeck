@@ -67,6 +67,22 @@ public sealed class OdSettingsPagesTests : IDisposable
     }
 
     [Fact]
+    public void PreReleases_FollowThisBuild_UntilTheUserChooses()
+    {
+        using var page = NewSettingsPage();
+
+        // This build is a pre-release (0.x), so without a choice it takes pre-releases.
+        Assert.Null(_settings.Current.Prereleases);
+        Assert.True(page.ReceivePrereleases);
+
+        page.ReceivePrereleases = false;
+        Assert.False(_settings.Current.Prereleases);
+
+        page.ReceivePrereleases = true;
+        Assert.True(_settings.Current.Prereleases);
+    }
+
+    [Fact]
     public void Accent_SwitchesBetweenWindowsAndASwatch()
     {
         using var page = NewSettingsPage();
