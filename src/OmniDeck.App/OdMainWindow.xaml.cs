@@ -121,6 +121,7 @@ public partial class OdMainWindow : INavigationViewPageProvider
         };
 
         SetUpNavigation(theme);
+        ListenForAway();
 
         // WPF ignores the Windows text size; re-read it when it may have changed (docs/UI-MODES.md §4).
         Activated += (_, _) => theme.RefreshTextScale();
@@ -402,13 +403,32 @@ public partial class OdMainWindow : INavigationViewPageProvider
 
     private void OnTrayNotificationClicked(object sender, RoutedEventArgs e) => _notifier.OnClicked();
 
-    /// <summary>A click on a notification brings the window up, on the module that raised it.</summary>
+    /// <summary>Minimized or in the tray, the window shows nothing: its module goes down the ladder meanwhile.</summary>
+    private void ListenForAway()
+    {
+        IsVisibleChanged += (_, _) => OnAwayChanged(this, EventArgs.Empty);
+        StateChanged += OnAwayChanged;
+    }
+
+    private async void OnAwayChanged(object? sender, EventArgs e) =>
+        await _shell.SetWindowAwayAsync(!IsVisible || WindowState == WindowState.Minimized);
+
+    /// <summary>
+    /// A click on a notification brings the window up, on the module that raised it. It navigates first,
+    /// so a module the window showed before is not woken up only to be hidden again.
+    /// </summary>
     private async void OnNotificationClicked(object? sender, OdNotificationClickedEventArgs e)
     {
-        Present();
-        if (e.Target is { } target)
+        try
         {
-            await _shell.NavigateAsync(target);
+            if (e.Target is { } target)
+            {
+                await _shell.NavigateAsync(target);
+            }
+        }
+        finally
+        {
+            Present();
         }
     }
 

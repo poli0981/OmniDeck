@@ -58,8 +58,14 @@ public sealed class OdModuleHost : IDisposable
     /// <summary>Every registered module, in registration order.</summary>
     public IReadOnlyList<OdHostedModule> Modules { get; }
 
-    /// <summary>The module visible in the main window; <see langword="null"/> while the shell shows one of its own pages.</summary>
+    /// <summary>
+    /// The main window's module; <see langword="null"/> while the shell shows one of its own pages. While
+    /// the window is away (<see cref="IsMainWindowAway"/>) it stays here but goes down the ladder.
+    /// </summary>
     public OdHostedModule? Current { get; private set; }
+
+    /// <summary>Whether the main window is minimized or hidden in the tray, so that nothing it holds is on screen.</summary>
+    public bool IsMainWindowAway { get; private set; }
 
     public OdHostedModule? Find(string moduleId) => _byId.GetValueOrDefault(moduleId);
 
@@ -81,7 +87,7 @@ public sealed class OdModuleHost : IDisposable
                 throw new InvalidOperationException($"Module '{moduleId}' shows in a window of its own.");
             }
 
-            if (hosted == Current && hosted.View is { } shown)
+            if (hosted == Current && hosted.View is { } shown && hosted.State == OdModuleState.Active)
             {
                 return shown;
             }
@@ -149,6 +155,77 @@ public sealed class OdModuleHost : IDisposable
             hosted.IsPoppedOut = false;
             hosted.LastActive = _time.GetUtcNow();
             SetState(hosted, OdModuleState.Idle);
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    /// <summary>
+    /// The main window went away (minimized, or hidden in the tray) or came back. Away, its module is
+    /// hidden like any other and goes down the ladder (docs/RAM-GOVERNOR.md §1), yet stays
+    /// <see cref="Current"/>. Back, that module is active again, with a new view if it was hibernated
+    /// meanwhile; the view to show is returned, or <see langword="null"/> when the window shows a shell page
+    /// or is away. Calls that overtake each other settle on the latest one.
+    /// </summary>
+    public async Task<FrameworkElement?> SetMainWindowAwayAsync(bool away)
+    {
+        IsMainWindowAway = away;
+        await _gate.WaitAsync();
+        try
+        {
+            if (Current is not { } current)
+            {
+                return null;
+            }
+
+            if (IsMainWindowAway)
+            {
+                if (current.State == OdModuleState.Active)
+                {
+                    current.LastActive = _time.GetUtcNow();
+                    SetState(current, OdModuleState.Idle);
+                }
+
+                return null;
+            }
+
+            if (current.State == OdModuleState.Active && current.View is { } shown)
+            {
+                return shown;
+            }
+
+            var view = await EnsureViewAsync(current);
+            await current.Module.ActivateAsync();
+            current.LastActive = _time.GetUtcNow();
+            SetState(current, OdModuleState.Active);
+            return view;
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    /// <summary>
+    /// Whether a hidden module refuses to be suspended right now, as a player does while it plays. Time
+    /// spent so pinned is not time hidden: its hidden time restarts, so the ladder counts from the moment
+    /// the pin ends (docs/RAM-GOVERNOR.md §3).
+    /// </summary>
+    public async Task<bool> IsPinnedAsync(string moduleId)
+    {
+        var hosted = Get(moduleId);
+        await _gate.WaitAsync();
+        try
+        {
+            if (hosted.State is not (OdModuleState.Idle or OdModuleState.Suspended) || await hosted.Module.CanSuspendAsync())
+            {
+                return false;
+            }
+
+            hosted.LastActive = _time.GetUtcNow();
+            return true;
         }
         finally
         {
@@ -309,8 +386,13 @@ public sealed class OdModuleHost : IDisposable
         }
 
         Current = null;
-        previous.LastActive = _time.GetUtcNow();
-        SetState(previous, OdModuleState.Idle);
+
+        // One the window already hid while it was away keeps its place on the ladder.
+        if (previous.State == OdModuleState.Active)
+        {
+            previous.LastActive = _time.GetUtcNow();
+            SetState(previous, OdModuleState.Idle);
+        }
     }
 
     private void SetState(OdHostedModule hosted, OdModuleState state)

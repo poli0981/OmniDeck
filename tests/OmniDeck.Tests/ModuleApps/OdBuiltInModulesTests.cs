@@ -90,6 +90,35 @@ public sealed class OdBuiltInModulesTests : IDisposable
         Assert.Empty(calculatorAgain.History);
     });
 
+    [Fact]
+    public void ClockAndTimer_TickAgain_WhenTheWindowComesBackAfterASuspension() => OdSta.Run(async () =>
+    {
+        using var timers = new OdTimerService(_time, new OdFakeNotifier());
+        using var host = NewHost(new OdClockModule(), new OdTimerModule(timers));
+
+        // A minimized window never unloads its view, so only activation can restart the ticking.
+        var clock = (OdClockViewModel)(await host.ShowAsync("clock")).DataContext;
+        await host.SetMainWindowAwayAsync(away: true);
+        Assert.True(await host.SuspendAsync("clock", OdSuspendReason.Hidden));
+        var clockShown = clock.Clocks[0].TimeText;
+        _time.Advance(TimeSpan.FromMinutes(1));
+        await Task.Delay(50);
+        Assert.Equal(clockShown, clock.Clocks[0].TimeText);
+        await host.SetMainWindowAwayAsync(away: false);
+        Assert.NotEqual(clockShown, clock.Clocks[0].TimeText, StringComparer.Ordinal);
+
+        var timer = (OdTimerViewModel)(await host.ShowAsync("timer")).DataContext;
+        timer.ToggleStopwatchCommand.Execute(null);
+        await host.SetMainWindowAwayAsync(away: true);
+        Assert.True(await host.SuspendAsync("timer", OdSuspendReason.Hidden));
+        var timerShown = timer.StopwatchText;
+        _time.Advance(TimeSpan.FromSeconds(30));
+        await Task.Delay(50);
+        Assert.Equal(timerShown, timer.StopwatchText);
+        await host.SetMainWindowAwayAsync(away: false);
+        Assert.NotEqual(timerShown, timer.StopwatchText, StringComparer.Ordinal);
+    });
+
     private OdModuleHost NewHost(params IOdModule[] modules)
     {
         var database = new OdDatabase(_temp.Combine("omnideck.db"), pooling: false);

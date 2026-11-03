@@ -99,6 +99,12 @@ public sealed class OdRamGovernor : IDisposable
         var demoted = false;
         foreach (var hosted in Demotable().Where(hosted => !StaysResident(hosted)))
         {
+            // A player that plays is in use even though hidden: its hidden time starts when it stops.
+            if (await _host.IsPinnedAsync(hosted.Info.Id))
+            {
+                continue;
+            }
+
             var hiddenFor = now - hosted.LastActive;
             if (hiddenFor >= options.HibernateAfter)
             {

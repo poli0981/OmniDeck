@@ -284,6 +284,130 @@ public sealed class OdModuleHostTests : IDisposable
         Assert.Equal(Start.AddMinutes(2), clock.LastActive);
     });
 
+    [Fact]
+    public void WindowAway_HidesItsModule_ButKeepsItCurrent() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        var view = await host.ShowAsync("clock");
+        var changes = new List<string>();
+        host.StateChanged += (_, e) => changes.Add($"{e.Module.Info.Id}:{e.Previous}>{e.Module.State}");
+        _time.Advance(TimeSpan.FromMinutes(2));
+
+        Assert.Null(await host.SetMainWindowAwayAsync(away: true));
+        Assert.Null(await host.SetMainWindowAwayAsync(away: true));
+
+        var clock = host.Find("clock")!;
+        Assert.True(host.IsMainWindowAway);
+        Assert.Same(clock, host.Current);
+        Assert.Equal(OdModuleState.Idle, clock.State);
+        Assert.Equal(Start.AddMinutes(2), clock.LastActive);
+        Assert.True(await host.SuspendAsync("clock", OdSuspendReason.Hidden));
+
+        _time.Advance(TimeSpan.FromMinutes(1));
+        Assert.Same(view, await host.SetMainWindowAwayAsync(away: false));
+
+        Assert.False(host.IsMainWindowAway);
+        Assert.Equal(OdModuleState.Active, clock.State);
+        Assert.Equal(Start.AddMinutes(3), clock.LastActive);
+        Assert.Equal(new[] { "clock:Active>Idle", "clock:Idle>Suspended", "clock:Suspended>Active" }, changes, StringComparer.Ordinal);
+        Assert.Equal(new[] { "init", "view", "activate", "suspend:Hidden", "activate" }, _clock.Calls, StringComparer.Ordinal);
+    });
+
+    [Fact]
+    public void WindowBack_AfterAHibernation_BuildsANewView() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        var first = await host.ShowAsync("clock");
+        await host.SetMainWindowAwayAsync(away: true);
+        Assert.True(await host.HibernateAsync("clock"));
+
+        var second = await host.SetMainWindowAwayAsync(away: false);
+
+        Assert.NotNull(second);
+        Assert.NotSame(first, second);
+        Assert.Same(second, host.Find("clock")?.View);
+        Assert.Equal(OdModuleState.Active, host.Find("clock")?.State);
+        Assert.Equal(new[] { "init", "view", "activate", "hibernate", "view", "activate" }, _clock.Calls, StringComparer.Ordinal);
+    });
+
+    [Fact]
+    public void WindowAway_OnAShellPage_ChangesNoModule() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        await host.ShowAsync("clock");
+        await host.HideAsync();
+        _time.Advance(TimeSpan.FromMinutes(1));
+
+        Assert.Null(await host.SetMainWindowAwayAsync(away: true));
+        Assert.Null(await host.SetMainWindowAwayAsync(away: false));
+
+        Assert.Null(host.Current);
+        Assert.Equal(OdModuleState.Idle, host.Find("clock")?.State);
+        Assert.Equal(Start, host.Find("clock")?.LastActive);
+    });
+
+    [Fact]
+    public void ShowingAnotherModule_WhileAway_LeavesTheFirstOneWhereTheLadderHasIt() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        await host.ShowAsync("clock");
+        await host.SetMainWindowAwayAsync(away: true);
+        _time.Advance(TimeSpan.FromMinutes(6));
+        await host.SuspendAsync("clock", OdSuspendReason.Hidden);
+
+        // A notification for Timer, clicked while the window is in the tray.
+        await host.ShowAsync("timer");
+
+        Assert.Equal(OdModuleState.Suspended, host.Find("clock")?.State);
+        Assert.Equal(Start, host.Find("clock")?.LastActive);
+        Assert.Same(host.Find("timer"), host.Current);
+        Assert.Equal(OdModuleState.Active, host.Find("timer")?.State);
+    });
+
+    [Fact]
+    public void ShowingTheWindowsOwnModule_WhileAway_ActivatesItAgain() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        var view = await host.ShowAsync("clock");
+        await host.SetMainWindowAwayAsync(away: true);
+        await host.SuspendAsync("clock", OdSuspendReason.Hidden);
+
+        Assert.Same(view, await host.ShowAsync("clock"));
+
+        Assert.Equal(OdModuleState.Active, host.Find("clock")?.State);
+        Assert.Equal(new[] { "init", "view", "activate", "suspend:Hidden", "activate" }, _clock.Calls, StringComparer.Ordinal);
+    });
+
+    [Fact]
+    public void APopOut_StaysActive_WhileTheMainWindowIsAway() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        await host.ShowAsync("clock");
+        await host.PopOutAsync("timer");
+
+        await host.SetMainWindowAwayAsync(away: true);
+
+        Assert.Equal(OdModuleState.Active, host.Find("timer")?.State);
+        Assert.Equal(OdModuleState.Idle, host.Find("clock")?.State);
+    });
+
+    [Fact]
+    public void IsPinned_RestartsTheHiddenTime_OfAModuleThatRefusesToSuspend() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        await host.ShowAsync("clock");
+        await host.ShowAsync("timer");
+        _clock.CanSuspend = false;
+        _time.Advance(TimeSpan.FromMinutes(40));
+
+        Assert.True(await host.IsPinnedAsync("clock"));
+        Assert.Equal(Start.AddMinutes(40), host.Find("clock")?.LastActive);
+
+        _clock.CanSuspend = true;
+        Assert.False(await host.IsPinnedAsync("clock"));
+        Assert.False(await host.IsPinnedAsync("timer"));
+    });
+
     private OdModuleHost NewHost(params IOdModule[] more) => new(
         [_clock, _timer, .. more],
         new OdDatabase(_temp.Combine("omnideck.db"), pooling: false),

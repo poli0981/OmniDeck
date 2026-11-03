@@ -6,6 +6,15 @@ All notable changes to OmniDeck are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+- The module on screen when you minimized OmniDeck, or closed it to the notification area, kept
+  running at full size for as long as the window stayed away, even above the memory limits. It now
+  rests like any other hidden module: suspended after 5 minutes and closed down after 30 (or whatever
+  Settings → Memory says), unless it is playing, kept running or has notifications on. It comes back,
+  on the page it showed, when the window does.
+- A player that stops after playing out of sight for a while is no longer closed down at once: the
+  time it spent playing does not count as time unused.
+
 ## [0.2.0-alpha.3] — 2026-11-02
 
 Third P2 alpha, the build to try out before 0.2.0: pop-out windows, web pages in full screen, an icon

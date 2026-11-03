@@ -46,6 +46,8 @@ public partial class OdWebAppView : IOdWebSurface
             return;
         }
 
+        // WebView2 suspends only a hidden browser, and a minimized window does not hide it.
+        _browser.Visibility = Visibility.Hidden;
         core.MemoryUsageTargetLevel = CoreWebView2MemoryUsageTargetLevel.Low;
         try
         {
@@ -70,6 +72,8 @@ public partial class OdWebAppView : IOdWebSurface
         {
             core.Resume();
         }
+
+        _browser.Visibility = Visibility.Visible;
     }
 
     public async Task<int?> CountCookiesAsync(Uri page) =>

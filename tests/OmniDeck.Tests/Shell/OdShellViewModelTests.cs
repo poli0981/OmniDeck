@@ -327,6 +327,49 @@ public sealed class OdShellViewModelTests : IDisposable
     });
 
     [Fact]
+    public void WindowAway_HidesTheModule_AndBackShowsItAgain_OnTheSameView() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        using var shell = NewShell(host);
+        await shell.NavigateAsync("clock");
+        var view = shell.CurrentView;
+        var changed = new List<string?>();
+        shell.PropertyChanged += (_, e) => changed.Add(e.PropertyName);
+
+        await shell.SetWindowAwayAsync(away: true);
+        await shell.SetWindowAwayAsync(away: true);
+        Assert.Equal(OdModuleState.Idle, host.Find("clock")?.State);
+        Assert.Equal(OdModuleState.Idle, shell.Library[0].State);
+        Assert.Same(view, shell.CurrentView);
+
+        await shell.SetWindowAwayAsync(away: false);
+        Assert.Equal(OdModuleState.Active, host.Find("clock")?.State);
+        Assert.Same(view, shell.CurrentView);
+
+        // The stage keeps its view, so a module in full screen stays there.
+        Assert.DoesNotContain(nameof(OdShellViewModel.CurrentView), changed, StringComparer.Ordinal);
+        Assert.Equal("clock", shell.CurrentTarget);
+    });
+
+    [Fact]
+    public void WindowBack_AfterAHibernation_ShowsTheNewView() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        using var shell = NewShell(host);
+        await shell.NavigateAsync("clock");
+        var view = shell.CurrentView;
+
+        await shell.SetWindowAwayAsync(away: true);
+        Assert.True(await host.HibernateAsync("clock"));
+        Assert.Same(view, shell.CurrentView);
+
+        await shell.SetWindowAwayAsync(away: false);
+        Assert.NotNull(shell.CurrentView);
+        Assert.NotSame(view, shell.CurrentView);
+        Assert.Same(host.Find("clock")?.View, shell.CurrentView);
+    });
+
+    [Fact]
     public void ABrandName_IsShownAsWritten()
     {
         var item = new OdModuleItemViewModel(new OdModuleInfo("gmail", "Module_gmail", "Mail24", "Test", OdRamClass.Heavy, DisplayName: "Gmail"));
