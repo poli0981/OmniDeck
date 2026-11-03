@@ -30,7 +30,7 @@ A translation holds only the keys it translates: a key it lacks shows in English
 
 ## 4. How the app switches language
 
-`OdLocalization` holds the UI language. XAML binds its strings with `{res:OdLoc Key}`, and a row's buttons with `{res:OdLocRow Key, Path=…}`, so those follow a change of language at once. Text built in code follows through `OdLocalization.FollowCulture(handler)`: each view model that builds text reads it again on a change. Lists the user picks from keep their entries and change only their text (`OdChoice<T>`, `OdLocalizedOption`, `OdPresetOption`), so the selection bound to them stays. WebView2 takes the UI language when it starts: web apps follow on OmniDeck's next start.
+`OdLocalization` holds the UI language. XAML binds its strings with `{res:OdLoc Key}`, and a row's buttons with `{res:OdLocRow Key, Path=…}`, so those follow a change of language at once. Text built in code follows through `OdLocalization.FollowCulture(handler)`: each view model that builds text reads it again on a change, and one that is disposed stops with `UnfollowCulture`; a follower that fails is logged and keeps its old text, without stopping the others. Lists the user picks from keep their entries and change only their text (`OdChoice<T>`, `OdLocalizedOption`, `OdPresetOption`), so the selection bound to them stays. WebView2 takes the UI language when it starts: web apps follow on OmniDeck's next start.
 
 ## 5. Checks
 

@@ -80,7 +80,11 @@ public sealed partial class OdClockViewModel : ObservableObject, IDisposable
         }
     }
 
-    public void Dispose() => StopTicking();
+    public void Dispose()
+    {
+        OdLocalization.UnfollowCulture(OnCultureChanged);
+        StopTicking();
+    }
 
     private void OnCultureChanged(object? sender, EventArgs e) => Tick();
 

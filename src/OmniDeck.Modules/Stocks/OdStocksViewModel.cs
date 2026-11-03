@@ -141,6 +141,7 @@ public sealed partial class OdStocksViewModel : ObservableObject, IDisposable
 
     public void Dispose()
     {
+        OdLocalization.UnfollowCulture(OnCultureChanged);
         _ticker?.Dispose();
         _ticker = null;
         _work.Cancel();
