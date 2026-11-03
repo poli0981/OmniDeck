@@ -13,7 +13,8 @@
     </UserControl.Resources>
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="{DynamicResource Od.Padding.Card}">
-            <TextBlock FontSize="{DynamicResource Od.Font.H1}"
+            <TextBlock AutomationProperties.HeadingLevel="Level2"
+                       FontSize="{DynamicResource Od.Font.H1}"
                        FontWeight="SemiBold"
                        Text="{res:OdLoc Memory_Title}" />
             <TextBlock Margin="{DynamicResource Od.Margin.Item}"
@@ -65,6 +66,8 @@
                                 <ui:ToggleSwitch Grid.Column="1"
                                                  Margin="{DynamicResource Od.Padding.Control}"
                                                  VerticalAlignment="Center"
+                                                 AutomationProperties.Name="{res:OdLocRow Memory_KeepRunning,
+                                                                                          Path=Title}"
                                                  Command="{Binding DataContext.ToggleKeepRunningCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                  CommandParameter="{Binding}"
                                                  Content="{res:OdLoc Memory_KeepRunning}"
@@ -73,16 +76,22 @@
                                             VerticalAlignment="Center"
                                             Orientation="Horizontal">
                                     <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                               AutomationProperties.Name="{res:OdLocRow Memory_Suspend,
+                                                                                        Path=Title}"
                                                Command="{Binding DataContext.SuspendCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                CommandParameter="{Binding}"
                                                Content="{res:OdLoc Memory_Suspend}"
                                                IsEnabled="{Binding CanSuspend}" />
                                     <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                               AutomationProperties.Name="{res:OdLocRow Memory_Hibernate,
+                                                                                        Path=Title}"
                                                Command="{Binding DataContext.HibernateCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                CommandParameter="{Binding}"
                                                Content="{res:OdLoc Memory_Hibernate}"
                                                IsEnabled="{Binding CanHibernate}" />
                                     <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                               AutomationProperties.Name="{res:OdLocRow Shell_Close,
+                                                                                        Path=Title}"
                                                Command="{Binding DataContext.CloseCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                CommandParameter="{Binding}"
                                                Content="{res:OdLoc Shell_Close}"
@@ -105,7 +114,9 @@
                                    FontSize="{DynamicResource Od.Font.H2}"
                                    Symbol="Globe24" />
                     <StackPanel VerticalAlignment="Center">
-                        <TextBlock FontWeight="SemiBold" Text="{res:OdLoc Memory_SharedTitle}" />
+                        <TextBlock AutomationProperties.HeadingLevel="Level3"
+                                   FontWeight="SemiBold"
+                                   Text="{res:OdLoc Memory_SharedTitle}" />
                         <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                    Text="{res:OdLoc Memory_SharedDescription}"
                                    TextWrapping="Wrap" />

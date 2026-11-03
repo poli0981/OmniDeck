@@ -5,4 +5,8 @@ namespace OmniDeck.App.Shell;
 /// <param name="Detail">The second line: the module's category, or "Command".</param>
 /// <param name="Icon">A WPF-UI <c>SymbolRegular</c> name.</param>
 /// <param name="RunAsync">What choosing the entry does.</param>
-public sealed record OdPaletteEntry(string Title, string Detail, string Icon, Func<Task> RunAsync);
+public sealed record OdPaletteEntry(string Title, string Detail, string Icon, Func<Task> RunAsync)
+{
+    /// <summary>The title: screen readers name a list item after its data.</summary>
+    public override string ToString() => Title;
+}

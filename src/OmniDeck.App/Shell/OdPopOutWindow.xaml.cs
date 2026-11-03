@@ -37,6 +37,9 @@ public partial class OdPopOutWindow
     /// <summary>The user closed the window, which has let go of the view: the module goes back to the main window.</summary>
     internal event EventHandler? Returned;
 
+    /// <summary>Ctrl+K, as in the main window: the command palette.</summary>
+    internal event EventHandler? PaletteRequested;
+
     /// <summary>Where the window was, out of full screen, when it let go of the view.</summary>
     internal Rect LastBounds { get; private set; }
 
@@ -113,6 +116,25 @@ public partial class OdPopOutWindow
         {
             e.Handled = true;
             SetFullscreen(on: false);
+            return;
+        }
+
+        // Exactly Ctrl, as in the main window: AltGr arrives as Ctrl+Alt. Ctrl+W closes this window,
+        // which returns the module to the main window, as the title bar's Close does.
+        if (Keyboard.Modifiers != ModifierKeys.Control)
+        {
+            return;
+        }
+
+        if (e.Key == Key.K)
+        {
+            e.Handled = true;
+            PaletteRequested?.Invoke(this, EventArgs.Empty);
+        }
+        else if (e.Key == Key.W)
+        {
+            e.Handled = true;
+            Close();
         }
     }
 

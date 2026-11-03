@@ -121,7 +121,7 @@ public sealed partial class OdResxKeyTests
         return keys;
     }
 
-    // {res:OdLoc Key} in XAML; OdLocalization.Get("Key"), .Format("Key", ...) and Localized("Key") in code.
-    [GeneratedRegex(@"(?:OdLoc\s+|(?:Get|Format|Localized)\("")(?<key>[A-Z][A-Za-z]*_[A-Za-z0-9_]+)\b", RegexOptions.CultureInvariant, matchTimeoutMilliseconds: 2000)]
+    // {res:OdLoc Key} and {res:OdLocRow Key, ...} in XAML; OdLocalization.Get("Key"), .Format("Key", ...) and Localized("Key") in code.
+    [GeneratedRegex(@"(?:OdLoc(?:Row)?\s+|(?:Get|Format|Localized)\("")(?<key>[A-Z][A-Za-z0-9]*_[A-Za-z0-9_]+)\b", RegexOptions.CultureInvariant, matchTimeoutMilliseconds: 2000)]
     private static partial Regex UiKey();
 }

@@ -333,13 +333,18 @@ public sealed class OdMediaTests : IDisposable
         using var screen = new OdMediaViewModel(session, new OdMediaSettings { Volume = 30 }, settings => saved = settings, TimeProvider.System);
 
         Assert.Equal("Nothing to play yet", screen.Title);
+        Assert.Equal(("Play", "Mute"), (screen.PlayPauseName, screen.MuteName));
         screen.Add([folder, playlist, _temp.Combine("notes.txt")]);
 
         Assert.Equal(new[] { "01 a", "02 b", "c" }, screen.Items.Select(item => item.Title), StringComparer.Ordinal);
         Assert.True(screen.Items[0].IsCurrent);
         Assert.Equal("01 a", screen.Title);
         Assert.True(screen.IsPlaying);
+        Assert.Equal("Pause", screen.PlayPauseName);
         Assert.Equal(30, _engine.Players[0].Volume);
+        screen.ToggleMuteCommand.Execute(null);
+        Assert.Equal("Unmute", screen.MuteName);
+        screen.ToggleMuteCommand.Execute(null);
 
         var player = _engine.Players[0];
         player.Length = TimeSpan.FromMinutes(3);

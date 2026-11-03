@@ -1,4 +1,4 @@
-<UserControl x:Class="OmniDeck.Modules.Clock.OdClockView"
+﻿<UserControl x:Class="OmniDeck.Modules.Clock.OdClockView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:clock="clr-namespace:OmniDeck.Modules.Clock"
@@ -16,7 +16,8 @@
                                  Content="{res:OdLoc Clock_24Hour}"
                                  DockPanel.Dock="Right"
                                  IsChecked="{Binding Use24Hour}" />
-                <TextBlock FontSize="{DynamicResource Od.Font.H1}"
+                <TextBlock AutomationProperties.HeadingLevel="Level1"
+                           FontSize="{DynamicResource Od.Font.H1}"
                            FontWeight="SemiBold"
                            Text="{res:OdLoc Clock_Name}" />
             </DockPanel>
@@ -28,11 +29,12 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type clock:OdWorldClockViewModel}">
-                        <ui:Card Width="320" Margin="{DynamicResource Od.Margin.Tile}">
+                        <ui:Card Width="{DynamicResource Od.Width.TileWide}" Margin="{DynamicResource Od.Margin.Tile}">
                             <StackPanel>
                                 <DockPanel>
                                     <ui:Button Appearance="Transparent"
-                                               AutomationProperties.Name="{res:OdLoc Clock_Remove}"
+                                               AutomationProperties.Name="{res:OdLocRow Clock_Remove,
+                                                                                        Path=Title}"
                                                Command="{Binding DataContext.RemoveZoneCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                CommandParameter="{Binding}"
                                                DockPanel.Dock="Right"

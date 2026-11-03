@@ -40,6 +40,11 @@ internal static class OdThemeResources
             [OdTokenKeys.NavShowLabels] = tokens.NavShowLabels,
             [OdTokenKeys.NavIconSize] = tokens.NavIconSize,
             [OdTokenKeys.ContrastTarget] = tokens.ContrastTarget,
+            [OdTokenKeys.DimOpacity] = variant == OdThemeVariant.HighContrast ? 1.0 : 0.7,
+            [OdTokenKeys.WidthTile] = tokens.TileWidth,
+            [OdTokenKeys.WidthTileWide] = tokens.WideTileWidth,
+            [OdTokenKeys.WidthField] = tokens.FieldWidth,
+            [OdTokenKeys.WidthReadable] = tokens.ReadableWidth,
 
             // Deliberate WPF-UI overrides (docs/WPFUI-CONVENTIONS.md §6): WPF-UI 4.3 templates read these
             // keys through DynamicResource, so stock controls follow the preset without a style of ours.

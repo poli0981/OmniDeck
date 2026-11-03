@@ -66,7 +66,7 @@ The SPEC set keeps the plugin folders access, audio filter, audio mixer, audio o
 ## Consequences
 
 - **Engine:** LibVLCSharp with libVLC 3.0.x, as [SPEC](../SPEC.md#36-media-player) §3.6 says. FlyleafLib stays unused.
-- **Fullscreen:** the module's own window (main or pop-out) covers the monitor; the player never moves to a separate fullscreen window. This passes the fullscreen part of [WPFUI-CONVENTIONS](../WPFUI-CONVENTIONS.md#8-hard-rules) §8.
+- **Fullscreen:** the module's own window (main or pop-out) covers the monitor; the player never moves to a separate fullscreen window. This passes the fullscreen part of [WPFUI-CONVENTIONS](../WPFUI-CONVENTIONS.md#9-hard-rules) §8.
 - **Pop-out:** move the player to the new `VideoView`, re-select the video track, and seek to the current time. Pop-out ships only after P2 fixes the overlay's sizing in a newly created window and re-tests it, as §8 requires.
 - **Build:**
   - set `VlcWindowsX86Enabled` and `VlcWindowsArm64Enabled` to `false` and use the SPEC include list;

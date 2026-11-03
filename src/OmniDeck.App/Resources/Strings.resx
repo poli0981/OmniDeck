@@ -478,4 +478,89 @@ Support code: {0}
   <data name="About_PrereleasesNote" xml:space="preserve">
     <value>Every version before 1.0 is a pre-release. From 1.0 on, leave this off to get stable versions only.</value>
   </data>
+  <data name="Shell_NavModules" xml:space="preserve">
+    <value>Modules</value>
+  </data>
+  <data name="Shell_NavFooter" xml:space="preserve">
+    <value>Settings and library</value>
+  </data>
+  <data name="A11y_RowAction" xml:space="preserve">
+    <value>{0}, {1}</value>
+    <comment>What screen readers hear for a button on a row of a list: {0} is the button&apos;s label, {1} the row&apos;s name, as in &quot;Remove, Tokyo&quot;.</comment>
+  </data>
+  <data name="A11y_Minimize" xml:space="preserve">
+    <value>Minimize</value>
+  </data>
+  <data name="A11y_Maximize" xml:space="preserve">
+    <value>Maximize</value>
+  </data>
+  <data name="A11y_Restore" xml:space="preserve">
+    <value>Restore</value>
+  </data>
+  <data name="A11y_Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="A11y_OpenNavigation" xml:space="preserve">
+    <value>Open navigation</value>
+  </data>
+  <data name="A11y_CloseNavigation" xml:space="preserve">
+    <value>Close navigation</value>
+  </data>
+  <data name="A11y_Increase" xml:space="preserve">
+    <value>Increase</value>
+  </data>
+  <data name="A11y_Decrease" xml:space="preserve">
+    <value>Decrease</value>
+  </data>
+  <data name="A11y_ShowPassword" xml:space="preserve">
+    <value>Show password</value>
+  </data>
+  <data name="A11y_ScrollUp" xml:space="preserve">
+    <value>Scroll up</value>
+  </data>
+  <data name="A11y_ScrollDown" xml:space="preserve">
+    <value>Scroll down</value>
+  </data>
+  <data name="A11y_ScrollLeft" xml:space="preserve">
+    <value>Scroll left</value>
+  </data>
+  <data name="A11y_ScrollRight" xml:space="preserve">
+    <value>Scroll right</value>
+  </data>
+  <data name="A11y_PageUp" xml:space="preserve">
+    <value>Page up</value>
+  </data>
+  <data name="A11y_PageDown" xml:space="preserve">
+    <value>Page down</value>
+  </data>
+  <data name="A11y_PageLeft" xml:space="preserve">
+    <value>Page left</value>
+  </data>
+  <data name="A11y_PageRight" xml:space="preserve">
+    <value>Page right</value>
+  </data>
+  <data name="Settings_AccentColors" xml:space="preserve">
+    <value>Accent colors</value>
+  </data>
+  <data name="Accent_Blue" xml:space="preserve">
+    <value>Blue</value>
+  </data>
+  <data name="Accent_Purple" xml:space="preserve">
+    <value>Purple</value>
+  </data>
+  <data name="Accent_Pink" xml:space="preserve">
+    <value>Pink</value>
+  </data>
+  <data name="Accent_Red" xml:space="preserve">
+    <value>Red</value>
+  </data>
+  <data name="Accent_Orange" xml:space="preserve">
+    <value>Orange</value>
+  </data>
+  <data name="Accent_Green" xml:space="preserve">
+    <value>Green</value>
+  </data>
+  <data name="Shell_OpenDataFolder" xml:space="preserve">
+    <value>Open the data folder</value>
+  </data>
 </root>

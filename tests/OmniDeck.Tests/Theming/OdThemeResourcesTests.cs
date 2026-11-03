@@ -28,6 +28,11 @@ public sealed class OdThemeResourcesTests
         Assert.Equal(new Thickness(5), resources[OdTokenKeys.MarginTight]);
         Assert.Equal(22.0, resources[OdTokenKeys.NavIconSize]);
         Assert.Equal(OdContrast.Aaa, resources[OdTokenKeys.ContrastTarget]);
+        Assert.Equal(0.7, resources[OdTokenKeys.DimOpacity]);
+        Assert.Equal(323.0, resources[OdTokenKeys.WidthTile]);
+        Assert.Equal(390.0, resources[OdTokenKeys.WidthTileWide]);
+        Assert.Equal(219.0, resources[OdTokenKeys.WidthField]);
+        Assert.Equal(874.0, resources[OdTokenKeys.WidthReadable]);
     }
 
     [Theory]
@@ -50,6 +55,7 @@ public sealed class OdThemeResourcesTests
 
         Assert.False(resources.Contains("TextFillColorSecondaryBrush"));
         Assert.False(resources.Contains("TextFillColorTertiaryBrush"));
+        Assert.Equal(1.0, resources[OdTokenKeys.DimOpacity]);
     }
 
     [Fact]

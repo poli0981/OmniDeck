@@ -26,6 +26,8 @@ $env:OMNIDECK_DATA_ROOT = "$env:TEMP\OmniDeck.Dev"
 dotnet run --project src/OmniDeck.App
 ```
 
+`scripts/od-drive.ps1` drives such a build through UI Automation, without the mouse or the keyboard: it opens a module through the palette, invokes a button by name, saves a screenshot, or audits a screen for what screen readers would trip on (`-Action audit`). It is a development tool; CI does not run it.
+
 ## Code style & quality gates (enforced in CI)
 
 - `.editorconfig` is authoritative. `dotnet format OmniDeck.slnx --verify-no-changes` must pass.

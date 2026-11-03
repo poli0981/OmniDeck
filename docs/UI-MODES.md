@@ -43,8 +43,8 @@ Appearance settings expose the presets as three cards plus granular overrides on
 
 ## 4. Windows accessibility interplay (non-negotiable)
 
-- **Text scaling:** the OS text scale factor multiplies `Od.Font.Base` on top of everything else.
-- **High Contrast:** when `SystemParameters.HighContrast` is on, palette tokens defer to system colors entirely; only layout tokens from the preset remain.
+- **Text scaling:** the OS text scale factor multiplies `Od.Font.Base` on top of everything else. As built, widths that hold text grow with it too: `Od.Width.Tile`, `Od.Width.TileWide`, `Od.Width.Field` and `Od.Width.Readable` are multiples of `Od.Font.Base`, and rows of buttons in tiles wrap rather than clip.
+- **High Contrast:** when `SystemParameters.HighContrast` is on, palette tokens defer to system colors entirely; only layout tokens from the preset remain. As built, the preset layer then carries no text palette, `Od.Opacity.Dim` (0.7 otherwise, for what is dimmed but still in use) is 1, and Settings hides the accent swatches.
 - **Reduced motion:** if the OS animation setting is off, `Od.Motion` is forced off regardless of preset.
 
 ## 5. Onboarding

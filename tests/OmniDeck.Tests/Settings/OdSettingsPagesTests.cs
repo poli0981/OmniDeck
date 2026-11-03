@@ -87,13 +87,17 @@ public sealed class OdSettingsPagesTests : IDisposable
     {
         using var page = NewSettingsPage();
 
+        Assert.Null(page.SelectedSwatch);
         page.UseSystemAccent = false;
-        Assert.Equal(page.AccentSwatches[0], _settings.Current.AccentColor);
-        page.ChooseAccentCommand.Execute("#10893E");
+        Assert.Equal(page.AccentSwatches[0].Color, _settings.Current.AccentColor);
+        Assert.Equal("Blue", page.SelectedSwatch?.ToString());
+        page.SelectedSwatch = page.AccentSwatches[5];
         Assert.Equal("#10893E", _settings.Current.AccentColor);
+        Assert.Equal("Green", page.SelectedSwatch?.Name);
         page.UseSystemAccent = true;
 
         Assert.Equal("", _settings.Current.AccentColor);
+        Assert.Null(page.SelectedSwatch);
     }
 
     [Fact]
