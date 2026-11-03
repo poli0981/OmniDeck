@@ -7,7 +7,7 @@
 **OmniDeck** — ứng dụng desktop **Windows 11** (24H2+, x64) gom các mini-app native (đồng hồ, hẹn giờ, máy tính, thời tiết, lịch, chứng khoán, media player) và các web app tuyển chọn (Spotify, Discord, YouTube, Google…, chạy trên WebView2) vào một cửa sổ, với **RAM governor** tự suspend/hibernate module.
 
 - Open-source **GPL-3.0**; cài & cập nhật bằng **Velopack** (per-user, không admin).
-- Trạng thái: **pre-alpha** — kickoff 28/10/2026, P0 từ 02/11/2026, v1.0 ~23/05/2027 (`docs/ROADMAP.md`).
+- Trạng thái: **alpha** — P0–P2 đã xong phần code (bản 0.2.0-alpha.N đang dogfood), P3 đang làm; lịch và các mốc ở `docs/ROADMAP.md`.
 
 ## 2. Luật vàng (KHÔNG được vi phạm)
 
@@ -26,7 +26,7 @@
 
 - **.NET 10 (LTS), C# 14**, SDK ghim trong `global.json` · **WPF** + **WPF-UI 4.3** (Fluent; quy ước ở `docs/WPFUI-CONVENTIONS.md`)
 - **Velopack** 1.2 — `vpk` là local tool trong `.config/dotnet-tools.json`, luôn cùng version với thư viện
-- Dự kiến từ P1: CommunityToolkit.Mvvm, M.E.DependencyInjection, Serilog, SQLite + Dapper, WebView2 SDK, LibVLCSharp, ScottPlot, Ical.Net, H.NotifyIcon (bảng version ở `docs/SPEC.md` §7)
+- Thư viện chính: CommunityToolkit.Mvvm, M.E.DependencyInjection, Serilog, SQLite + Dapper, WebView2 SDK, LibVLCSharp + libVLC, Ical.Net, H.NotifyIcon, Markdig (bảng version ở `docs/SPEC.md` §7). Biểu đồ tự vẽ bằng WPF, không dùng thư viện chart.
 - Test: **xUnit v3** (`xunit.v3.mtp-off`, chạy qua VSTest)
 - Analyzer (warnings = errors): .NET analyzers latest, **SonarAnalyzer.CSharp**, **Roslynator**, **Meziantou**, **ReferenceTrimmer** — khai báo trong `Directory.Build.props`
 - i18n: `.resx` EN (neutral) / VI / JA
@@ -36,11 +36,11 @@
 ```
 OmniDeck.slnx · Directory.Build.props · global.json · .config/dotnet-tools.json · Settings.XamlStyler
 src/OmniDeck.App/      WPF shell — exe OmniDeck.exe; Program.Main (Velopack) → OdApp (OdApp.xaml)
-src/OmniDeck.Core/     contracts, governor, storage, services (hiện có OdVersionInfo)
-src/OmniDeck.Modules/  mini-app (tạo ở P1) · src/OmniDeck.Web/ web runner (tạo ở P2)
+src/OmniDeck.Core/     contracts, module host, governor, storage, settings, localization, token theme
+src/OmniDeck.Modules/  mini-app (clock, timer, calculator, weather, calendar, media) · src/OmniDeck.Web/ web runner + catalog
 tests/OmniDeck.Tests/  xUnit v3
 catalog/               webapps.json + webapps.schema.json
-scripts/               pack.ps1 (publish + vpk pack), validate-catalog.ps1
+scripts/               pack.ps1 (publish + vpk pack), validate-catalog.ps1, make-icon.ps1
 ```
 
 ## 5. Lệnh
@@ -53,6 +53,7 @@ dotnet format OmniDeck.slnx --verify-no-changes
 dotnet xstyler -c Settings.XamlStyler -d src -r -p  # bỏ -p để tự định dạng
 pwsh scripts/validate-catalog.ps1
 pwsh scripts/pack.ps1 -Version 0.0.1-local          # publish + Velopack → Releases/ (Velopack cần ≥ 0.0.1)
+$env:OMNIDECK_DATA_ROOT = "$env:TEMP\OmniDeck.Dev"   # chỉ bản Debug đọc: chạy bản dev cạnh bản đã cài, không đụng dữ liệu thật
 ```
 
 Repo dùng CRLF (`.gitattributes`, `.editorconfig`); file do tool tạo có thể là LF → chạy `unix2dos` cho `.cs`/`.xaml` trước `dotnet format`. XamlStyler ghi XAML kèm BOM (`.editorconfig` khai báo `charset = utf-8-bom` cho `*.xaml`).

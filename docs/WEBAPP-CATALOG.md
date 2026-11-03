@@ -53,7 +53,7 @@ Top-level file fields: `$schema` (optional editor hint), `schemaVersion` (int, c
 | id | profile | audioPin | Notes |
 |---|---|---|---|
 | spotify | spotify | yes | Web Player; DRM works in the runtime ([spike #1](spikes/01-drm-widevine.md)). "Continue with Google / Facebook / Apple" move the main frame to `accounts.google.com`, `www.facebook.com` and `appleid.apple.com` and back, so those hosts and the `google-account-domains` set are listed (each hop checked up to the provider's sign-in page on 2 November 2026) |
-| discord | discord | yes | pinned while a voice or video call plays audio; no global PTT on web; host hotkey partial mitigation |
+| discord | discord | yes | pinned while a voice or video call plays audio; no global push-to-talk on the web; a host-side hotkey is on the post-v1 backlog |
 | youtube | google | yes | sign-in hops to Google's country-code domains, allowed through the `google-account-domains` set like every `google` entry ([spike #2](spikes/02-google-sign-in.md)) |
 | gmail | google | no | |
 | gcalendar | google | no | |
@@ -63,4 +63,4 @@ Top-level file fields: `$schema` (optional editor hint), `schemaVersion` (int, c
 
 ## 4. Known-good candidates for post-v1 PRs
 
-WhatsApp Web, Telegram Web, X, Reddit, Notion — all verified-working-in-Edge, low-controversy additions the community can contribute following §2.
+WhatsApp Web, Telegram Web, X, Reddit, Notion — low-controversy candidates that work in Microsoft Edge but have not been checked in OmniDeck yet; the community can propose them following §2.

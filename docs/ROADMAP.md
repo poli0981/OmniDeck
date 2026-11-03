@@ -89,7 +89,7 @@ Every version below 1.0.0 is published as a GitHub **pre-release**; 1.0.0 is the
 
 | Risk | Impact | Mitigation |
 |---|---|---|
-| Widevine unavailable in WebView2 on target machines | Spotify won't play | **Retired by spike #1:** the evergreen runtime ships Widevine and Spotify plays without flags. If a future runtime breaks EME, the bug report's EME self-check shows it. Fallback unchanged: ship the Spotify entry disabled with a note |
+| Widevine unavailable in WebView2 on target machines | Spotify won't play | **Retired by spike #1:** the evergreen runtime ships Widevine and Spotify plays without flags. If a future runtime breaks EME, Spotify stops playing and users report it. Fallback: take the Spotify entry out of the catalog (the schema has no "disabled" state), with a note in the release notes and Discussions |
 | Google blocks sign-in in WebView2 | Google group unusable | **Spike #2:** sign-in works with the default user agent, and one sign-in covers the `google` group. Google's hop to country-code domains needs `navAllowSets` (P2). Client hints name WebView2, so Google could still block it later; fallback: treat it as an upstream limitation, documented |
 | LibVLCSharp airspace friction in WPF | Media UX degraded | **Retired by spike #6:** overlay controls and fullscreen in place work in a `FluentWindow`. Pop-out, in P2, moves the same view, so the video keeps playing and the overlay follows. FlyleafLib is not needed |
 | Free API tiers change (Twelve Data/Stooq) | Stocks degraded | **Materialized for Stooq** (2026-10-30), which now blocks scripted clients. Spike #7 leaves Twelve Data with the user's own key as the only provider; its free plan covers US listings. The provider abstraction stays; Stocks is first in the cut order (§4) |
@@ -107,4 +107,4 @@ The web runner, governor, legal gate, and the trivial modules are never cut — 
 
 ## 5. Post-v1 backlog (unordered)
 
-Finnhub provider (real-time US), Google Calendar native sync, `.ics` calendar subscriptions, multi-point global hotkeys per web app (Discord's push-to-talk among them), web app favicons in the sidebar, catalog entries from §4 of WEBAPP-CATALOG, per-module popout window session restore, portable build.
+Finnhub provider (real-time US), Google Calendar native sync, `.ics` calendar subscriptions, multi-point global hotkeys per web app (Discord's push-to-talk among them), web app favicons in the sidebar, catalog entries from §4 of WEBAPP-CATALOG, per-module popout window session restore, a truly portable build (data beside the program; the Portable zip Velopack makes today still keeps its data in `%LocalAppData%\OmniDeck.Data`).
