@@ -1,3 +1,6 @@
+using System.Security.Cryptography;
+using System.Text;
+
 namespace OmniDeck.Core.Storage;
 
 /// <summary>
@@ -10,6 +13,13 @@ public sealed class OdDataRoot
 {
     /// <summary>The data root's folder name under <c>%LocalAppData%</c>.</summary>
     public const string FolderName = "OmniDeck.Data";
+
+    /// <summary>
+    /// The environment variable a Debug build reads to use a data root of its own, so a development
+    /// copy runs beside an installed OmniDeck without touching its data (CONTRIBUTING.md). Release
+    /// builds never read it.
+    /// </summary>
+    public const string OverrideVariable = "OMNIDECK_DATA_ROOT";
 
     /// <summary>Velopack's install folder name, which the data root must never be.</summary>
     private const string InstallFolderName = "OmniDeck";
@@ -28,7 +38,24 @@ public sealed class OdDataRoot
     public static OdDataRoot Default { get; } = new(Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), FolderName));
 
+    /// <summary><paramref name="overridePath"/> when it is set, otherwise <see cref="Default"/>.</summary>
+    public static OdDataRoot Choose(string? overridePath) =>
+        string.IsNullOrWhiteSpace(overridePath) ? Default : new OdDataRoot(overridePath);
+
     public string Root { get; }
+
+    /// <summary>Whether this is the signed-in user's real data root.</summary>
+    public bool IsDefault => string.Equals(
+        Path.TrimEndingDirectorySeparator(Root), Path.TrimEndingDirectorySeparator(Default.Root), StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Tells single-instance guards apart per data root: <see langword="null"/> for the real one and a
+    /// short hash of the path otherwise, so a development build with a root of its own does not hand
+    /// off to the installed OmniDeck.
+    /// </summary>
+    public string? InstanceSuffix => IsDefault
+        ? null
+        : "." + Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(Path.TrimEndingDirectorySeparator(Root).ToUpperInvariant())), 0, 4);
 
     public string SettingsFile => Path.Combine(Root, "settings.json");
 

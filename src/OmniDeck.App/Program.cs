@@ -19,15 +19,30 @@ internal static class Program
             .OnBeforeUninstallFastCallback(_ => OdDataRoot.Default.TryDelete())
             .Run();
 
-        using var guard = new OdSingleInstanceGuard();
+        var dataRoot = DataRoot();
+        using var guard = new OdSingleInstanceGuard(dataRoot.InstanceSuffix);
         if (!guard.IsPrimaryInstance)
         {
             guard.SignalPrimaryInstance();
             return 0;
         }
 
-        var app = new OdApp(guard);
+        var app = new OdApp(guard, dataRoot);
         app.InitializeComponent();
         return app.Run();
+    }
+
+    /// <summary>
+    /// The signed-in user's data root. A Debug build can be pointed elsewhere with
+    /// <see cref="OdDataRoot.OverrideVariable"/>, so it runs beside an installed OmniDeck without
+    /// touching its data; a Release build never reads the variable.
+    /// </summary>
+    private static OdDataRoot DataRoot()
+    {
+#if DEBUG
+        return OdDataRoot.Choose(Environment.GetEnvironmentVariable(OdDataRoot.OverrideVariable));
+#else
+        return OdDataRoot.Default;
+#endif
     }
 }

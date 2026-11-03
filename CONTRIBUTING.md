@@ -19,6 +19,13 @@ dotnet test OmniDeck.slnx
 dotnet run --project src/OmniDeck.App
 ```
 
+To run a development build beside an installed OmniDeck, give it a data root of its own. Only Debug builds read the variable, so the installed copy keeps its settings, sign-ins and database, and the two run side by side:
+
+```powershell
+$env:OMNIDECK_DATA_ROOT = "$env:TEMP\OmniDeck.Dev"
+dotnet run --project src/OmniDeck.App
+```
+
 ## Code style & quality gates (enforced in CI)
 
 - `.editorconfig` is authoritative. `dotnet format OmniDeck.slnx --verify-no-changes` must pass.

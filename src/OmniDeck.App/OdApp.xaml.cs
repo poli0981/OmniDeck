@@ -35,11 +35,13 @@ namespace OmniDeck.App;
 public partial class OdApp
 {
     private readonly OdSingleInstanceGuard _guard;
+    private readonly OdDataRoot _dataRoot;
     private ServiceProvider? _services;
 
-    internal OdApp(OdSingleInstanceGuard guard)
+    internal OdApp(OdSingleInstanceGuard guard, OdDataRoot dataRoot)
     {
         _guard = guard;
+        _dataRoot = dataRoot;
     }
 
     /// <summary>The legal documents that ship next to the executable.</summary>
@@ -76,10 +78,14 @@ public partial class OdApp
     private void Start(string[] args)
     {
         var startMinimized = args.Contains(OdRunKeyStartup.MinimizedArgument, StringComparer.OrdinalIgnoreCase);
-        var dataRoot = OdDataRoot.Default;
+        var dataRoot = _dataRoot;
         dataRoot.EnsureCreated();
         Log.Logger = OdLogging.CreateLogger(dataRoot);
         Log.ForContext<OdApp>().Information("OmniDeck {Version} starting", OdVersionInfo.FromAssembly(typeof(OdApp).Assembly).DisplayText);
+        if (!dataRoot.IsDefault)
+        {
+            Log.ForContext<OdApp>().Warning("Development data root in use: {DataRoot}", dataRoot.Root);
+        }
 
         // The catalog decides which web-app modules exist, so it loads before the container is built.
         var catalog = OdCatalogService.LoadInstalled(dataRoot, TimeProvider.System, Log.Logger);
