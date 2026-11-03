@@ -49,6 +49,7 @@ public sealed partial class OdTimerViewModel : ObservableObject, IDisposable
         Alarms = alarms is null ? null : new OdAlarmsViewModel(alarms);
         service.Changed += OnServiceChanged;
         Sync();
+        OdLocalization.FollowCulture(OnCultureChanged);
     }
 
     public ObservableCollection<OdCountdownViewModel> Countdowns { get; } = [];
@@ -59,8 +60,7 @@ public sealed partial class OdTimerViewModel : ObservableObject, IDisposable
     public bool HasAlarms => Alarms is not null;
 
     /// <summary>The one-click durations.</summary>
-    public IReadOnlyList<OdTimerPreset> Presets { get; } =
-        [.. new[] { 1, 5, 10, 25 }.Select(minutes => new OdTimerPreset(minutes, OdLocalization.Format("Timer_PresetMinutes", minutes)))];
+    public IReadOnlyList<OdTimerPreset> Presets { get; private set; } = NewPresets();
 
     /// <summary>Laps, newest first.</summary>
     public ObservableCollection<OdLapViewModel> Laps { get; } = [];
@@ -95,6 +95,18 @@ public sealed partial class OdTimerViewModel : ObservableObject, IDisposable
         StopwatchText = OdDurationText.FormatPrecise(_service.Stopwatch.ElapsedAt(now));
         StopwatchRunning = _service.Stopwatch.IsRunning;
         StopwatchToggleText = StopwatchRunning ? OdLocalization.Get("Timer_Stop") : OdLocalization.Get("Timer_Start");
+    }
+
+    private static OdTimerPreset[] NewPresets() =>
+        [.. new[] { 1, 5, 10, 25 }.Select(minutes => new OdTimerPreset(minutes, OdLocalization.Format("Timer_PresetMinutes", minutes)))];
+
+    // A change of language: the presets, the laps and the texts again.
+    private void OnCultureChanged(object? sender, EventArgs e)
+    {
+        Presets = NewPresets();
+        OnPropertyChanged(nameof(Presets));
+        Laps.Clear();
+        Refresh();
     }
 
     public void Dispose()

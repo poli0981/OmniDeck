@@ -39,6 +39,14 @@ public sealed class OdLocalization : INotifyPropertyChanged
 
     public static string Get(string key) => Instance[key];
 
+    /// <summary>
+    /// Calls <paramref name="handler"/> after each change of language, holding its target weakly, so a
+    /// view model that lives as long as its view needs no unsubscribing. <paramref name="handler"/> must
+    /// be a method of that view model: nothing else would keep a lambda's closure alive.
+    /// </summary>
+    public static void FollowCulture(EventHandler<EventArgs> handler) =>
+        WeakEventManager<OdLocalization, EventArgs>.AddHandler(Instance, nameof(CultureChanged), handler);
+
     /// <summary>Fills a format string; numbers and dates follow the regional format, not the UI language.</summary>
     public static string Format(string key, params object?[] args) =>
         string.Format(CultureInfo.CurrentCulture, Instance[key], args);

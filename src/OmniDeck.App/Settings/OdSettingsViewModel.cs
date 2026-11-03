@@ -91,15 +91,16 @@ public sealed partial class OdSettingsViewModel : ObservableObject, IDisposable
         DataFolder = dataRoot.Root;
         Load(settings.Current);
         settings.Changed += OnSettingsChanged;
+        OdLocalization.FollowCulture(OnCultureChanged);
     }
 
     public IReadOnlyList<OdChoice<string>> Languages { get; } = LanguageChoices();
 
     public IReadOnlyList<OdChoice<OdThemeMode>> Themes { get; } =
     [
-        new(OdThemeMode.System, OdLocalization.Get("Theme_System")),
-        new(OdThemeMode.Light, OdLocalization.Get("Theme_Light")),
-        new(OdThemeMode.Dark, OdLocalization.Get("Theme_Dark")),
+        new(OdThemeMode.System, () => OdLocalization.Get("Theme_System")),
+        new(OdThemeMode.Light, () => OdLocalization.Get("Theme_Light")),
+        new(OdThemeMode.Dark, () => OdLocalization.Get("Theme_Dark")),
     ];
 
     public IReadOnlyList<OdPresetOption> Presets { get; } = OdPresetOption.All();
@@ -129,11 +130,14 @@ public sealed partial class OdSettingsViewModel : ObservableObject, IDisposable
 
     public string DataFolder { get; }
 
-    /// <summary>The language choices: Windows' display language, then the languages OmniDeck ships.</summary>
+    /// <summary>
+    /// The language choices: Windows' display language, then the languages OmniDeck ships, each named in
+    /// itself, so that whoever reads the list finds their own language whatever the UI's.
+    /// </summary>
     public static IReadOnlyList<OdChoice<string>> LanguageChoices() =>
     [
-        new("", OdLocalization.Get("Language_System")),
-        new("en", OdLocalization.Get("Language_English")),
+        new("", () => OdLocalization.Get("Language_System")),
+        .. OdLanguages.Shipped.Select(name => new OdChoice<string>(name, OdLanguages.NativeName(name))),
     ];
 
     public void ShowSection(OdSettingsSection section) => SectionIndex = (int)section;
@@ -225,6 +229,33 @@ public sealed partial class OdSettingsViewModel : ObservableObject, IDisposable
     }
 
     private void OnSettingsChanged(object? sender, OdSettingsChangedEventArgs e) => Load(e.Settings);
+
+    // The lists keep their items, whose texts change in place: the selections bound to them stay.
+    private void OnCultureChanged(object? sender, EventArgs e)
+    {
+        foreach (var choice in Languages)
+        {
+            choice.RefreshTitle();
+        }
+
+        foreach (var choice in Themes)
+        {
+            choice.RefreshTitle();
+        }
+
+        foreach (var option in Presets)
+        {
+            option.RefreshTexts();
+        }
+
+        foreach (var swatch in AccentSwatches)
+        {
+            swatch.RefreshName();
+        }
+
+        About.RefreshTexts();
+        WebApps.Refresh();
+    }
 
     /// <summary>Shows <paramref name="settings"/> without writing anything back.</summary>
     private void Load(OdSettings settings)

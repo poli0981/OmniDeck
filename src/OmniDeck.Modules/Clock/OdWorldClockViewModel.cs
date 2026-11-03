@@ -30,7 +30,7 @@ public sealed partial class OdWorldClockViewModel(TimeZoneInfo zone, bool isLoca
         ArgumentNullException.ThrowIfNull(local);
         var culture = CultureInfo.CurrentCulture;
         var here = TimeZoneInfo.ConvertTime(utcNow, Zone);
-        TimeText = here.ToString(use24Hour ? "HH:mm:ss" : "h:mm:ss tt", culture);
+        TimeText = here.ToString(use24Hour ? "HH:mm:ss" : OdLocalization.Get("Clock_Time12"), culture);
         DateText = here.ToString("D", culture);
         OffsetText = IsLocal ? "" : Offset(Zone.GetUtcOffset(utcNow) - local.GetUtcOffset(utcNow));
         OnPropertyChanged(nameof(Title));

@@ -43,7 +43,7 @@ dotnet run --project src/OmniDeck.App
 
 - Naming: namespace `OmniDeck.*`, public type prefix `Od*`, interfaces `IOd*`; the application class is `OdApp`.
 - Language: C# 14, nullable enabled, file-scoped namespaces; methods returning an awaitable end in `Async`.
-- Strings: user-facing text goes in `.resx` (EN neutral; the VI and JA translations arrive in P3). Never concatenate localized fragments; use format placeholders.
+- Strings: user-facing text goes in `.resx` (EN neutral, VI, JA). Never concatenate localized fragments; use format placeholders. Text a view model builds in code reads its strings again on a change of language (`OdLocalization.FollowCulture`). See [TRANSLATING](docs/TRANSLATING.md) for the rules, and for translating.
 - App data goes under `%LocalAppData%\OmniDeck.Data`, never into Velopack's install folder `%LocalAppData%\OmniDeck` ([ARCHITECTURE](docs/ARCHITECTURE.md) §5).
 - Commits: imperative subject ≤ 72 chars, with a type prefix: `feat:`, `fix:`, `docs:`, `chore:`, `ci:` or `deps:`.
 - Signatures: `main` only accepts verified (signed) commits. Signed commits are appreciated; pull requests with unsigned commits are squash-merged, so GitHub signs the result.

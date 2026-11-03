@@ -27,10 +27,10 @@ public sealed partial class OdStockDetailViewModel : ObservableObject
         _load = load;
         Ranges =
         [
-            new(OdStockRange.OneMonth, OdLocalization.Get("Stocks_Range1M")),
-            new(OdStockRange.SixMonths, OdLocalization.Get("Stocks_Range6M")),
-            new(OdStockRange.OneYear, OdLocalization.Get("Stocks_Range1Y")),
-            new(OdStockRange.FiveYears, OdLocalization.Get("Stocks_Range5Y")),
+            new(OdStockRange.OneMonth, () => OdLocalization.Get("Stocks_Range1M")),
+            new(OdStockRange.SixMonths, () => OdLocalization.Get("Stocks_Range6M")),
+            new(OdStockRange.OneYear, () => OdLocalization.Get("Stocks_Range1Y")),
+            new(OdStockRange.FiveYears, () => OdLocalization.Get("Stocks_Range5Y")),
         ];
         SelectedRange = Ranges[1];
         Title = OdLocalization.Format("Stocks_ResultTitle", item.Symbol, quote?.Name ?? item.Name);

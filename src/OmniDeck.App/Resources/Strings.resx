@@ -250,9 +250,6 @@ Support code: {0}
   <data name="Language_System" xml:space="preserve">
     <value>Follow Windows</value>
   </data>
-  <data name="Language_English" xml:space="preserve">
-    <value>English</value>
-  </data>
   <data name="Theme_System" xml:space="preserve">
     <value>Follow Windows</value>
   </data>
@@ -562,5 +559,9 @@ Support code: {0}
   </data>
   <data name="Shell_OpenDataFolder" xml:space="preserve">
     <value>Open the data folder</value>
+  </data>
+  <data name="Shell_SearchShortcut" xml:space="preserve">
+    <value>Ctrl+K</value>
+    <comment>The search box&apos;s tooltip: the shortcut that opens it, with the key names your keyboards show.</comment>
   </data>
 </root>

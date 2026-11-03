@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using Microsoft.Web.WebView2.Core;
+using OmniDeck.Core.Localization;
 using OmniDeck.Core.Storage;
 using Serilog;
 
@@ -138,9 +139,12 @@ public sealed class OdWebRuntime(OdDataRoot dataRoot, OdWebOptions options, ILog
 
     private async Task<CoreWebView2Environment> CreateAsync()
     {
+        // The browser speaks OmniDeck's language: its own pages and menus, and what sites are asked for
+        // (Accept-Language). It is set once per run: a change of language reaches web apps on the next start.
         var environmentOptions = new CoreWebView2EnvironmentOptions
         {
             AdditionalBrowserArguments = options.ChromiumLogging ? "--enable-logging --v=0" : null,
+            Language = OdLocalization.Instance.Culture.Name,
         };
         var environment = await CoreWebView2Environment.CreateAsync(browserExecutableFolder: null, userDataFolder: dataRoot.WebView2Directory, environmentOptions);
         environment.BrowserProcessExited += OnBrowserProcessExited;

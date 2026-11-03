@@ -29,26 +29,27 @@ public sealed partial class OdCalendarViewModel : ObservableObject, IDisposable
         Times = [.. Enumerable.Range(0, 96).Select(quarter => TimeChoice(TimeOnly.FromTimeSpan(TimeSpan.FromMinutes(15 * quarter))))];
         Repeats =
         [
-            new(OdRepeat.None, OdLocalization.Get("Calendar_RepeatNone")),
-            new(OdRepeat.Daily, OdLocalization.Get("Calendar_RepeatDaily")),
-            new(OdRepeat.Weekly, OdLocalization.Get("Calendar_RepeatWeekly")),
-            new(OdRepeat.Monthly, OdLocalization.Get("Calendar_RepeatMonthly")),
-            new(OdRepeat.Yearly, OdLocalization.Get("Calendar_RepeatYearly")),
+            new(OdRepeat.None, () => OdLocalization.Get("Calendar_RepeatNone")),
+            new(OdRepeat.Daily, () => OdLocalization.Get("Calendar_RepeatDaily")),
+            new(OdRepeat.Weekly, () => OdLocalization.Get("Calendar_RepeatWeekly")),
+            new(OdRepeat.Monthly, () => OdLocalization.Get("Calendar_RepeatMonthly")),
+            new(OdRepeat.Yearly, () => OdLocalization.Get("Calendar_RepeatYearly")),
         ];
-        Intervals = [.. Enumerable.Range(1, 12)];
+        Intervals = [.. Enumerable.Range(1, 12).Select(interval => new OdCalendarChoice<int>(interval, () => EveryLabel(interval)))];
         Reminders =
         [
-            new(null, OdLocalization.Get("Calendar_ReminderNone")),
-            new(0, OdLocalization.Get("Calendar_ReminderAtStart")),
-            new(5, OdLocalization.Format("Calendar_ReminderMinutes", 5)),
-            new(15, OdLocalization.Format("Calendar_ReminderMinutes", 15)),
-            new(30, OdLocalization.Format("Calendar_ReminderMinutes", 30)),
-            new(60, OdLocalization.Get("Calendar_ReminderHour")),
-            new(1440, OdLocalization.Get("Calendar_ReminderDay")),
+            new(null, () => OdLocalization.Get("Calendar_ReminderNone")),
+            new(0, () => OdLocalization.Get("Calendar_ReminderAtStart")),
+            new(5, () => OdLocalization.Format("Calendar_ReminderMinutes", 5)),
+            new(15, () => OdLocalization.Format("Calendar_ReminderMinutes", 15)),
+            new(30, () => OdLocalization.Format("Calendar_ReminderMinutes", 30)),
+            new(60, () => OdLocalization.Get("Calendar_ReminderHour")),
+            new(1440, () => OdLocalization.Get("Calendar_ReminderDay")),
         ];
         WeekdayNames = [.. Enumerable.Range(0, 7).Select(day => Culture.DateTimeFormat.AbbreviatedDayNames[((int)FirstDay + day) % 7])];
         _store.Changed += OnStoreChanged;
         Refresh();
+        OdLocalization.FollowCulture(OnCultureChanged);
     }
 
     public ObservableCollection<OdCalendarDay> MonthDays { get; } = [];
@@ -62,7 +63,8 @@ public sealed partial class OdCalendarViewModel : ObservableObject, IDisposable
 
     public IReadOnlyList<OdCalendarChoice<OdRepeat>> Repeats { get; }
 
-    public IReadOnlyList<int> Intervals { get; }
+    /// <summary>"every 2 weeks": each interval as a phrase in the repeat's unit, which follows the repeat chosen.</summary>
+    public IReadOnlyList<OdCalendarChoice<int>> Intervals { get; }
 
     public IReadOnlyList<OdCalendarChoice<int?>> Reminders { get; }
 
@@ -320,9 +322,39 @@ public sealed partial class OdCalendarViewModel : ObservableObject, IDisposable
         {
             EditCustomRule = null;
         }
+
+        // The intervals say the repeat's unit: every 2 weeks, every 2 months.
+        foreach (var interval in Intervals)
+        {
+            interval.RefreshLabel();
+        }
     }
 
-    private static OdCalendarChoice<TimeOnly> TimeChoice(TimeOnly time) => new(time, time.ToString("t", Culture));
+    // A change of language: the editor's lists in place, so their selections stay, and the days again.
+    private void OnCultureChanged(object? sender, EventArgs e)
+    {
+        foreach (var choice in Repeats.Concat<OdLocalizedOption>(Reminders).Concat(Intervals))
+        {
+            choice.RefreshLabel();
+        }
+
+        Refresh();
+    }
+
+    /// <summary>The interval as one phrase in the repeat's unit, worded as each language words it.</summary>
+    private string EveryLabel(int interval) => (EditRepeat?.Value ?? OdRepeat.Weekly, interval) switch
+    {
+        (OdRepeat.Daily, 1) => OdLocalization.Get("Calendar_EveryDay"),
+        (OdRepeat.Daily, _) => OdLocalization.Format("Calendar_EveryDays", interval),
+        (OdRepeat.Monthly, 1) => OdLocalization.Get("Calendar_EveryMonth"),
+        (OdRepeat.Monthly, _) => OdLocalization.Format("Calendar_EveryMonths", interval),
+        (OdRepeat.Yearly, 1) => OdLocalization.Get("Calendar_EveryYear"),
+        (OdRepeat.Yearly, _) => OdLocalization.Format("Calendar_EveryYears", interval),
+        (_, 1) => OdLocalization.Get("Calendar_EveryWeek"),
+        _ => OdLocalization.Format("Calendar_EveryWeeks", interval),
+    };
+
+    private static OdCalendarChoice<TimeOnly> TimeChoice(TimeOnly time) => new(time, () => time.ToString("t", Culture));
 
     private static string Title(OdCalendarEvent value) => value.Title.Length > 0 ? value.Title : OdLocalization.Get("Calendar_Untitled");
 

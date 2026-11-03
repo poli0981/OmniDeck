@@ -30,9 +30,9 @@ public sealed partial class OdWeatherViewModel : ObservableObject, IDisposable
         _time = time;
         UnitsOptions =
         [
-            new(null, OdLocalization.Get("Weather_UnitsAuto")),
-            new(OdWeatherUnits.Metric, OdLocalization.Get("Weather_UnitsMetric")),
-            new(OdWeatherUnits.Imperial, OdLocalization.Get("Weather_UnitsImperial")),
+            new(null, () => OdLocalization.Get("Weather_UnitsAuto")),
+            new(OdWeatherUnits.Metric, () => OdLocalization.Get("Weather_UnitsMetric")),
+            new(OdWeatherUnits.Imperial, () => OdLocalization.Get("Weather_UnitsImperial")),
         ];
         Locations = [.. settings.Locations];
 
@@ -42,6 +42,7 @@ public sealed partial class OdWeatherViewModel : ObservableObject, IDisposable
         var selected = settings.Selected >= 0 && settings.Selected < Locations.Count ? settings.Selected : 0;
         SelectedLocation = Locations.Count == 0 ? null : Locations[selected];
         _restoring = false;
+        OdLocalization.FollowCulture(OnCultureChanged);
     }
 
     public ObservableCollection<OdWeatherLocation> Locations { get; }
@@ -317,6 +318,17 @@ public sealed partial class OdWeatherViewModel : ObservableObject, IDisposable
         }
     }
 
+    // A change of language: the units' names, and the forecast shown again, from the cache.
+    private void OnCultureChanged(object? sender, EventArgs e)
+    {
+        foreach (var option in UnitsOptions)
+        {
+            option.RefreshLabel();
+        }
+
+        _ = LoadAsync(refresh: false);
+    }
+
     private void Show(OdForecast? forecast)
     {
         Hours.Clear();
@@ -354,7 +366,7 @@ public sealed partial class OdWeatherViewModel : ObservableObject, IDisposable
         foreach (var day in forecast.Daily)
         {
             Days.Add(new OdWeatherDay(
-                day.Date == today ? OdLocalization.Get("Weather_Today") : day.Date.ToString("ddd d", CultureInfo.CurrentCulture),
+                day.Date == today ? OdLocalization.Get("Weather_Today") : day.Date.ToString(OdLocalization.Get("Weather_DayFormat"), CultureInfo.CurrentCulture),
                 OdLocalization.Format("Weather_HighLow", OdWeatherText.Temperature(day.High), OdWeatherText.Temperature(day.Low)),
                 OdWeatherCodes.Symbol(day.Code, isDay: true),
                 OdWeatherCodes.Describe(day.Code),

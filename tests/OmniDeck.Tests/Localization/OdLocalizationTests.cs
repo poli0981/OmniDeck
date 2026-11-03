@@ -50,7 +50,7 @@ public sealed class OdLocalizationTests
         localization.CultureChanged += OnCultureChanged;
         try
         {
-            var other = string.Equals(original.Name, "ja", StringComparison.Ordinal) ? CultureInfo.GetCultureInfo("vi") : CultureInfo.GetCultureInfo("ja");
+            var other = string.Equals(original.Name, "fr", StringComparison.Ordinal) ? CultureInfo.GetCultureInfo("de") : CultureInfo.GetCultureInfo("fr");
             localization.SetCulture(other);
             localization.SetCulture(other);
 
@@ -58,7 +58,7 @@ public sealed class OdLocalizationTests
             Assert.Equal(1, cultureChanges);
             Assert.Equal(other, CultureInfo.CurrentUICulture);
 
-            // Only English ships in P1: other languages fall back to the neutral strings.
+            // A language OmniDeck has no strings for falls back to the neutral (English) ones.
             Assert.Equal("Library", localization["Shell_Library"]);
         }
         finally

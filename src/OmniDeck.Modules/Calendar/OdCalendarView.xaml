@@ -145,15 +145,13 @@
                                   ItemsSource="{Binding Repeats}"
                                   SelectedItem="{Binding EditRepeat}"
                                   ToolTip="{res:OdLoc Calendar_Repeat}" />
-                        <TextBlock Margin="{DynamicResource Od.Padding.Control}"
-                                   VerticalAlignment="Center"
-                                   Text="{res:OdLoc Calendar_Every}"
-                                   Visibility="{Binding IsRepeating, Converter={StaticResource Visible}}" />
+                        <!--  Each interval reads as a whole phrase ("every 2 weeks"): no sentence is built from pieces.  -->
                         <ComboBox Margin="{DynamicResource Od.Padding.Control}"
                                   VerticalAlignment="Center"
-                                  AutomationProperties.Name="{res:OdLoc Calendar_Every}"
+                                  AutomationProperties.Name="{res:OdLoc Calendar_Interval}"
                                   ItemsSource="{Binding Intervals}"
-                                  SelectedItem="{Binding EditInterval}"
+                                  SelectedValue="{Binding EditInterval}"
+                                  SelectedValuePath="Value"
                                   Visibility="{Binding IsRepeating, Converter={StaticResource Visible}}" />
                         <TextBlock Margin="{DynamicResource Od.Padding.Control}"
                                    VerticalAlignment="Center"

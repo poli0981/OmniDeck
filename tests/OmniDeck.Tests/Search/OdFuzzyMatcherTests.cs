@@ -15,6 +15,24 @@ public sealed class OdFuzzyMatcherTests
     }
 
     [Theory]
+    [InlineData("thoi tiet", "Thời tiết")]
+    [InlineData("dong ho", "Đồng hồ")]
+    [InlineData("LICH", "Lịch")]
+    [InlineData("tạm", "tam dung")]
+    public void Matches_LatinLettersWhateverTheirAccents(string query, string text)
+    {
+        Assert.NotNull(OdFuzzyMatcher.Score(query, text));
+    }
+
+    [Fact]
+    public void Folding_KeepsTheMarksOfOtherScripts()
+    {
+        Assert.Equal("Thoi tiet, dong ho", OdFuzzyMatcher.Fold("Thời tiết, đồng hồ"));
+        Assert.Equal("ガイド", OdFuzzyMatcher.Fold("ガイド"));
+        Assert.Null(OdFuzzyMatcher.Score("カ", "ガ"));
+    }
+
+    [Theory]
     [InlineData("kc", "Clock")]
     [InlineData("timers", "Timer")]
     [InlineData("x", "")]

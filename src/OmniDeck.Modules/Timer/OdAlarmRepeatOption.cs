@@ -1,7 +1,9 @@
+using OmniDeck.Core.Localization;
+
 namespace OmniDeck.Modules.Timer;
 
 /// <summary>A repeat choice, with its name in the UI language.</summary>
-public sealed record OdAlarmRepeatOption(OdAlarmRepeat Repeat, string Label)
+public sealed class OdAlarmRepeatOption(OdAlarmRepeat repeat, Func<string> label) : OdLocalizedOption(label)
 {
-    public override string ToString() => Label;
+    public OdAlarmRepeat Repeat { get; } = repeat;
 }

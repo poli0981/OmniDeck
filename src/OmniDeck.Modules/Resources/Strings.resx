@@ -358,11 +358,9 @@
   <data name="Calendar_Repeat" xml:space="preserve">
     <value>Repeat</value>
   </data>
-  <data name="Calendar_Every" xml:space="preserve">
-    <value>Every</value>
-  </data>
   <data name="Calendar_Until" xml:space="preserve">
     <value>until</value>
+    <comment>The label before the date a repeating event ends on. Where &quot;until&quot; cannot come before the date, use a label such as &quot;End date&quot;.</comment>
   </data>
   <data name="Calendar_RepeatNone" xml:space="preserve">
     <value>Doesn't repeat</value>
@@ -979,5 +977,44 @@
   </data>
   <data name="Media_Unmute" xml:space="preserve">
     <value>Unmute</value>
+  </data>
+  <data name="Calendar_Interval" xml:space="preserve">
+    <value>How often</value>
+  </data>
+  <data name="Calendar_EveryDay" xml:space="preserve">
+    <value>every day</value>
+  </data>
+  <data name="Calendar_EveryDays" xml:space="preserve">
+    <value>every {0} days</value>
+    <comment>An item of the repeat&apos;s interval list, after the repeat chosen (Daily): {0} is 2 to 12.</comment>
+  </data>
+  <data name="Calendar_EveryWeek" xml:space="preserve">
+    <value>every week</value>
+  </data>
+  <data name="Calendar_EveryWeeks" xml:space="preserve">
+    <value>every {0} weeks</value>
+    <comment>An item of the interval list when the event repeats weekly: {0} is 2 to 12.</comment>
+  </data>
+  <data name="Calendar_EveryMonth" xml:space="preserve">
+    <value>every month</value>
+  </data>
+  <data name="Calendar_EveryMonths" xml:space="preserve">
+    <value>every {0} months</value>
+    <comment>An item of the interval list when the event repeats monthly: {0} is 2 to 12.</comment>
+  </data>
+  <data name="Calendar_EveryYear" xml:space="preserve">
+    <value>every year</value>
+  </data>
+  <data name="Calendar_EveryYears" xml:space="preserve">
+    <value>every {0} years</value>
+    <comment>An item of the interval list when the event repeats yearly: {0} is 2 to 12.</comment>
+  </data>
+  <data name="Clock_Time12" xml:space="preserve">
+    <value>h:mm:ss tt</value>
+    <comment>A .NET time format, not words: h the hour, mm the minutes, ss the seconds, tt AM or PM in the region&apos;s own words. Put tt where your language puts it (Japanese: tt h:mm:ss).</comment>
+  </data>
+  <data name="Weather_DayFormat" xml:space="preserve">
+    <value>ddd d</value>
+    <comment>A .NET date format, not words: ddd the short day name, d the day of the month. Order them as your language does (Japanese: d日(ddd)).</comment>
   </data>
 </root>

@@ -30,6 +30,7 @@ All notable changes to OmniDeck are documented here. The format follows
   window. Whatever the palette or Ctrl+1–9 opens takes the keyboard focus.
 - Enter and Delete play or remove the selected file of the media queue, and bring back or forget the
   selected calculation of the calculator's history.
+- The command palette finds what you type whatever its accents: "thoi tiet" finds "Thời tiết".
 
 ### Changed
 - Screen readers (Narrator, NVDA, JAWS):
@@ -46,6 +47,10 @@ All notable changes to OmniDeck are documented here. The format follows
   Windows' colors, hides them.
 - With large text, tiles, number boxes and the weather's columns grow with it, and the buttons of the
   library's tiles and of the timers wrap rather than clip.
+- A change of language reaches every screen at once, and the lists you pick from keep their choice;
+  web apps follow at OmniDeck's next start. The language list names each language in itself.
+- Calendar: a repeating event's interval reads as one phrase, such as "every 2 weeks".
+- The bug report's GitHub issue stays in English, with modules by id, whatever the language of the app.
 - Fainter text (descriptions, captions, times) is darker on the light theme, so that it reads at a
   contrast of at least 4.5:1 in every layout; in Comfort it reaches 7:1 on both themes. High Contrast
   keeps Windows' colors.
