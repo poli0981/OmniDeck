@@ -173,6 +173,84 @@
                     </ItemsControl>
                 </StackPanel>
             </ui:Card>
+            <!--  Alarms: a time of day, on which days, and an optional label.  -->
+            <StackPanel Visibility="{Binding HasAlarms, Converter={StaticResource Visible}}">
+                <TextBlock Margin="{DynamicResource Od.Margin.Item}"
+                           FontSize="{DynamicResource Od.Font.H2}"
+                           FontWeight="SemiBold"
+                           Text="{res:OdLoc Timer_Alarms}" />
+                <TextBlock Margin="{DynamicResource Od.Margin.Item}"
+                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                           Text="{res:OdLoc Timer_AlarmsNote}"
+                           TextWrapping="Wrap" />
+                <ui:Card Margin="{DynamicResource Od.Margin.Item}" DataContext="{Binding Alarms}">
+                    <StackPanel>
+                        <WrapPanel>
+                            <ui:TextBox Margin="{DynamicResource Od.Padding.Control}"
+                                        AutomationProperties.HelpText="{Binding TimeHint}"
+                                        AutomationProperties.Name="{res:OdLoc Timer_AlarmTime}"
+                                        PlaceholderText="{Binding TimeHint}"
+                                        Text="{Binding NewTime, UpdateSourceTrigger=PropertyChanged}">
+                                <ui:TextBox.InputBindings>
+                                    <KeyBinding Key="Enter" Command="{Binding AddCommand}" />
+                                </ui:TextBox.InputBindings>
+                            </ui:TextBox>
+                            <ComboBox Margin="{DynamicResource Od.Padding.Control}"
+                                      AutomationProperties.Name="{res:OdLoc Timer_AlarmRepeat}"
+                                      ItemsSource="{Binding RepeatOptions}"
+                                      SelectedItem="{Binding NewRepeat}" />
+                            <ui:TextBox Margin="{DynamicResource Od.Padding.Control}"
+                                        AutomationProperties.Name="{res:OdLoc Timer_AlarmLabel}"
+                                        PlaceholderText="{res:OdLoc Timer_AlarmLabel}"
+                                        Text="{Binding NewLabel, UpdateSourceTrigger=PropertyChanged}" />
+                            <ui:Button Margin="{DynamicResource Od.Padding.Control}"
+                                       Appearance="Primary"
+                                       Command="{Binding AddCommand}"
+                                       Content="{res:OdLoc Timer_AlarmAdd}" />
+                        </WrapPanel>
+                        <TextBlock Margin="{DynamicResource Od.Padding.Control}"
+                                   AutomationProperties.LiveSetting="Assertive"
+                                   Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+                                   Text="{Binding Message}"
+                                   TextWrapping="Wrap" />
+                        <TextBlock Margin="{DynamicResource Od.Padding.Control}"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                   Text="{res:OdLoc Timer_NoAlarms}"
+                                   Visibility="{Binding HasNoAlarms, Converter={StaticResource Visible}}" />
+                        <ItemsControl Focusable="False" ItemsSource="{Binding Rows}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type timer:OdAlarmRowViewModel}">
+                                    <DockPanel Margin="{DynamicResource Od.Padding.Control}">
+                                        <ui:Button Appearance="Transparent"
+                                                   AutomationProperties.Name="{res:OdLoc Timer_AlarmDelete}"
+                                                   Command="{Binding DataContext.RemoveCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                   CommandParameter="{Binding}"
+                                                   DockPanel.Dock="Right"
+                                                   Icon="{ui:SymbolIcon Delete24}"
+                                                   ToolTip="{res:OdLoc Timer_AlarmDelete}" />
+                                        <ui:ToggleSwitch Margin="{DynamicResource Od.Padding.Control}"
+                                                         AutomationProperties.Name="{Binding AccessibleName}"
+                                                         DockPanel.Dock="Right"
+                                                         IsChecked="{Binding IsOn}" />
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock FontSize="{DynamicResource Od.Font.H2}"
+                                                       FontWeight="SemiBold"
+                                                       Text="{Binding Time}" />
+                                            <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}" Text="{Binding Label}" />
+                                            <TextBlock FontSize="{DynamicResource Od.Font.Caption}"
+                                                       Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                                       Text="{Binding Repeat}" />
+                                            <TextBlock FontSize="{DynamicResource Od.Font.Caption}"
+                                                       Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                                       Text="{Binding Next}" />
+                                        </StackPanel>
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </ui:Card>
+            </StackPanel>
         </StackPanel>
     </ScrollViewer>
 </UserControl>

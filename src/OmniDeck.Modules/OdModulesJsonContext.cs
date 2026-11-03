@@ -3,6 +3,7 @@ using OmniDeck.Modules.Calculator;
 using OmniDeck.Modules.Clock;
 using OmniDeck.Modules.Media;
 using OmniDeck.Modules.Stocks;
+using OmniDeck.Modules.Timer;
 using OmniDeck.Modules.Weather;
 
 namespace OmniDeck.Modules;
@@ -17,6 +18,7 @@ namespace OmniDeck.Modules;
 [JsonSerializable(typeof(OdWeatherSettings))]
 [JsonSerializable(typeof(OdMediaSettings))]
 [JsonSerializable(typeof(OdStocksSettings))]
+[JsonSerializable(typeof(OdAlarmsDocument))]
 [JsonSerializable(typeof(OdQuote))]
 [JsonSerializable(typeof(OdSeries))]
 [JsonSerializable(typeof(OdCreditState))]

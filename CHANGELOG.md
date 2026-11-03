@@ -7,6 +7,10 @@ All notable changes to OmniDeck are documented here. The format follows
 ## [Unreleased]
 
 ### Added
+- Timer: alarms at a time of day, once, every day, on weekdays or at weekends, each with an optional
+  label and a switch. They ring as a notification that opens Timer, while OmniDeck runs (in the
+  notification area too), as the screen says. A one-off alarm turns itself off once it rang; one the PC
+  slept through still rings on waking within the hour, and not after that.
 - Stocks: a watchlist of US stocks and ETFs with Twelve Data, using your own free (or paid) API key, which
   stays on this PC encrypted for your Windows account. Add listings by searching for them; each row
   shows the price, the day's change and a sparkline of the last month. Prices refresh only while Stocks

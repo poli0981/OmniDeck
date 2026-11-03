@@ -38,6 +38,7 @@ All mini-apps implement the module contract in [ARCHITECTURE](ARCHITECTURE.md) a
 - World clock: multiple time zones, 12/24 h.
 - Countdown timer and stopwatch; finished timers raise a Windows toast (works while minimized to tray).
 - Alarms fire only while OmniDeck is running (tray counts as running); this limitation is stated in the UI.
+- **As built in P3:** alarms live in Timer: a time of day, once, daily, on weekdays or at weekends, with an optional label and an on/off switch. `OdAlarmService` keeps them in a settings document of their own and outlives the module, like the timers. A one-off alarm turns itself off once it rang; one that came due while OmniDeck was closed is not shown later, and one the PC slept through rings on waking only within the hour. A time that a daylight-saving change skips rings once the clock is past the gap, and one that happens twice rings the first time.
 
 ### 3.2 Calculator
 - Standard + scientific modes, calculation history (session-scoped), copy result.
