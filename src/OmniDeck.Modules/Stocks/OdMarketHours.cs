@@ -93,6 +93,13 @@ public static class OdMarketHours
         return At(day, OpensAt);
     }
 
+    /// <summary>The trading day a moment belongs to: New York's date for a US listing, the UTC date for others.</summary>
+    public static DateTime DayOf(OdTicker ticker, DateTimeOffset moment)
+    {
+        ArgumentNullException.ThrowIfNull(ticker);
+        return IsUnitedStates(ticker.Mic) ? TimeZoneInfo.ConvertTime(moment, NewYork.Value).Date : moment.UtcDateTime.Date;
+    }
+
     private static bool IsTradingDay(DateTime day) => day.DayOfWeek is not (DayOfWeek.Saturday or DayOfWeek.Sunday);
 
     private static DateTimeOffset At(DateTime day, TimeSpan time)

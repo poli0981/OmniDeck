@@ -109,6 +109,16 @@ public sealed partial class OdStocksViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private string _plan = "";
 
+    /// <summary>The watchlist row on screen in detail, if any.</summary>
+    [ObservableProperty]
+    private OdWatchRowViewModel? _selectedRow;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasDetail))]
+    private OdStockDetailViewModel? _detail;
+
+    public bool HasDetail => Detail is not null;
+
     /// <summary>On screen: refreshes what is stale now, then checks every minute.</summary>
     public void Activate()
     {
@@ -329,8 +339,67 @@ public sealed partial class OdStocksViewModel : ObservableObject, IDisposable
 
         _cache.Forget(row.Item.Ticker);
         _unavailable.Remove(row.Item.Ticker.Key);
+        if (SelectedRow == row)
+        {
+            SelectedRow = null;
+        }
+
         OnPropertyChanged(nameof(IsEmpty));
         SaveWatchlist();
+    }
+
+    [RelayCommand]
+    private void CloseDetail() => SelectedRow = null;
+
+    /// <summary>
+    /// A series for the detail view: the cached one while it is fresh, otherwise fetched, one credit,
+    /// since the user asked for it; the cached one again, however old, when that cannot be done.
+    /// </summary>
+    internal async Task<OdSeries?> LoadSeriesAsync(OdTicker ticker, OdSeriesRange range)
+    {
+        var cached = _cache.Series(ticker, range);
+        if (cached is not null && OdStocksFreshness.IsFresh(cached, _time.GetUtcNow()))
+        {
+            return cached.Value;
+        }
+
+        if (_unavailable.ContainsKey(ticker.Key) || _secrets.Read(SecretName) is not { } key || _limiter.WaitFor(1) != TimeSpan.Zero)
+        {
+            return cached?.Value;
+        }
+
+        _limiter.Spend(1);
+        try
+        {
+            var series = await _provider.SeriesAsync(ticker, range, key, _work.Token);
+            _cache.PutSeries(series, _time.GetUtcNow());
+            return series;
+        }
+        catch (OdStocksException)
+        {
+            return cached?.Value;
+        }
+        catch (OperationCanceledException)
+        {
+            return cached?.Value;
+        }
+        finally
+        {
+            ShowCredits();
+        }
+    }
+
+    partial void OnSelectedRowChanged(OdWatchRowViewModel? value)
+    {
+        if (value is null)
+        {
+            Detail = null;
+            return;
+        }
+
+        var ticker = value.Item.Ticker;
+        Detail = new OdStockDetailViewModel(value.Item, _cache.Quote(ticker)?.Value, range => LoadSeriesAsync(ticker, range));
+        _ = Detail.LoadAsync();
     }
 
     [RelayCommand]

@@ -766,4 +766,73 @@
   <data name="Stocks_DataBy" xml:space="preserve">
     <value>Market data by Twelve Data</value>
   </data>
+  <data name="Stocks_Range1M" xml:space="preserve">
+    <value>1 month</value>
+  </data>
+  <data name="Stocks_Range6M" xml:space="preserve">
+    <value>6 months</value>
+  </data>
+  <data name="Stocks_Range1Y" xml:space="preserve">
+    <value>1 year</value>
+  </data>
+  <data name="Stocks_Range5Y" xml:space="preserve">
+    <value>5 years</value>
+  </data>
+  <data name="Stocks_Ranges" xml:space="preserve">
+    <value>Range</value>
+  </data>
+  <data name="Stocks_DetailMarket" xml:space="preserve">
+    <value>{0}, {1}</value>
+  </data>
+  <data name="Stocks_MarketOpen" xml:space="preserve">
+    <value>market open</value>
+  </data>
+  <data name="Stocks_MarketClosed" xml:space="preserve">
+    <value>market closed</value>
+  </data>
+  <data name="Stocks_DayRange" xml:space="preserve">
+    <value>Today: {0} to {1}</value>
+  </data>
+  <data name="Stocks_YearRange" xml:space="preserve">
+    <value>52 weeks: {0} to {1}</value>
+  </data>
+  <data name="Stocks_Volume" xml:space="preserve">
+    <value>Volume: {0}</value>
+  </data>
+  <data name="Stocks_SeriesUnavailable" xml:space="preserve">
+    <value>These prices are not available right now.</value>
+  </data>
+  <data name="Stocks_DetailSummary" xml:space="preserve">
+    <value>{0}, {1}: from {2} to {3} ({4}); highest {5} on {6}, lowest {7} on {8}.</value>
+  </data>
+  <data name="Stocks_DetailReadout" xml:space="preserve">
+    <value>{0}: open {1}, high {2}, low {3}, close {4}, volume {5}</value>
+  </data>
+  <data name="Stocks_CloseDetail" xml:space="preserve">
+    <value>Close the details</value>
+  </data>
+  <data name="Stocks_ShowTable" xml:space="preserve">
+    <value>Show the prices as a table</value>
+  </data>
+  <data name="Stocks_Table" xml:space="preserve">
+    <value>Prices</value>
+  </data>
+  <data name="Stocks_ColumnDate" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Stocks_ColumnOpen" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="Stocks_ColumnHigh" xml:space="preserve">
+    <value>High</value>
+  </data>
+  <data name="Stocks_ColumnLow" xml:space="preserve">
+    <value>Low</value>
+  </data>
+  <data name="Stocks_ColumnClose" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Stocks_ColumnVolume" xml:space="preserve">
+    <value>Volume</value>
+  </data>
 </root>
