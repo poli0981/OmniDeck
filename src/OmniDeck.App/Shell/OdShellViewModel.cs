@@ -33,6 +33,7 @@ public sealed partial class OdShellViewModel : ObservableObject, IDisposable
     private readonly List<OdModuleItemViewModel> _openOrder = [];
     private IReadOnlyList<string> _pinned = [];
     private string _sidebarShape = "";
+    private bool _windowAway;
 
     [ObservableProperty]
     private string _currentTarget = LibraryTarget;
@@ -143,6 +144,26 @@ public sealed partial class OdShellViewModel : ObservableObject, IDisposable
 
             CurrentView = await _host.ShowAsync(target);
             CurrentTarget = target;
+        }
+    }
+
+    /// <summary>
+    /// The main window was minimized or hidden in the tray (<paramref name="away"/>), or is back. Away,
+    /// its module goes down the ladder like any hidden one; back, it is active again. The stage keeps its
+    /// view meanwhile, so a full screen and the page stay as they were; a module hibernated while away
+    /// comes back with a new view.
+    /// </summary>
+    public async Task SetWindowAwayAsync(bool away)
+    {
+        if (away == _windowAway)
+        {
+            return;
+        }
+
+        _windowAway = away;
+        if (await _host.SetMainWindowAwayAsync(away) is { } view)
+        {
+            CurrentView = view;
         }
     }
 

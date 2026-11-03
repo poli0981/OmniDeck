@@ -64,6 +64,8 @@ public interface IOdModule
 
 `OdModuleHost` runs the contract. It initializes a module on first open, builds its view when it has none (first open, or after hibernation), keeps the view of the visible module, and moves hidden ones down the ladder when the shell or the governor asks; it refuses to suspend or hibernate a module whose `CanSuspendAsync` returns false. Calls run one at a time on the UI thread. The shell's navigation view is chrome only: every module item navigates to one shared stage page, whose content is the view the host hands back, so the control never creates or caches module views.
 
+When the main window is minimized or hidden in the tray, nothing it holds is on screen: `OdModuleHost.SetMainWindowAwayAsync` makes its module Idle, so the ladder and the caps apply to it, while it stays the module the window shows. When the window comes back, the module is activated again, and gets a new view if it was hibernated meanwhile. The stage keeps the old view while the window is away, so a full screen and the page survive a minimize. Since a minimized window never unloads its view, `ActivateAsync` must undo whatever `SuspendAsync` stopped (Clock and Timer restart their ticking there), and a web app hides its browser before asking WebView2 to suspend, which WebView2 does only for a hidden browser.
+
 A view asks for full screen with `OdFullscreen.Request(view, on)`, a bubbling routed event raised from the view itself, since content it hosts in a window of its own (a video overlay) is outside the main window's tree. The main window then:
 
 - covers the monitor it is on (`OdMonitors.BoundsOf`, `OdWindowCover`), and keeps where it was;

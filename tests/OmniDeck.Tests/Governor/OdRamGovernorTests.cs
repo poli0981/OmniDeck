@@ -339,6 +339,92 @@ public sealed class OdRamGovernorTests : IDisposable
         Assert.IsType<InvalidOperationException>(failure);
     }
 
+    [Fact]
+    public void Ladder_TakesTheMainWindowsModule_OnlyWhileTheWindowIsAway() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        using var governor = NewGovernor(host);
+        await host.ShowAsync("clock");
+
+        _time.Advance(TimeSpan.FromHours(1));
+        await governor.TickAsync();
+        Assert.Equal(OdModuleState.Active, State(host, "clock"));
+
+        await host.SetMainWindowAwayAsync(away: true);
+        _time.Advance(TimeSpan.FromMinutes(5));
+        await governor.TickAsync();
+        Assert.Equal(OdModuleState.Suspended, State(host, "clock"));
+
+        _time.Advance(TimeSpan.FromMinutes(25));
+        await governor.TickAsync();
+        Assert.Equal(OdModuleState.Hibernated, State(host, "clock"));
+
+        Assert.NotNull(await host.SetMainWindowAwayAsync(away: false));
+        Assert.Equal(OdModuleState.Active, State(host, "clock"));
+    });
+
+    [Fact]
+    public void SoftCap_TakesTheMainWindowsModule_OnlyWhileTheWindowIsAway() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        using var governor = NewGovernor(host);
+        await host.ShowAsync("web");
+        _memory.Committed = 5 * GiB;
+
+        await governor.TickAsync();
+        Assert.Equal(OdModuleState.Active, State(host, "web"));
+
+        await host.SetMainWindowAwayAsync(away: true);
+        await governor.TickAsync();
+        Assert.Equal(OdModuleState.Hibernated, State(host, "web"));
+    });
+
+    [Fact]
+    public void Ladder_CountsHiddenTimeFromTheEndOfAPin() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        using var governor = NewGovernor(host);
+        await host.ShowAsync("clock");
+        await host.ShowAsync("calc");
+        _clock.CanSuspend = false;
+
+        _time.Advance(TimeSpan.FromMinutes(40));
+        await governor.TickAsync();
+        Assert.Equal(OdModuleState.Idle, State(host, "clock"));
+
+        // It stopped playing: hidden for 40 minutes, but in use until now.
+        _clock.CanSuspend = true;
+        _time.Advance(TimeSpan.FromMinutes(4));
+        await governor.TickAsync();
+        Assert.Equal(OdModuleState.Idle, State(host, "clock"));
+
+        _time.Advance(TimeSpan.FromMinutes(1));
+        await governor.TickAsync();
+        Assert.Equal(OdModuleState.Suspended, State(host, "clock"));
+    });
+
+    [Fact]
+    public void KeptRunningAndResidentModules_StayUp_WhileTheWindowIsAway() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        using var governor = NewGovernor(host);
+        governor.SetKeptRunning("clock", keep: true);
+        _web.StaysResident = true;
+
+        await host.ShowAsync("clock");
+        await host.SetMainWindowAwayAsync(away: true);
+        _time.Advance(TimeSpan.FromHours(1));
+        await governor.TickAsync();
+        Assert.Equal(OdModuleState.Idle, State(host, "clock"));
+
+        await host.SetMainWindowAwayAsync(away: false);
+        await host.ShowAsync("web");
+        await host.SetMainWindowAwayAsync(away: true);
+        _time.Advance(TimeSpan.FromHours(1));
+        await governor.TickAsync();
+        Assert.Equal(OdModuleState.Idle, State(host, "web"));
+    });
+
     private static OdModuleState? State(OdModuleHost host, string id) => host.Find(id)?.State;
 
     /// <summary>Opens clock, timer and web one after another, then calc, so the first three are hidden.</summary>

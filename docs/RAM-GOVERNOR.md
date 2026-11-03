@@ -14,6 +14,8 @@ The governor is the feature that makes "many apps in one" viable. It moves every
 
 A module in a window of its own (a pop-out) is visible while that window is open, so it stays Active whatever the main window shows; closing the window puts it back on the ladder as a hidden module.
 
+The main window's module is hidden too while that window is minimized or hidden in the tray: it goes Idle when the window goes away and down the ladder from there, and it is active again when the window comes back (rebuilt, if it was hibernated meanwhile). Pop-outs keep their rule above, even when their own window is minimized.
+
 Reactivation from Suspended is instant. From Hibernated it is a cold open (view rebuild and page reload, about 0.6–2.5 s); that is acceptable because the profile keeps the user signed in. After the last web app has been hibernated, the next one also restarts the browser process (about 160 ms).
 
 ## 2. Defaults (all configurable in Settings → Memory)
@@ -37,6 +39,8 @@ A module is **pinned** (governor must not demote it below its current state) whe
 A module that works while hidden is **resident** (`IOdResidency`): in P2, a web app with notifications on, which would stop notifying once suspended. The time ladder skips it; the caps may still hibernate it, after every other victim, and then OmniDeck shows a notification naming the app, which reopens it when clicked.
 
 Pinned modules are skipped by cap enforcement; if the hard cap is exceeded purely by pinned modules, the governor toasts a warning instead of killing audio.
+
+Time spent pinned does not count as time hidden: each pass restarts a pinned module's hidden time, so a player that stops after an hour out of sight is suspended `IdleAfter` later and hibernated `HibernateAfter` later, not on the next pass.
 
 ## 4. Cap enforcement
 

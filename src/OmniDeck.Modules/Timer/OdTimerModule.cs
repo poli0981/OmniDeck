@@ -31,7 +31,15 @@ public sealed class OdTimerModule(OdTimerService service) : IOdModule
         return new OdTimerView { DataContext = _viewModel };
     }
 
-    public Task ActivateAsync() => Task.CompletedTask;
+    /// <summary>
+    /// Ticks again after a suspension. The view's Loaded event does that when it comes back on stage, but a
+    /// window that was minimized never unloaded it.
+    /// </summary>
+    public Task ActivateAsync()
+    {
+        _viewModel?.StartTicking();
+        return Task.CompletedTask;
+    }
 
     public Task<bool> CanSuspendAsync() => Task.FromResult(true);
 
