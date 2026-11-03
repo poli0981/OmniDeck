@@ -65,6 +65,51 @@ switch (args.FirstOrDefault())
 
         break;
 
+    case "shapes":
+        // P3 addendum to docs/spikes/07-providers.md: the answers OmniDeck's parser has not seen from a
+        // real key. Prints structure only (HTTP status, shape, field names, error codes and messages,
+        // which credit headers came back), never a figure or the key, and saves nothing.
+        //   dotnet run --project spikes/ProviderProbe -- shapes [429]
+        var shapesKey = Environment.GetEnvironmentVariable("OD_TWELVEDATA_KEY");
+        if (string.IsNullOrWhiteSpace(shapesKey))
+        {
+            Console.Error.WriteLine("Set OD_TWELVEDATA_KEY first; the key is only sent to Twelve Data, never printed.");
+            return 2;
+        }
+
+        // About 10 credits, paced 10 s apart to stay under 8 per minute.
+        (string Name, string Path)[] shapes =
+        [
+            ("batch-with-unknown", "quote?symbol=AAPL,ZZZZQX"),
+            ("batch-with-plan-gated", "quote?symbol=AAPL,SAP:XETR"),
+            ("mic-code-form", "quote?symbol=SAP&mic_code=XETR"),
+            ("single-unknown", "quote?symbol=ZZZZQX"),
+            ("trailing-comma", "quote?symbol=AAPL,"),
+            ("dotted-symbol", "quote?symbol=BRK.B"),
+            ("series-unknown", "time_series?symbol=ZZZZQX&interval=1day&outputsize=5"),
+        ];
+        for (var i = 0; i < shapes.Length; i++)
+        {
+            if (i > 0)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(10));
+            }
+
+            await ShapeAsync(shapes[i].Name, $"https://api.twelvedata.com/{shapes[i].Path}", shapesKey);
+        }
+
+        if (args.Contains("429"))
+        {
+            // Nine more credits at once, to see what going over the minute's eight looks like.
+            Console.WriteLine("Waiting a minute, then nine quotes at once...");
+            await Task.Delay(TimeSpan.FromSeconds(61));
+            for (var i = 0; i < 9; i++)
+            {
+                await ShapeAsync($"burst-{i + 1}", "https://api.twelvedata.com/quote?symbol=AAPL", shapesKey);
+            }
+        }
+
+        return 0;
     case "verify-models":
         // Deserializes the newest saved Twelve Data responses with the frozen models.
         string Latest(string name) => Directory.GetFiles(outDir, $"*-td-{name}.json").Max()!;
@@ -88,7 +133,7 @@ switch (args.FirstOrDefault())
         return 0;
 
     default:
-        Console.Error.WriteLine("usage: ProviderProbe stooq | twelvedata | verify-models");
+        Console.Error.WriteLine("usage: ProviderProbe stooq | twelvedata | shapes [429] | verify-models");
         return 1;
 }
 
@@ -125,6 +170,61 @@ async Task ProbeAsync(string name, string url, string? apiKey)
     rows.Add($"| `{name}` | {(int)response.StatusCode} | {contentType} | {sw.ElapsedMilliseconds} | {credits} | {verdict} |");
     Console.WriteLine($"{name,-22} {(int)response.StatusCode} {sw.ElapsedMilliseconds,5} ms  {credits,-9} {verdict}");
 }
+
+async Task ShapeAsync(string name, string url, string apiKey)
+{
+    using var request = new HttpRequestMessage(HttpMethod.Get, url);
+    request.Headers.TryAddWithoutValidation("Authorization", $"apikey {apiKey}");
+    using var response = await http.SendAsync(request);
+    var body = await response.Content.ReadAsStringAsync();
+    var credits = string.Join(", ", new[] { "api-credits-used", "api-credits-left" }.Where(response.Headers.Contains));
+    Console.WriteLine($"{name,-24} HTTP {(int)response.StatusCode}  credit headers: {(credits.Length == 0 ? "none" : credits)}");
+    Console.WriteLine("    " + Describe(body));
+}
+
+static string Describe(string body)
+{
+    try
+    {
+        using var document = JsonDocument.Parse(body);
+        return Shape(document.RootElement);
+    }
+    catch (JsonException)
+    {
+        return "not JSON";
+    }
+}
+
+static string Shape(JsonElement element)
+{
+    if (element.ValueKind != JsonValueKind.Object)
+    {
+        return element.ValueKind.ToString();
+    }
+
+    if (ErrorOf(element) is { } error)
+    {
+        return error;
+    }
+
+    static string Fields(JsonElement value) => string.Join(",", value.EnumerateObject().Select(p => p.Name).Order(StringComparer.Ordinal));
+    if (element.TryGetProperty("symbol", out _))
+    {
+        return "flat quote; fields: " + Fields(element);
+    }
+
+    if (element.TryGetProperty("values", out _))
+    {
+        return "series; fields: " + Fields(element);
+    }
+
+    return "keyed by symbol: " + string.Join("; ", element.EnumerateObject().Select(p => $"{p.Name} => {(ErrorOf(p.Value) ?? (p.Value.ValueKind == JsonValueKind.Object ? "quote" : p.Value.ValueKind.ToString()))}"));
+}
+
+static string? ErrorOf(JsonElement element) =>
+    element.ValueKind == JsonValueKind.Object && element.TryGetProperty("status", out var status) && status.ValueKind == JsonValueKind.String && status.GetString() == "error"
+        ? $"error code={(element.TryGetProperty("code", out var code) ? code.ToString() : "?")} message=\"{(element.TryGetProperty("message", out var message) ? message.GetString() : "")}\""
+        : null;
 
 static string? Header(HttpResponseMessage response, string name) =>
     response.Headers.TryGetValues(name, out var values) ? values.FirstOrDefault() : null;
