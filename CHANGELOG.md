@@ -6,6 +6,16 @@ All notable changes to OmniDeck are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-11-03
+
+The end of phase P2. The eight web apps of the catalog run inside OmniDeck on Microsoft Edge
+WebView2, with their notifications, site permissions and memory figures, beside the clock, timer and
+calculator and the new weather, calendar and media player modules. Any module can open in a window
+of its own, web pages go full screen, a bug report can be prepared from inside the app, and the
+memory governor rests the modules no one is looking at, a minimized window's included. The
+0.2.0-alpha.1 to 0.2.0-alpha.4 notes list all of it in detail: 0.2.0 is the same app as
+0.2.0-alpha.4. Stocks, the finished Dynamic and Comfort layouts, Vietnamese and Japanese arrive in P3.
+
 ## [0.2.0-alpha.4] — 2026-11-03
 
 Fourth P2 alpha, the build to try out before 0.2.0: the memory governor now also rests the module
@@ -251,7 +261,8 @@ user-facing features yet: the window only shows the version.
 - Supported platform narrowed to Windows 11 (24H2 or later), x64.
 - App data moves to `%LocalAppData%\OmniDeck.Data`, outside Velopack's install folder.
 
-[Unreleased]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.4...HEAD
+[Unreleased]: https://github.com/poli0981/OmniDeck/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.4...v0.2.0
 [0.2.0-alpha.4]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.3...v0.2.0-alpha.4
 [0.2.0-alpha.3]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.2...v0.2.0-alpha.3
 [0.2.0-alpha.2]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.1...v0.2.0-alpha.2
