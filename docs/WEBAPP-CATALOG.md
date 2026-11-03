@@ -35,7 +35,7 @@ OmniDeck deliberately does **not** allow arbitrary user-added URLs in v1: the cu
 
 Top-level file fields: `$schema` (optional editor hint), `schemaVersion` (int, currently 2), `updated` (ISO date of the last content change), `navAllowSets` (optional: named lists of domains, each name `[a-z0-9-]`), `apps` (array).
 
-**Named domain sets.** `google-account-domains` lists Google's account host on every country-code domain, `accounts.google.<ccTLD>`, taken from `https://www.google.com/supported_domains` (186 domains; `google.com` itself is already in each entry's `navAllow`). Google's sign-in hops there to set its cookies, for example `accounts.google.com.vn/accounts/SetSID`. Every `google` entry uses the set, because they share one sign-in. The list lives in the catalog rather than in the app, so a change is a catalog pull request, not a release. Schema v2 (2 November 2026) added `navAllowSets`; no released build read v1, and the app reads v2 only. The JSON Schema is [`catalog/webapps.schema.json`](../catalog/webapps.schema.json); `scripts/validate-catalog.ps1` checks it plus the rules a schema can't express (unique `id` and `name`, every set an entry names exists and every set is used, the coverage rules above, `updated` not in the future), and CI runs it on every pull request. The app checks every catalog it loads or fetches against the same rules (`OdCatalogValidator`, whose test runs on this repository's file), rejects any whose `schemaVersion` it does not understand or that fails them, and keeps the copy it has. A fetched catalog takes effect from the next start.
+**Named domain sets.** `google-account-domains` lists Google's account host on every country-code domain, `accounts.google.<ccTLD>`, taken from `https://www.google.com/supported_domains` (186 domains; `google.com` itself is already in each entry's `navAllow`). Google's sign-in hops there to set its cookies, for example `accounts.google.com.vn/accounts/SetSID`. Every `google` entry uses the set, because they share one sign-in, and so does `spotify`: its "Continue with Google" signs in to Google on Spotify's own profile, and goes through the same hops. The list lives in the catalog rather than in the app, so a change is a catalog pull request, not a release. Schema v2 (2 November 2026) added `navAllowSets`; no released build read v1, and the app reads v2 only. The JSON Schema is [`catalog/webapps.schema.json`](../catalog/webapps.schema.json); `scripts/validate-catalog.ps1` checks it plus the rules a schema can't express (unique `id` and `name`, every set an entry names exists and every set is used, the coverage rules above, `updated` not in the future), and CI runs it on every pull request. The app checks every catalog it loads or fetches against the same rules (`OdCatalogValidator`, whose test runs on this repository's file), rejects any whose `schemaVersion` it does not understand or that fails them, and keeps the copy it has. A fetched catalog takes effect from the next start.
 
 ## 2. Review rules for new entries (PR checklist)
 
@@ -43,7 +43,7 @@ Top-level file fields: `$schema` (optional editor hint), `schemaVersion` (int, c
 2. `navAllow` is the *minimal* set of domains the app's main frame genuinely navigates to — test sign-in redirects, core flows, and downloads; do not add ad/tracking domains just to silence the default-browser handoff, and do not add CDN/asset domains that are only loaded as subresources.
 3. `popupAllow` contains only identity/SSO domains actually used by the sign-in flow.
 4. Isolated `profile` unless there is a concrete single-sign-on reason to share.
-5. `audioPin: true` only for apps whose primary function is audio/video playback.
+5. `audioPin: true` only for apps whose primary function is audio/video playback, or voice and video calls (`discord`, `facebook`): a call must not be suspended while it is in progress.
 6. No services that primarily distribute illegal content, and nothing requiring DRM schemes known not to work in WebView2 (see ROADMAP risk register).
 7. State in the PR description which flows you manually tested inside OmniDeck (or a WebView2 sample) — sign-in, notifications, a core action.
 8. `pwsh scripts/validate-catalog.ps1` passes locally (CI runs it too).
@@ -52,14 +52,14 @@ Top-level file fields: `$schema` (optional editor hint), `schemaVersion` (int, c
 
 | id | profile | audioPin | Notes |
 |---|---|---|---|
-| spotify | spotify | yes | Web Player; DRM works in the runtime ([spike #1](spikes/01-drm-widevine.md)); the third-party sign-in buttons (Google/Facebook/Apple) are still untested ([spike #2](spikes/02-google-sign-in.md)) |
-| discord | discord | no | no global PTT on web; host hotkey partial mitigation |
+| spotify | spotify | yes | Web Player; DRM works in the runtime ([spike #1](spikes/01-drm-widevine.md)). "Continue with Google / Facebook / Apple" move the main frame to `accounts.google.com`, `www.facebook.com` and `appleid.apple.com` and back, so those hosts and the `google-account-domains` set are listed (each hop checked up to the provider's sign-in page on 2 November 2026) |
+| discord | discord | yes | pinned while a voice or video call plays audio; no global PTT on web; host hotkey partial mitigation |
 | youtube | google | yes | sign-in hops to Google's country-code domains, allowed through the `google-account-domains` set like every `google` entry ([spike #2](spikes/02-google-sign-in.md)) |
 | gmail | google | no | |
 | gcalendar | google | no | |
 | gdrive | google | no | |
 | gmaps | google | no | replaces a native map mini-app entirely |
-| facebook | meta | no | also Meta's web messaging (`facebook.com/messages`) since messenger.com closed in April 2026; the Messenger entry was removed |
+| facebook | meta | yes | pinned while a call or video plays audio; also Meta's web messaging (`facebook.com/messages`) since messenger.com closed in April 2026; the Messenger entry was removed |
 
 ## 4. Known-good candidates for post-v1 PRs
 
