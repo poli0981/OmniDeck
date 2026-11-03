@@ -1,0 +1,568 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- The shell's UI strings, Japanese. A key missing here shows in English (Strings.resx). -->
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="App_Name" xml:space="preserve">
+    <value>OmniDeck</value>
+  </data>
+  <data name="Shell_Search" xml:space="preserve">
+    <value>モジュールとコマンドを検索</value>
+  </data>
+  <data name="Shell_Library" xml:space="preserve">
+    <value>ライブラリ</value>
+  </data>
+  <data name="Shell_LibraryTitle" xml:space="preserve">
+    <value>モジュール ライブラリ</value>
+  </data>
+  <data name="Shell_LibraryIntro" xml:space="preserve">
+    <value>モジュールを開くか、ピン留めしてサイドバーに表示したままにします。</value>
+  </data>
+  <data name="Shell_LibraryEmpty" xml:space="preserve">
+    <value>利用できるモジュールはまだありません。</value>
+  </data>
+  <data name="Shell_Open" xml:space="preserve">
+    <value>開く</value>
+  </data>
+  <data name="Shell_Pin" xml:space="preserve">
+    <value>サイドバーにピン留めする</value>
+  </data>
+  <data name="Shell_Unpin" xml:space="preserve">
+    <value>サイドバーからピン留めを外す</value>
+  </data>
+  <data name="Shell_Close" xml:space="preserve">
+    <value>閉じる</value>
+  </data>
+  <data name="Shell_PopOut" xml:space="preserve">
+    <value>別ウィンドウで開く</value>
+  </data>
+  <data name="Shell_PopIn" xml:space="preserve">
+    <value>メイン ウィンドウに戻す</value>
+  </data>
+  <data name="Shell_PaletteCommand" xml:space="preserve">
+    <value>コマンド</value>
+  </data>
+  <data name="Shell_Quit" xml:space="preserve">
+    <value>OmniDeck を終了</value>
+  </data>
+  <data name="Tray_Open" xml:space="preserve">
+    <value>OmniDeck を開く</value>
+  </data>
+  <data name="Tray_QuickTimer" xml:space="preserve">
+    <value>5 分のタイマーを開始</value>
+  </data>
+  <data name="Tray_Quit" xml:space="preserve">
+    <value>終了</value>
+  </data>
+  <data name="Tray_StillRunningTitle" xml:space="preserve">
+    <value>OmniDeck は引き続き実行中です</value>
+  </data>
+  <data name="Tray_StillRunningMessage" xml:space="preserve">
+    <value>通知領域で実行を続けます。終了するには、アイコンのメニューから [終了] を選択してください。</value>
+  </data>
+  <data name="Error_Title" xml:space="preserve">
+    <value>問題が発生しました</value>
+  </data>
+  <data name="Error_UiMessage" xml:space="preserve">
+    <value>問題が発生しましたが、OmniDeck は引き続き実行中です。
+
+サポート コード: {0}
+
+{1}</value>
+  </data>
+  <data name="Error_StartFailed" xml:space="preserve">
+    <value>OmniDeck を起動できませんでした。
+
+{0}</value>
+  </data>
+  <data name="Memory_Title" xml:space="preserve">
+    <value>実行中のモジュール</value>
+  </data>
+  <data name="Memory_Intro" xml:space="preserve">
+    <value>非表示のモジュールは、メモリを節約するため、時間の経過とともにアイドル、一時停止、休止の順に移行します。対象外にするには、モジュールの [常に実行] をオンにします。</value>
+  </data>
+  <data name="Memory_InUse" xml:space="preserve">
+    <value>使用中: {0}</value>
+  </data>
+  <data name="Memory_Limits" xml:space="preserve">
+    <value>ソフト上限 {0} · ハード上限 {1}</value>
+  </data>
+  <data name="Memory_SharedNote" xml:space="preserve">
+    <value>組み込みモジュールは OmniDeck 本体のプロセスを共有するため、個別の数値が表示されるのは Web アプリだけです。</value>
+  </data>
+  <data name="Memory_SharedTitle" xml:space="preserve">
+    <value>共有の Web プロセス</value>
+  </data>
+  <data name="Memory_SharedDescription" xml:space="preserve">
+    <value>すべての Web アプリが使用するブラウザー、グラフィックス、ヘルパーのプロセスです。最後の Web アプリを閉じると終了します。</value>
+  </data>
+  <data name="Memory_KeepRunning" xml:space="preserve">
+    <value>常に実行</value>
+  </data>
+  <data name="Memory_Suspend" xml:space="preserve">
+    <value>一時停止</value>
+  </data>
+  <data name="Memory_Hibernate" xml:space="preserve">
+    <value>休止</value>
+  </data>
+  <data name="Memory_UsedNow" xml:space="preserve">
+    <value>表示中</value>
+  </data>
+  <data name="Memory_UsedJustNow" xml:space="preserve">
+    <value>たった今使用</value>
+  </data>
+  <data name="Memory_UsedMinutesAgo" xml:space="preserve">
+    <value>{0} 分前に使用</value>
+  </data>
+  <data name="Memory_UsedHoursAgo" xml:space="preserve">
+    <value>{0} 時間前に使用</value>
+  </data>
+  <data name="State_Created" xml:space="preserve">
+    <value>未起動</value>
+  </data>
+  <data name="State_Active" xml:space="preserve">
+    <value>アクティブ</value>
+  </data>
+  <data name="State_Idle" xml:space="preserve">
+    <value>アイドル</value>
+  </data>
+  <data name="State_Suspended" xml:space="preserve">
+    <value>一時停止中</value>
+  </data>
+  <data name="State_Hibernated" xml:space="preserve">
+    <value>休止中</value>
+  </data>
+  <data name="State_Closed" xml:space="preserve">
+    <value>終了済み</value>
+  </data>
+  <data name="Governor_HardCapTitle" xml:space="preserve">
+    <value>OmniDeck のメモリ使用量が多くなっています</value>
+  </data>
+  <data name="Governor_HardCapHibernatedOne" xml:space="preserve">
+    <value>上限の {0} を超えないように、モジュールを 1 つ休止しました。</value>
+  </data>
+  <data name="Governor_HardCapHibernated" xml:space="preserve">
+    <value>上限の {1} を超えないように、モジュールを {0} 個休止しました。</value>
+  </data>
+  <data name="Governor_HardCapKept" xml:space="preserve">
+    <value>上限の {0} を超えていますが、これ以上休止できるモジュールはありません。開いているモジュールは使用中か、[常に実行] がオンになっています。</value>
+  </data>
+  <data name="Governor_HardCapShared" xml:space="preserve">
+    <value>開いている Web アプリが共有するプロセスが主にグラフィックスのために {1} を使用しているため、上限の {0} を超えています。他のモジュールを休止しても、この使用量は減りません。</value>
+  </data>
+  <data name="Governor_ResidentHibernatedTitle" xml:space="preserve">
+    <value>メモリを節約するため、{0} を休止しました</value>
+  </data>
+  <data name="Governor_ResidentHibernated" xml:space="preserve">
+    <value>もう一度開くまで、通知は表示されません。ここをクリックすると開きます。</value>
+  </data>
+  <data name="Settings_Nav" xml:space="preserve">
+    <value>設定</value>
+  </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>設定</value>
+  </data>
+  <data name="Settings_General" xml:space="preserve">
+    <value>全般</value>
+  </data>
+  <data name="Settings_Appearance" xml:space="preserve">
+    <value>外観</value>
+  </data>
+  <data name="Settings_Memory" xml:space="preserve">
+    <value>メモリ</value>
+  </data>
+  <data name="Settings_Data" xml:space="preserve">
+    <value>データ</value>
+  </data>
+  <data name="Settings_About" xml:space="preserve">
+    <value>バージョン情報</value>
+  </data>
+  <data name="Settings_Language" xml:space="preserve">
+    <value>言語</value>
+  </data>
+  <data name="Settings_CloseToTray" xml:space="preserve">
+    <value>ウィンドウを閉じても通知領域で実行を続ける</value>
+  </data>
+  <data name="Settings_StartWithWindows" xml:space="preserve">
+    <value>Windows にサインインしたときに OmniDeck を起動する</value>
+  </data>
+  <data name="Settings_Theme" xml:space="preserve">
+    <value>テーマ</value>
+  </data>
+  <data name="Settings_Preset" xml:space="preserve">
+    <value>レイアウト</value>
+  </data>
+  <data name="Settings_FontScale" xml:space="preserve">
+    <value>テキストのサイズ</value>
+  </data>
+  <data name="Settings_Motion" xml:space="preserve">
+    <value>アニメーション効果</value>
+  </data>
+  <data name="Settings_AccentSystem" xml:space="preserve">
+    <value>Windows のアクセント カラーを使用する</value>
+  </data>
+  <data name="Settings_IdleAfter" xml:space="preserve">
+    <value>非表示のモジュールを一時停止するまでの時間 (分)</value>
+  </data>
+  <data name="Settings_HibernateAfter" xml:space="preserve">
+    <value>非表示のモジュールを休止するまでの時間 (分)</value>
+  </data>
+  <data name="Settings_SoftCap" xml:space="preserve">
+    <value>メモリのソフト上限 (MB、0 で自動)</value>
+  </data>
+  <data name="Settings_HardCap" xml:space="preserve">
+    <value>メモリのハード上限 (MB、0 で自動)</value>
+  </data>
+  <data name="Settings_DataFolder" xml:space="preserve">
+    <value>データ フォルダー</value>
+  </data>
+  <data name="Settings_OpenDataFolder" xml:space="preserve">
+    <value>開く</value>
+  </data>
+  <data name="Settings_Export" xml:space="preserve">
+    <value>設定をエクスポート…</value>
+  </data>
+  <data name="Settings_Import" xml:space="preserve">
+    <value>設定をインポート…</value>
+  </data>
+  <data name="Settings_FileFilter" xml:space="preserve">
+    <value>OmniDeck の設定 (*.json)|*.json</value>
+  </data>
+  <data name="Settings_Exported" xml:space="preserve">
+    <value>設定をエクスポートしました。</value>
+  </data>
+  <data name="Settings_Imported" xml:space="preserve">
+    <value>設定をインポートしました。</value>
+  </data>
+  <data name="Settings_ImportFailed" xml:space="preserve">
+    <value>このファイルは OmniDeck の設定ファイルではありません。</value>
+  </data>
+  <data name="Language_System" xml:space="preserve">
+    <value>Windows の設定に合わせる</value>
+  </data>
+  <data name="Theme_System" xml:space="preserve">
+    <value>Windows の設定に合わせる</value>
+  </data>
+  <data name="Theme_Light" xml:space="preserve">
+    <value>ライト</value>
+  </data>
+  <data name="Theme_Dark" xml:space="preserve">
+    <value>ダーク</value>
+  </data>
+  <data name="Preset_Dynamic" xml:space="preserve">
+    <value>ダイナミック</value>
+  </data>
+  <data name="Preset_DynamicHint" xml:space="preserve">
+    <value>コンパクトで軽快。文字は小さめ、動きは多めです。</value>
+  </data>
+  <data name="Preset_Standard" xml:space="preserve">
+    <value>標準</value>
+  </data>
+  <data name="Preset_StandardHint" xml:space="preserve">
+    <value>バランスがよく、ほとんどの人に適しています。</value>
+  </data>
+  <data name="Preset_Comfort" xml:space="preserve">
+    <value>ゆったり</value>
+  </data>
+  <data name="Preset_ComfortHint" xml:space="preserve">
+    <value>文字とボタンが大きめで、動きはありません。</value>
+  </data>
+  <data name="Onboarding_Title" xml:space="preserve">
+    <value>OmniDeck へようこそ</value>
+  </data>
+  <data name="Onboarding_Intro" xml:space="preserve">
+    <value>言語とレイアウトを選んでください。レイアウトは選ぶとすぐに適用されます。</value>
+  </data>
+  <data name="Onboarding_Later" xml:space="preserve">
+    <value>どちらも後で [設定] から変更できます。</value>
+  </data>
+  <data name="Onboarding_Done" xml:space="preserve">
+    <value>始める</value>
+  </data>
+  <data name="Legal_Title" xml:space="preserve">
+    <value>始める前に</value>
+  </data>
+  <data name="Legal_Intro" xml:space="preserve">
+    <value>OmniDeck は GNU General Public License v3 に基づくフリー ソフトウェアです。これらの文書をお読みください。続行すると、これらを読んだことが記録されます。これはライセンスの条件ではありません。</value>
+  </data>
+  <data name="Legal_Eula" xml:space="preserve">
+    <value>使用許諾契約</value>
+  </data>
+  <data name="Legal_Disclaimer" xml:space="preserve">
+    <value>免責事項</value>
+  </data>
+  <data name="Legal_Privacy" xml:space="preserve">
+    <value>プライバシー ポリシー</value>
+  </data>
+  <data name="Legal_Notices" xml:space="preserve">
+    <value>サードパーティ通知</value>
+  </data>
+  <data name="Legal_HaveRead" xml:space="preserve">
+    <value>これらの文書を読みました</value>
+  </data>
+  <data name="Legal_Continue" xml:space="preserve">
+    <value>続行</value>
+  </data>
+  <data name="Legal_Quit" xml:space="preserve">
+    <value>終了</value>
+  </data>
+  <data name="Legal_Close" xml:space="preserve">
+    <value>閉じる</value>
+  </data>
+  <data name="Legal_Missing" xml:space="preserve">
+    <value>この OmniDeck には {0} が含まれていません。</value>
+  </data>
+  <data name="About_Version" xml:space="preserve">
+    <value>バージョン {0}</value>
+  </data>
+  <data name="About_CheckUpdates" xml:space="preserve">
+    <value>更新プログラムを確認</value>
+  </data>
+  <data name="About_Checking" xml:space="preserve">
+    <value>更新プログラムを確認しています…</value>
+  </data>
+  <data name="About_UpToDate" xml:space="preserve">
+    <value>OmniDeck は最新の状態です。</value>
+  </data>
+  <data name="About_Available" xml:space="preserve">
+    <value>バージョン {0} を利用できます。</value>
+  </data>
+  <data name="About_Download" xml:space="preserve">
+    <value>ダウンロードして再起動</value>
+  </data>
+  <data name="About_Downloading" xml:space="preserve">
+    <value>更新プログラムをダウンロードしています: {0}%</value>
+  </data>
+  <data name="About_Failed" xml:space="preserve">
+    <value>更新できませんでした: {0}</value>
+  </data>
+  <data name="About_NotInstalled" xml:space="preserve">
+    <value>更新を利用できるのは、インストールされた OmniDeck だけです。開発ビルドでは利用できません。</value>
+  </data>
+  <data name="About_Links" xml:space="preserve">
+    <value>リンク</value>
+  </data>
+  <data name="About_GitHub" xml:space="preserve">
+    <value>GitHub のソース コード</value>
+  </data>
+  <data name="About_Discussions" xml:space="preserve">
+    <value>ディスカッション</value>
+  </data>
+  <data name="About_Discord" xml:space="preserve">
+    <value>Discord</value>
+  </data>
+  <data name="About_Legal" xml:space="preserve">
+    <value>ライセンスと法的文書</value>
+  </data>
+  <data name="About_Credits" xml:space="preserve">
+    <value>OmniDeck は .NET、WPF-UI、Velopack、CommunityToolkit.Mvvm、H.NotifyIcon、Serilog、Dapper、SQLite、Markdig で構築されています。すべてサードパーティ通知に記載されています。</value>
+  </data>
+  <data name="Update_AvailableTitle" xml:space="preserve">
+    <value>OmniDeck {0} を利用できます</value>
+  </data>
+  <data name="Update_AvailableMessage" xml:space="preserve">
+    <value>インストールするには、[設定] → [バージョン情報] を開いてください。</value>
+  </data>
+  <data name="Dialog_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Dialog_Cancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="Settings_WebApps" xml:space="preserve">
+    <value>Web アプリ</value>
+  </data>
+  <data name="WebApps_Intro" xml:space="preserve">
+    <value>通知を表示できる Web アプリを選択します。通知がオンのアプリは、通知を届けられるよう非表示の間も実行を続け、OmniDeck のメモリが不足したときにだけ閉じられます。</value>
+  </data>
+  <data name="WebApps_Notifications" xml:space="preserve">
+    <value>通知</value>
+  </data>
+  <data name="WebApps_NoPermissions" xml:space="preserve">
+    <value>アクセス許可の要求はまだありません</value>
+  </data>
+  <data name="WebApps_Allowed" xml:space="preserve">
+    <value>{0}: 許可</value>
+  </data>
+  <data name="WebApps_Blocked" xml:space="preserve">
+    <value>{0}: ブロック</value>
+  </data>
+  <data name="WebApps_ResetPermissions" xml:space="preserve">
+    <value>もう一度確認する</value>
+  </data>
+  <data name="WebApps_DataTitle" xml:space="preserve">
+    <value>サインイン データ</value>
+  </data>
+  <data name="WebApps_DataIntro" xml:space="preserve">
+    <value>グループ内のアプリは 1 つのサインインを共有します。グループのデータを消去すると、そのすべてのアプリからサインアウトされ、アプリは閉じられます。</value>
+  </data>
+  <data name="WebApps_ClearData" xml:space="preserve">
+    <value>データを消去</value>
+  </data>
+  <data name="WebApps_ClearTitle" xml:space="preserve">
+    <value>サインイン データを消去しますか?</value>
+  </data>
+  <data name="WebApps_ClearMessage" xml:space="preserve">
+    <value>{0} からサインアウトされます。Cookie、サイト データ、キャッシュされたページは削除されます。</value>
+  </data>
+  <data name="WebApps_ClearConfirm" xml:space="preserve">
+    <value>データを消去</value>
+  </data>
+  <data name="WebApps_Cleared" xml:space="preserve">
+    <value>{0} のデータを消去しました。</value>
+  </data>
+  <data name="WebApps_ClearFailed" xml:space="preserve">
+    <value>データを消去できませんでした。OmniDeck を再起動してから、もう一度お試しください。</value>
+  </data>
+  <data name="WebApps_Catalog" xml:space="preserve">
+    <value>Web アプリ カタログ ({0} 版) には {1} 個のアプリがあります。</value>
+  </data>
+  <data name="WebApps_Checked" xml:space="preserve">
+    <value>新しいカタログを最後に確認したのは {0} です。</value>
+  </data>
+  <data name="WebApps_NotChecked" xml:space="preserve">
+    <value>新しいカタログはまだ確認していません。</value>
+  </data>
+  <data name="About_ReportBug" xml:space="preserve">
+    <value>バグを報告</value>
+  </data>
+  <data name="Error_Report" xml:space="preserve">
+    <value>バグを報告</value>
+  </data>
+  <data name="Report_Title" xml:space="preserve">
+    <value>バグを報告</value>
+  </data>
+  <data name="Report_Intro" xml:space="preserve">
+    <value>OmniDeck はこの PC にレポートを保存し、短い項目を入力した状態で GitHub の新しい Issue をブラウザーで開きます。何も送信されないため、レポートはご自身で Issue に添付してください。Web アドレスからはクエリが除かれ、トークン、Cookie、メール アドレス、長い ID、ユーザー名もあらかじめ取り除かれます。</value>
+  </data>
+  <data name="Report_Subject" xml:space="preserve">
+    <value>何についての報告ですか?</value>
+  </data>
+  <data name="Report_General" xml:space="preserve">
+    <value>OmniDeck 全般</value>
+  </data>
+  <data name="Report_Preview" xml:space="preserve">
+    <value>Issue の本文 (レポートにも issue.md として含まれます)</value>
+  </data>
+  <data name="Report_Save" xml:space="preserve">
+    <value>保存して GitHub を開く</value>
+  </data>
+  <data name="Tray_Play" xml:space="preserve">
+    <value>再生</value>
+  </data>
+  <data name="Tray_Pause" xml:space="preserve">
+    <value>一時停止</value>
+  </data>
+  <data name="Tray_Next" xml:space="preserve">
+    <value>次へ</value>
+  </data>
+  <data name="Tray_Previous" xml:space="preserve">
+    <value>前へ</value>
+  </data>
+  <data name="About_Prereleases" xml:space="preserve">
+    <value>プレリリース版 (アルファ版とベータ版) を入手する</value>
+  </data>
+  <data name="About_PrereleasesNote" xml:space="preserve">
+    <value>1.0 より前のバージョンはすべてプレリリース版です。1.0 以降は、これをオフのままにすると安定版のみを入手します。</value>
+  </data>
+  <data name="Shell_NavModules" xml:space="preserve">
+    <value>モジュール</value>
+  </data>
+  <data name="Shell_NavFooter" xml:space="preserve">
+    <value>設定とライブラリ</value>
+  </data>
+  <data name="A11y_RowAction" xml:space="preserve">
+    <value>{0}、{1}</value>
+  </data>
+  <data name="A11y_Minimize" xml:space="preserve">
+    <value>最小化</value>
+  </data>
+  <data name="A11y_Maximize" xml:space="preserve">
+    <value>最大化</value>
+  </data>
+  <data name="A11y_Restore" xml:space="preserve">
+    <value>元に戻す (縮小)</value>
+  </data>
+  <data name="A11y_Close" xml:space="preserve">
+    <value>閉じる</value>
+  </data>
+  <data name="A11y_OpenNavigation" xml:space="preserve">
+    <value>ナビゲーションを開く</value>
+  </data>
+  <data name="A11y_CloseNavigation" xml:space="preserve">
+    <value>ナビゲーションを閉じる</value>
+  </data>
+  <data name="A11y_Increase" xml:space="preserve">
+    <value>増やす</value>
+  </data>
+  <data name="A11y_Decrease" xml:space="preserve">
+    <value>減らす</value>
+  </data>
+  <data name="A11y_ShowPassword" xml:space="preserve">
+    <value>パスワードを表示</value>
+  </data>
+  <data name="A11y_ScrollUp" xml:space="preserve">
+    <value>上へスクロール</value>
+  </data>
+  <data name="A11y_ScrollDown" xml:space="preserve">
+    <value>下へスクロール</value>
+  </data>
+  <data name="A11y_ScrollLeft" xml:space="preserve">
+    <value>左へスクロール</value>
+  </data>
+  <data name="A11y_ScrollRight" xml:space="preserve">
+    <value>右へスクロール</value>
+  </data>
+  <data name="A11y_PageUp" xml:space="preserve">
+    <value>1 ページ上へ</value>
+  </data>
+  <data name="A11y_PageDown" xml:space="preserve">
+    <value>1 ページ下へ</value>
+  </data>
+  <data name="A11y_PageLeft" xml:space="preserve">
+    <value>1 ページ左へ</value>
+  </data>
+  <data name="A11y_PageRight" xml:space="preserve">
+    <value>1 ページ右へ</value>
+  </data>
+  <data name="Settings_AccentColors" xml:space="preserve">
+    <value>アクセント カラー</value>
+  </data>
+  <data name="Accent_Blue" xml:space="preserve">
+    <value>青</value>
+  </data>
+  <data name="Accent_Purple" xml:space="preserve">
+    <value>紫</value>
+  </data>
+  <data name="Accent_Pink" xml:space="preserve">
+    <value>ピンク</value>
+  </data>
+  <data name="Accent_Red" xml:space="preserve">
+    <value>赤</value>
+  </data>
+  <data name="Accent_Orange" xml:space="preserve">
+    <value>オレンジ</value>
+  </data>
+  <data name="Accent_Green" xml:space="preserve">
+    <value>緑</value>
+  </data>
+  <data name="Shell_OpenDataFolder" xml:space="preserve">
+    <value>データ フォルダーを開く</value>
+  </data>
+  <data name="Shell_SearchShortcut" xml:space="preserve">
+    <value>Ctrl+K</value>
+  </data>
+  <data name="A11y_Clear" xml:space="preserve">
+    <value>クリア</value>
+  </data>
+</root>

@@ -76,3 +76,44 @@ A translation holds only the keys it translates: a key it lacks shows in English
 | local time, time zone | giờ địa phương, múi giờ |
 
 **Formats.** `Clock_Time12` stays `h:mm:ss tt` and `Weather_DayFormat` stays `ddd d`: the region gives "SA"/"CH" and "T2"…"CN".
+
+## 7. Japanese
+
+**Voice.** As Windows 11's Japanese UI words things: labels and buttons are short noun phrases or plain verb forms (保存, キャンセル, この場所を削除), messages are sentences in です・ます form. Prefer the kanji terms Windows uses to needless katakana. A half-width space goes between Japanese and Latin letters or numbers, as Windows writes them (Web アプリ, 5 分, API キー), but not next to Japanese punctuation. Japanese has no plurals: "every {0} weeks" is "{0} 週間ごと".
+
+**Terms.** Windows' own Japanese terms where Windows has one.
+
+| English | 日本語 |
+|---|---|
+| module | モジュール |
+| web app | Web アプリ |
+| sidebar | サイドバー |
+| module library | モジュール ライブラリ |
+| pin / unpin | ピン留めする / ピン留めを外す |
+| pop out / return to main window | 別ウィンドウで開く / メイン ウィンドウに戻す |
+| command palette | コマンド パレット |
+| Settings / Appearance | 設定 / 外観 |
+| layout (preset): Dynamic, Standard, Comfort | レイアウト: ダイナミック, 標準, ゆったり |
+| theme: Light, Dark, Follow Windows | テーマ: ライト, ダーク, Windows の設定に合わせる |
+| accent color | アクセント カラー |
+| text size | テキストのサイズ |
+| animations | アニメーション効果 |
+| High Contrast | ハイ コントラスト |
+| notification area | 通知領域 |
+| memory: suspend, hibernate, keep running | メモリ: 一時停止, 休止, 常に実行 |
+| sign in / sign-in data | サインイン / サインイン データ |
+| permission | アクセス許可 |
+| pre-release (alpha, beta) | プレリリース版 |
+| report a bug | バグを報告 |
+| check for updates | 更新プログラムを確認 |
+| data folder | データ フォルダー |
+| timer, countdown, stopwatch, lap, alarm | タイマー, カウントダウン, ストップウォッチ, ラップ, アラーム |
+| event, reminder, repeat | 予定, 通知, 繰り返し |
+| forecast, chance of rain, feels like | 予報, 降水確率, 体感温度 |
+| watchlist, listing, API key, plan, credits | ウォッチリスト, 銘柄, API キー, プラン, クレジット |
+| queue, playlist, subtitles | キュー, プレイリスト, 字幕 |
+| local time, time zone | 現地時刻, タイム ゾーン |
+
+**Formats.** `Clock_Time12` is `tt h:mm:ss` and `Weather_DayFormat` is `d日(ddd)`; the region gives 午前/午後 and the day names. A row's button names join with an ideographic comma: `A11y_RowAction` is `{0}、{1}`.
+
+**Fonts.** Japanese text falls back to Yu Gothic UI, Windows' Japanese UI font (WPF's fallback for `xml:lang="ja"`); OmniDeck tags its windows with the UI language, so that kanji take their Japanese shapes rather than Chinese ones.

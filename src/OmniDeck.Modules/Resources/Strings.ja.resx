@@ -1,0 +1,1009 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- The built-in modules' UI strings, Japanese. English (Strings.resx) is the neutral language. -->
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Category_Time" xml:space="preserve">
+    <value>時間</value>
+  </data>
+  <data name="Category_Tools" xml:space="preserve">
+    <value>ツール</value>
+  </data>
+  <data name="Clock_Name" xml:space="preserve">
+    <value>時計</value>
+  </data>
+  <data name="Clock_Local" xml:space="preserve">
+    <value>現地時刻</value>
+  </data>
+  <data name="Clock_24Hour" xml:space="preserve">
+    <value>24 時間表示</value>
+  </data>
+  <data name="Clock_AddZone" xml:space="preserve">
+    <value>追加するタイム ゾーン</value>
+  </data>
+  <data name="Clock_Add" xml:space="preserve">
+    <value>時計を追加</value>
+  </data>
+  <data name="Clock_Remove" xml:space="preserve">
+    <value>この時計を削除</value>
+  </data>
+  <data name="Clock_SameTime" xml:space="preserve">
+    <value>現地時刻と同じ</value>
+  </data>
+  <data name="Clock_Hours" xml:space="preserve">
+    <value>{0} 時間</value>
+  </data>
+  <data name="Clock_HoursMinutes" xml:space="preserve">
+    <value>{0} 時間 {1} 分</value>
+  </data>
+  <data name="Clock_Ahead" xml:space="preserve">
+    <value>{0}進み</value>
+  </data>
+  <data name="Clock_Behind" xml:space="preserve">
+    <value>{0}遅れ</value>
+  </data>
+  <data name="Timer_Name" xml:space="preserve">
+    <value>タイマー</value>
+  </data>
+  <data name="Timer_RunningNote" xml:space="preserve">
+    <value>タイマーは OmniDeck の実行中にのみ動作します。ウィンドウを閉じても、OmniDeck は通知領域で実行を続けます。</value>
+  </data>
+  <data name="Timer_Minutes" xml:space="preserve">
+    <value>分</value>
+  </data>
+  <data name="Timer_Seconds" xml:space="preserve">
+    <value>秒</value>
+  </data>
+  <data name="Timer_NameHint" xml:space="preserve">
+    <value>名前 (省略可能)</value>
+  </data>
+  <data name="Timer_Add" xml:space="preserve">
+    <value>タイマーを開始</value>
+  </data>
+  <data name="Timer_PresetMinutes" xml:space="preserve">
+    <value>{0} 分</value>
+  </data>
+  <data name="Timer_Countdowns" xml:space="preserve">
+    <value>カウントダウン</value>
+  </data>
+  <data name="Timer_NoCountdowns" xml:space="preserve">
+    <value>タイマーはまだありません。プリセットを選択するか、時間を指定してください。</value>
+  </data>
+  <data name="Timer_Start" xml:space="preserve">
+    <value>開始</value>
+  </data>
+  <data name="Timer_Pause" xml:space="preserve">
+    <value>一時停止</value>
+  </data>
+  <data name="Timer_Reset" xml:space="preserve">
+    <value>リセット</value>
+  </data>
+  <data name="Timer_Delete" xml:space="preserve">
+    <value>削除</value>
+  </data>
+  <data name="Timer_Finished" xml:space="preserve">
+    <value>完了</value>
+  </data>
+  <data name="Timer_Stopwatch" xml:space="preserve">
+    <value>ストップウォッチ</value>
+  </data>
+  <data name="Timer_Stop" xml:space="preserve">
+    <value>停止</value>
+  </data>
+  <data name="Timer_Lap" xml:space="preserve">
+    <value>ラップ</value>
+  </data>
+  <data name="Timer_LapNumber" xml:space="preserve">
+    <value>ラップ {0}</value>
+  </data>
+  <data name="Timer_DoneTitle" xml:space="preserve">
+    <value>タイマーが終了しました</value>
+  </data>
+  <data name="Timer_DoneMessage" xml:space="preserve">
+    <value>「{0}」が終了しました。</value>
+  </data>
+  <data name="Timer_DefaultName" xml:space="preserve">
+    <value>{0} のタイマー</value>
+  </data>
+  <data name="Timer_QuickName" xml:space="preserve">
+    <value>クイック タイマー</value>
+  </data>
+  <data name="Calc_Name" xml:space="preserve">
+    <value>電卓</value>
+  </data>
+  <data name="Calc_Scientific" xml:space="preserve">
+    <value>関数電卓</value>
+  </data>
+  <data name="Calc_Degrees" xml:space="preserve">
+    <value>度数法</value>
+  </data>
+  <data name="Calc_Copy" xml:space="preserve">
+    <value>結果をコピー</value>
+  </data>
+  <data name="Calc_Clear" xml:space="preserve">
+    <value>クリア</value>
+  </data>
+  <data name="Calc_Backspace" xml:space="preserve">
+    <value>最後の文字を削除</value>
+  </data>
+  <data name="Calc_Negate" xml:space="preserve">
+    <value>符号を反転</value>
+  </data>
+  <data name="Calc_History" xml:space="preserve">
+    <value>履歴</value>
+  </data>
+  <data name="Calc_HistoryEmpty" xml:space="preserve">
+    <value>計算履歴はまだありません。</value>
+  </data>
+  <data name="Calc_ClearHistory" xml:space="preserve">
+    <value>履歴をクリア</value>
+  </data>
+  <data name="Calc_Error" xml:space="preserve">
+    <value>計算できません</value>
+  </data>
+  <data name="Calc_DivideByZero" xml:space="preserve">
+    <value>0 で割ることはできません</value>
+  </data>
+  <data name="Category_Info" xml:space="preserve">
+    <value>情報</value>
+  </data>
+  <data name="Weather_Name" xml:space="preserve">
+    <value>天気</value>
+  </data>
+  <data name="Weather_Refresh" xml:space="preserve">
+    <value>更新</value>
+  </data>
+  <data name="Weather_Units" xml:space="preserve">
+    <value>単位</value>
+  </data>
+  <data name="Weather_UnitsAuto" xml:space="preserve">
+    <value>地域の設定に合わせる</value>
+  </data>
+  <data name="Weather_UnitsMetric" xml:space="preserve">
+    <value>°C と km/h</value>
+  </data>
+  <data name="Weather_UnitsImperial" xml:space="preserve">
+    <value>°F と mph</value>
+  </data>
+  <data name="Weather_Places" xml:space="preserve">
+    <value>保存した場所</value>
+  </data>
+  <data name="Weather_Remove" xml:space="preserve">
+    <value>この場所を削除</value>
+  </data>
+  <data name="Weather_Empty" xml:space="preserve">
+    <value>下で都市を検索すると、その天気が表示されます。</value>
+  </data>
+  <data name="Weather_Next48Hours" xml:space="preserve">
+    <value>今後 48 時間</value>
+  </data>
+  <data name="Weather_Next7Days" xml:space="preserve">
+    <value>今後 7 日間</value>
+  </data>
+  <data name="Weather_AddPlace" xml:space="preserve">
+    <value>場所を追加</value>
+  </data>
+  <data name="Weather_Search" xml:space="preserve">
+    <value>都市名</value>
+  </data>
+  <data name="Weather_SearchButton" xml:space="preserve">
+    <value>検索</value>
+  </data>
+  <data name="Weather_SearchNone" xml:space="preserve">
+    <value>その名前に一致する場所はありません。</value>
+  </data>
+  <data name="Weather_SearchFailed" xml:space="preserve">
+    <value>Open-Meteo に接続できなかったため、検索できませんでした。後でもう一度お試しください。</value>
+  </data>
+  <data name="Weather_Add" xml:space="preserve">
+    <value>追加</value>
+  </data>
+  <data name="Weather_DataBy" xml:space="preserve">
+    <value>気象データ提供: Open-Meteo.com</value>
+  </data>
+  <data name="Weather_Updated" xml:space="preserve">
+    <value>{0} に更新</value>
+  </data>
+  <data name="Weather_Stale" xml:space="preserve">
+    <value>Open-Meteo に接続できないため、{0} 時点の予報を表示しています。</value>
+  </data>
+  <data name="Weather_Unavailable" xml:space="preserve">
+    <value>天気を読み込めませんでした。インターネット接続を確認してから、更新してください。</value>
+  </data>
+  <data name="Weather_FeelsLike" xml:space="preserve">
+    <value>体感温度 {0}</value>
+  </data>
+  <data name="Weather_Humidity" xml:space="preserve">
+    <value>湿度 {0}</value>
+  </data>
+  <data name="Weather_Wind" xml:space="preserve">
+    <value>{1}の風 {0}</value>
+  </data>
+  <data name="Weather_SpeedMetric" xml:space="preserve">
+    <value>{0} km/h</value>
+  </data>
+  <data name="Weather_SpeedImperial" xml:space="preserve">
+    <value>{0} mph</value>
+  </data>
+  <data name="Weather_HighLow" xml:space="preserve">
+    <value>{0} / {1}</value>
+  </data>
+  <data name="Weather_Today" xml:space="preserve">
+    <value>今日</value>
+  </data>
+  <data name="Weather_Clear" xml:space="preserve">
+    <value>快晴</value>
+  </data>
+  <data name="Weather_MainlyClear" xml:space="preserve">
+    <value>晴れ</value>
+  </data>
+  <data name="Weather_PartlyCloudy" xml:space="preserve">
+    <value>晴れ時々曇り</value>
+  </data>
+  <data name="Weather_Overcast" xml:space="preserve">
+    <value>曇り</value>
+  </data>
+  <data name="Weather_Fog" xml:space="preserve">
+    <value>霧</value>
+  </data>
+  <data name="Weather_Drizzle" xml:space="preserve">
+    <value>霧雨</value>
+  </data>
+  <data name="Weather_FreezingDrizzle" xml:space="preserve">
+    <value>着氷性の霧雨</value>
+  </data>
+  <data name="Weather_Rain" xml:space="preserve">
+    <value>雨</value>
+  </data>
+  <data name="Weather_FreezingRain" xml:space="preserve">
+    <value>着氷性の雨</value>
+  </data>
+  <data name="Weather_Snow" xml:space="preserve">
+    <value>雪</value>
+  </data>
+  <data name="Weather_RainShowers" xml:space="preserve">
+    <value>にわか雨</value>
+  </data>
+  <data name="Weather_SnowShowers" xml:space="preserve">
+    <value>にわか雪</value>
+  </data>
+  <data name="Weather_Thunderstorm" xml:space="preserve">
+    <value>雷雨</value>
+  </data>
+  <data name="Weather_ThunderstormHail" xml:space="preserve">
+    <value>ひょうを伴う雷雨</value>
+  </data>
+  <data name="Weather_Unknown" xml:space="preserve">
+    <value>天気不明</value>
+  </data>
+  <data name="Weather_DirN" xml:space="preserve">
+    <value>北</value>
+  </data>
+  <data name="Weather_DirNE" xml:space="preserve">
+    <value>北東</value>
+  </data>
+  <data name="Weather_DirE" xml:space="preserve">
+    <value>東</value>
+  </data>
+  <data name="Weather_DirSE" xml:space="preserve">
+    <value>南東</value>
+  </data>
+  <data name="Weather_DirS" xml:space="preserve">
+    <value>南</value>
+  </data>
+  <data name="Weather_DirSW" xml:space="preserve">
+    <value>南西</value>
+  </data>
+  <data name="Weather_DirW" xml:space="preserve">
+    <value>西</value>
+  </data>
+  <data name="Weather_DirNW" xml:space="preserve">
+    <value>北西</value>
+  </data>
+  <data name="Calendar_Name" xml:space="preserve">
+    <value>カレンダー</value>
+  </data>
+  <data name="Calendar_New" xml:space="preserve">
+    <value>新しい予定</value>
+  </data>
+  <data name="Calendar_Import" xml:space="preserve">
+    <value>.ics ファイルをインポート</value>
+  </data>
+  <data name="Calendar_Export" xml:space="preserve">
+    <value>.ics ファイルにエクスポート</value>
+  </data>
+  <data name="Calendar_Month" xml:space="preserve">
+    <value>月</value>
+  </data>
+  <data name="Calendar_Week" xml:space="preserve">
+    <value>週</value>
+  </data>
+  <data name="Calendar_Agenda" xml:space="preserve">
+    <value>予定一覧</value>
+  </data>
+  <data name="Calendar_Previous" xml:space="preserve">
+    <value>前へ</value>
+  </data>
+  <data name="Calendar_Today" xml:space="preserve">
+    <value>今日</value>
+  </data>
+  <data name="Calendar_Next" xml:space="preserve">
+    <value>次へ</value>
+  </data>
+  <data name="Calendar_TitleHint" xml:space="preserve">
+    <value>タイトル</value>
+  </data>
+  <data name="Calendar_Date" xml:space="preserve">
+    <value>日付</value>
+  </data>
+  <data name="Calendar_AllDay" xml:space="preserve">
+    <value>終日</value>
+  </data>
+  <data name="Calendar_Start" xml:space="preserve">
+    <value>開始時刻</value>
+  </data>
+  <data name="Calendar_End" xml:space="preserve">
+    <value>終了時刻</value>
+  </data>
+  <data name="Calendar_Repeat" xml:space="preserve">
+    <value>繰り返し</value>
+  </data>
+  <data name="Calendar_Until" xml:space="preserve">
+    <value>終了日</value>
+  </data>
+  <data name="Calendar_RepeatNone" xml:space="preserve">
+    <value>繰り返さない</value>
+  </data>
+  <data name="Calendar_RepeatDaily" xml:space="preserve">
+    <value>毎日</value>
+  </data>
+  <data name="Calendar_RepeatWeekly" xml:space="preserve">
+    <value>毎週</value>
+  </data>
+  <data name="Calendar_RepeatMonthly" xml:space="preserve">
+    <value>毎月</value>
+  </data>
+  <data name="Calendar_RepeatYearly" xml:space="preserve">
+    <value>毎年</value>
+  </data>
+  <data name="Calendar_RepeatCustom" xml:space="preserve">
+    <value>この予定は、インポート元のファイルの設定どおりに繰り返されます。上で繰り返しを選択すると、その設定は置き換えられます。</value>
+  </data>
+  <data name="Calendar_Reminder" xml:space="preserve">
+    <value>通知</value>
+  </data>
+  <data name="Calendar_ReminderNone" xml:space="preserve">
+    <value>通知なし</value>
+  </data>
+  <data name="Calendar_ReminderAtStart" xml:space="preserve">
+    <value>開始時</value>
+  </data>
+  <data name="Calendar_ReminderMinutes" xml:space="preserve">
+    <value>{0} 分前</value>
+  </data>
+  <data name="Calendar_ReminderHour" xml:space="preserve">
+    <value>1 時間前</value>
+  </data>
+  <data name="Calendar_ReminderDay" xml:space="preserve">
+    <value>1 日前</value>
+  </data>
+  <data name="Calendar_ReminderNote" xml:space="preserve">
+    <value>通知は OmniDeck の実行中にのみ表示されます。</value>
+  </data>
+  <data name="Calendar_Notes" xml:space="preserve">
+    <value>メモ</value>
+  </data>
+  <data name="Calendar_Save" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="Calendar_Cancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="Calendar_Delete" xml:space="preserve">
+    <value>予定を削除</value>
+  </data>
+  <data name="Calendar_DeleteOccurrence" xml:space="preserve">
+    <value>この日のみ削除</value>
+  </data>
+  <data name="Calendar_NoEvents" xml:space="preserve">
+    <value>予定はありません</value>
+  </data>
+  <data name="Calendar_Untitled" xml:space="preserve">
+    <value>無題の予定</value>
+  </data>
+  <data name="Calendar_More" xml:space="preserve">
+    <value>他 {0} 件</value>
+  </data>
+  <data name="Calendar_Range" xml:space="preserve">
+    <value>{0}～{1}</value>
+  </data>
+  <data name="Calendar_NeedDate" xml:space="preserve">
+    <value>予定の日付を選択してください。</value>
+  </data>
+  <data name="Calendar_Imported" xml:space="preserve">
+    <value>{0} 件の予定をインポートしました。</value>
+  </data>
+  <data name="Calendar_ImportFailed" xml:space="preserve">
+    <value>そのファイルはカレンダーとして読み込めませんでした。</value>
+  </data>
+  <data name="Calendar_Exported" xml:space="preserve">
+    <value>カレンダーを {0} として保存しました。</value>
+  </data>
+  <data name="Calendar_ExportFailed" xml:space="preserve">
+    <value>その場所にカレンダーを保存できませんでした。</value>
+  </data>
+  <data name="Calendar_IcsFilter" xml:space="preserve">
+    <value>カレンダー ファイル (*.ics)|*.ics</value>
+  </data>
+  <data name="Calendar_ReminderStarts" xml:space="preserve">
+    <value>{0} に開始します</value>
+  </data>
+  <data name="Calendar_ReminderAllDay" xml:space="preserve">
+    <value>{0}、終日</value>
+  </data>
+  <data name="Category_Media" xml:space="preserve">
+    <value>メディア</value>
+  </data>
+  <data name="Media_Name" xml:space="preserve">
+    <value>メディア</value>
+  </data>
+  <data name="Media_Empty" xml:space="preserve">
+    <value>再生する項目はまだありません</value>
+  </data>
+  <data name="Media_Hint" xml:space="preserve">
+    <value>ファイルやフォルダーを追加するか、.m3u プレイリストを開くか、ここにファイルをドロップしてください。ファイルをダブルクリックすると再生されます。</value>
+  </data>
+  <data name="Media_NothingToPlay" xml:space="preserve">
+    <value>プレーヤーで開けるファイルはありませんでした。</value>
+  </data>
+  <data name="Media_Failed" xml:space="preserve">
+    <value>{0} を再生できませんでした。</value>
+  </data>
+  <data name="Media_AddFiles" xml:space="preserve">
+    <value>ファイルを追加</value>
+  </data>
+  <data name="Media_AddFolder" xml:space="preserve">
+    <value>フォルダーを追加</value>
+  </data>
+  <data name="Media_SavePlaylist" xml:space="preserve">
+    <value>プレイリストを保存</value>
+  </data>
+  <data name="Media_Clear" xml:space="preserve">
+    <value>クリア</value>
+  </data>
+  <data name="Media_Queue" xml:space="preserve">
+    <value>キュー</value>
+  </data>
+  <data name="Media_Remove" xml:space="preserve">
+    <value>キューから削除</value>
+  </data>
+  <data name="Media_Previous" xml:space="preserve">
+    <value>前へ</value>
+  </data>
+  <data name="Media_Next" xml:space="preserve">
+    <value>次へ</value>
+  </data>
+  <data name="Media_Stop" xml:space="preserve">
+    <value>停止</value>
+  </data>
+  <data name="Media_Mute" xml:space="preserve">
+    <value>ミュート</value>
+  </data>
+  <data name="Media_Volume" xml:space="preserve">
+    <value>音量</value>
+  </data>
+  <data name="Media_Seek" xml:space="preserve">
+    <value>再生位置</value>
+  </data>
+  <data name="Media_FilesFilter" xml:space="preserve">
+    <value>オーディオとビデオ</value>
+  </data>
+  <data name="Media_AllFilter" xml:space="preserve">
+    <value>すべてのファイル</value>
+  </data>
+  <data name="Media_PlaylistFilter" xml:space="preserve">
+    <value>プレイリスト (*.m3u, *.m3u8)|*.m3u;*.m3u8</value>
+  </data>
+  <data name="Media_More" xml:space="preserve">
+    <value>その他</value>
+  </data>
+  <data name="Media_AudioTrack" xml:space="preserve">
+    <value>音声トラック</value>
+  </data>
+  <data name="Media_Subtitles" xml:space="preserve">
+    <value>字幕</value>
+  </data>
+  <data name="Media_AddSubtitle" xml:space="preserve">
+    <value>字幕ファイルを追加…</value>
+  </data>
+  <data name="Media_SubtitleFilter" xml:space="preserve">
+    <value>字幕ファイル (*.srt, *.ass, *.ssa, *.vtt, *.sub)|*.srt;*.ass;*.ssa;*.vtt;*.sub</value>
+  </data>
+  <data name="Media_SubtitleFailed" xml:space="preserve">
+    <value>{0} を字幕として追加できませんでした。</value>
+  </data>
+  <data name="Media_SubtitleEncoding" xml:space="preserve">
+    <value>字幕のエンコード</value>
+  </data>
+  <data name="Media_Speed" xml:space="preserve">
+    <value>再生速度</value>
+  </data>
+  <data name="Media_AudioDevice" xml:space="preserve">
+    <value>オーディオ デバイス</value>
+  </data>
+  <data name="Media_DefaultDevice" xml:space="preserve">
+    <value>Windows の既定</value>
+  </data>
+  <data name="Media_Snapshot" xml:space="preserve">
+    <value>スナップショットを撮る</value>
+  </data>
+  <data name="Media_SnapshotSaved" xml:space="preserve">
+    <value>保存しました: {0}</value>
+  </data>
+  <data name="Media_SnapshotFailed" xml:space="preserve">
+    <value>スナップショットを撮る映像がありません。</value>
+  </data>
+  <data name="Media_EncodingAuto" xml:space="preserve">
+    <value>自動</value>
+  </data>
+  <data name="Media_EncodingUtf8" xml:space="preserve">
+    <value>Unicode (UTF-8)</value>
+  </data>
+  <data name="Media_EncodingWestern" xml:space="preserve">
+    <value>西ヨーロッパ言語 (Windows-1252)</value>
+  </data>
+  <data name="Media_EncodingCentral" xml:space="preserve">
+    <value>中央ヨーロッパ言語 (Windows-1250)</value>
+  </data>
+  <data name="Media_EncodingCyrillic" xml:space="preserve">
+    <value>キリル言語 (Windows-1251)</value>
+  </data>
+  <data name="Media_EncodingGreek" xml:space="preserve">
+    <value>ギリシャ語 (Windows-1253)</value>
+  </data>
+  <data name="Media_EncodingTurkish" xml:space="preserve">
+    <value>トルコ語 (Windows-1254)</value>
+  </data>
+  <data name="Media_EncodingVietnamese" xml:space="preserve">
+    <value>ベトナム語 (Windows-1258)</value>
+  </data>
+  <data name="Media_EncodingThai" xml:space="preserve">
+    <value>タイ語 (Windows-874)</value>
+  </data>
+  <data name="Media_EncodingJapanese" xml:space="preserve">
+    <value>日本語 (Shift_JIS)</value>
+  </data>
+  <data name="Media_EncodingChineseSimplified" xml:space="preserve">
+    <value>簡体字中国語 (GB18030)</value>
+  </data>
+  <data name="Media_EncodingChineseTraditional" xml:space="preserve">
+    <value>繁体字中国語 (Big5)</value>
+  </data>
+  <data name="Media_EncodingKorean" xml:space="preserve">
+    <value>韓国語 (EUC-KR)</value>
+  </data>
+  <data name="Media_Fullscreen" xml:space="preserve">
+    <value>全画面表示 (ビデオをダブルクリック、Esc で終了)</value>
+  </data>
+  <data name="Media_ExitFullscreen" xml:space="preserve">
+    <value>全画面表示を終了 (Esc)</value>
+  </data>
+  <data name="Chart_Type" xml:space="preserve">
+    <value>グラフ</value>
+  </data>
+  <data name="Chart_KeyboardHint" xml:space="preserve">
+    <value>左右の方向キーで値を 1 つずつ読み上げます。Home キーと End キーで最初と最後の値に移動します。</value>
+  </data>
+  <data name="Weather_ChartSummary" xml:space="preserve">
+    <value>今後 48 時間: 気温は {0} から {1}、降水確率が最も高いのは {2} {3} ({4}) です。</value>
+  </data>
+  <data name="Weather_ChartSummaryDry" xml:space="preserve">
+    <value>今後 48 時間: 気温は {0} から {1} です。</value>
+  </data>
+  <data name="Weather_ChartReadout" xml:space="preserve">
+    <value>{0} {1}、{2}、{3}、降水確率 {4}</value>
+  </data>
+  <data name="Stocks_Name" xml:space="preserve">
+    <value>株価</value>
+  </data>
+  <data name="Stocks_NotAvailable" xml:space="preserve">
+    <value>データなし</value>
+  </data>
+  <data name="Stocks_Price" xml:space="preserve">
+    <value>{0} {1}</value>
+  </data>
+  <data name="Stocks_Change" xml:space="preserve">
+    <value>{0} ({1})</value>
+  </data>
+  <data name="Stocks_RowPrice" xml:space="preserve">
+    <value>{0}、{1}、{2}</value>
+  </data>
+  <data name="Stocks_RowUp" xml:space="preserve">
+    <value>{0}、{1}、{2}、{3} パーセント上昇</value>
+  </data>
+  <data name="Stocks_RowDown" xml:space="preserve">
+    <value>{0}、{1}、{2}、{3} パーセント下落</value>
+  </data>
+  <data name="Stocks_RowNote" xml:space="preserve">
+    <value>{0}。{1}</value>
+  </data>
+  <data name="Stocks_ResultTitle" xml:space="preserve">
+    <value>{0} — {1}</value>
+  </data>
+  <data name="Stocks_ResultDetail" xml:space="preserve">
+    <value>{0}、{1}</value>
+  </data>
+  <data name="Stocks_NeedsPlan" xml:space="preserve">
+    <value>Twelve Data の {0} プランが必要です</value>
+  </data>
+  <data name="Stocks_AddNamed" xml:space="preserve">
+    <value>{0}、{1} を追加</value>
+  </data>
+  <data name="Stocks_IntervalStretched" xml:space="preserve">
+    <value>本日のクレジットが取引終了まで足りるよう、株価は {0} 分ごとに更新されます。</value>
+  </data>
+  <data name="Stocks_KeyEmpty" xml:space="preserve">
+    <value>先に Twelve Data の API キーを貼り付けてください。</value>
+  </data>
+  <data name="Stocks_KeyBusy" xml:space="preserve">
+    <value>このキーは現在クレジットを使い切っています。1 分ほどしてからもう一度お試しください。</value>
+  </data>
+  <data name="Stocks_KeyRejected" xml:space="preserve">
+    <value>このキーは Twelve Data に受け付けられませんでした。キーを確認して、もう一度お試しください。</value>
+  </data>
+  <data name="Stocks_KeyOffline" xml:space="preserve">
+    <value>Twelve Data に接続できなかったため、キーは保存されませんでした。</value>
+  </data>
+  <data name="Stocks_KeyFailed" xml:space="preserve">
+    <value>キーを確認できませんでした。後でもう一度お試しください。</value>
+  </data>
+  <data name="Stocks_SearchNone" xml:space="preserve">
+    <value>一致する銘柄はありません。</value>
+  </data>
+  <data name="Stocks_SearchFailed" xml:space="preserve">
+    <value>検索できませんでした。後でもう一度お試しください。</value>
+  </data>
+  <data name="Stocks_NotOnPlan" xml:space="preserve">
+    <value>お使いの Twelve Data プランでは利用できません</value>
+  </data>
+  <data name="Stocks_NotFound" xml:space="preserve">
+    <value>Twelve Data にこのシンボルはありません</value>
+  </data>
+  <data name="Stocks_StatusKeyRejected" xml:space="preserve">
+    <value>Twelve Data でお使いのキーが受け付けられなくなりました。下の [Twelve Data キー] で変更してください。</value>
+  </data>
+  <data name="Stocks_StatusOffline" xml:space="preserve">
+    <value>現在 Twelve Data に接続できません。OmniDeck が最後に受信した株価を表示しています。</value>
+  </data>
+  <data name="Stocks_StatusDay" xml:space="preserve">
+    <value>本日の Twelve Data のクレジットを使い切りました。株価は {0} 以降に再び更新されます。</value>
+  </data>
+  <data name="Stocks_StatusMinute" xml:space="preserve">
+    <value>この 1 分間の Twelve Data のクレジットを使い切りました。残りの銘柄は {0} に更新されます。</value>
+  </data>
+  <data name="Stocks_Credits" xml:space="preserve">
+    <value>Twelve Data の本日の残りクレジット: {0}/{1}</value>
+  </data>
+  <data name="Stocks_Plan" xml:space="preserve">
+    <value>プラン: {0}。上限は 1 分あたり {1} クレジット、1 日あたり {2} クレジットです。</value>
+  </data>
+  <data name="Stocks_Refresh" xml:space="preserve">
+    <value>株価を更新</value>
+  </data>
+  <data name="Stocks_SetupTitle" xml:space="preserve">
+    <value>Twelve Data のキーを設定</value>
+  </data>
+  <data name="Stocks_SetupBody" xml:space="preserve">
+    <value>株価モジュールは、ご自身の API キーを使って Twelve Data の市場データを表示します。無料のキーでは米国株、ETF、米国上場の ADR を利用できます。欧州の現地市場の銘柄と指数には有料プランが必要です。キーはお使いの Windows アカウント用に暗号化されてこの PC に保存され、OmniDeck はキーを Twelve Data にのみ送信します。</value>
+  </data>
+  <data name="Stocks_GetKey" xml:space="preserve">
+    <value>Twelve Data で無料のキーを取得</value>
+  </data>
+  <data name="Stocks_KeyLabel" xml:space="preserve">
+    <value>Twelve Data API キー</value>
+  </data>
+  <data name="Stocks_TestAndSave" xml:space="preserve">
+    <value>テストして保存</value>
+  </data>
+  <data name="Stocks_Cancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="Stocks_Empty" xml:space="preserve">
+    <value>ウォッチリストは空です。下で企業や ETF を検索して追加してください。</value>
+  </data>
+  <data name="Stocks_Watchlist" xml:space="preserve">
+    <value>ウォッチリスト</value>
+  </data>
+  <data name="Stocks_MoveUp" xml:space="preserve">
+    <value>上へ移動</value>
+  </data>
+  <data name="Stocks_MoveDown" xml:space="preserve">
+    <value>下へ移動</value>
+  </data>
+  <data name="Stocks_Remove" xml:space="preserve">
+    <value>削除</value>
+  </data>
+  <data name="Stocks_AddListing" xml:space="preserve">
+    <value>銘柄を追加</value>
+  </data>
+  <data name="Stocks_SearchButton" xml:space="preserve">
+    <value>検索</value>
+  </data>
+  <data name="Stocks_Search" xml:space="preserve">
+    <value>シンボルまたは企業名</value>
+  </data>
+  <data name="Stocks_Add" xml:space="preserve">
+    <value>追加</value>
+  </data>
+  <data name="Stocks_KeyPanel" xml:space="preserve">
+    <value>Twelve Data キー</value>
+  </data>
+  <data name="Stocks_ChangeKey" xml:space="preserve">
+    <value>キーを変更</value>
+  </data>
+  <data name="Stocks_RemoveKey" xml:space="preserve">
+    <value>キーを削除</value>
+  </data>
+  <data name="Stocks_Disclaimer" xml:space="preserve">
+    <value>遅延データまたは参考値です。投資助言ではありません。</value>
+  </data>
+  <data name="Stocks_DataBy" xml:space="preserve">
+    <value>市場データ提供: Twelve Data</value>
+  </data>
+  <data name="Stocks_Range1M" xml:space="preserve">
+    <value>1 か月</value>
+  </data>
+  <data name="Stocks_Range6M" xml:space="preserve">
+    <value>6 か月</value>
+  </data>
+  <data name="Stocks_Range1Y" xml:space="preserve">
+    <value>1 年</value>
+  </data>
+  <data name="Stocks_Range5Y" xml:space="preserve">
+    <value>5 年</value>
+  </data>
+  <data name="Stocks_Ranges" xml:space="preserve">
+    <value>期間</value>
+  </data>
+  <data name="Stocks_DetailMarket" xml:space="preserve">
+    <value>{0}、{1}</value>
+  </data>
+  <data name="Stocks_MarketOpen" xml:space="preserve">
+    <value>取引時間中</value>
+  </data>
+  <data name="Stocks_MarketClosed" xml:space="preserve">
+    <value>取引時間外</value>
+  </data>
+  <data name="Stocks_DayRange" xml:space="preserve">
+    <value>本日: {0}～{1}</value>
+  </data>
+  <data name="Stocks_YearRange" xml:space="preserve">
+    <value>52 週間: {0}～{1}</value>
+  </data>
+  <data name="Stocks_Volume" xml:space="preserve">
+    <value>出来高: {0}</value>
+  </data>
+  <data name="Stocks_SeriesUnavailable" xml:space="preserve">
+    <value>現在、この株価データは利用できません。</value>
+  </data>
+  <data name="Stocks_DetailSummary" xml:space="preserve">
+    <value>{0}、過去 {1}: {2} から {3} ({4})、最高値は {6} の {5}、最安値は {8} の {7} です。</value>
+  </data>
+  <data name="Stocks_DetailReadout" xml:space="preserve">
+    <value>{0}: 始値 {1}、高値 {2}、安値 {3}、終値 {4}、出来高 {5}</value>
+  </data>
+  <data name="Stocks_CloseDetail" xml:space="preserve">
+    <value>詳細を閉じる</value>
+  </data>
+  <data name="Stocks_ShowTable" xml:space="preserve">
+    <value>株価を表形式で表示</value>
+  </data>
+  <data name="Stocks_Table" xml:space="preserve">
+    <value>株価</value>
+  </data>
+  <data name="Stocks_ColumnDate" xml:space="preserve">
+    <value>日付</value>
+  </data>
+  <data name="Stocks_ColumnOpen" xml:space="preserve">
+    <value>始値</value>
+  </data>
+  <data name="Stocks_ColumnHigh" xml:space="preserve">
+    <value>高値</value>
+  </data>
+  <data name="Stocks_ColumnLow" xml:space="preserve">
+    <value>安値</value>
+  </data>
+  <data name="Stocks_ColumnClose" xml:space="preserve">
+    <value>終値</value>
+  </data>
+  <data name="Stocks_ColumnVolume" xml:space="preserve">
+    <value>出来高</value>
+  </data>
+  <data name="Timer_Alarms" xml:space="preserve">
+    <value>アラーム</value>
+  </data>
+  <data name="Timer_AlarmsNote" xml:space="preserve">
+    <value>アラームは OmniDeck の実行中 (通知領域での実行中を含む) にのみ鳴ります。</value>
+  </data>
+  <data name="Timer_AlarmTime" xml:space="preserve">
+    <value>アラームの時刻</value>
+  </data>
+  <data name="Timer_AlarmTimeHint" xml:space="preserve">
+    <value>例: {0}</value>
+  </data>
+  <data name="Timer_AlarmBadTime" xml:space="preserve">
+    <value>有効な時刻ではありません。{0}。</value>
+  </data>
+  <data name="Timer_AlarmLabel" xml:space="preserve">
+    <value>ラベル (省略可能)</value>
+  </data>
+  <data name="Timer_AlarmAdd" xml:space="preserve">
+    <value>アラームを追加</value>
+  </data>
+  <data name="Timer_AlarmRepeat" xml:space="preserve">
+    <value>繰り返し</value>
+  </data>
+  <data name="Timer_RepeatOnce" xml:space="preserve">
+    <value>1 回のみ</value>
+  </data>
+  <data name="Timer_RepeatDaily" xml:space="preserve">
+    <value>毎日</value>
+  </data>
+  <data name="Timer_RepeatWeekdays" xml:space="preserve">
+    <value>平日</value>
+  </data>
+  <data name="Timer_RepeatWeekends" xml:space="preserve">
+    <value>週末</value>
+  </data>
+  <data name="Timer_AlarmNext" xml:space="preserve">
+    <value>次回: {0} {1}</value>
+  </data>
+  <data name="Timer_AlarmOff" xml:space="preserve">
+    <value>オフ</value>
+  </data>
+  <data name="Timer_AlarmTitle" xml:space="preserve">
+    <value>アラーム</value>
+  </data>
+  <data name="Timer_AlarmLabelled" xml:space="preserve">
+    <value>{0}、{1}</value>
+  </data>
+  <data name="Timer_AlarmRow" xml:space="preserve">
+    <value>{0}、{1}、{2}。{3}</value>
+  </data>
+  <data name="Timer_NoAlarms" xml:space="preserve">
+    <value>アラームはまだありません。</value>
+  </data>
+  <data name="Timer_AlarmDelete" xml:space="preserve">
+    <value>アラームを削除</value>
+  </data>
+  <data name="Weather_HourName" xml:space="preserve">
+    <value>{0}、{1}、{2}、降水確率 {3}</value>
+  </data>
+  <data name="Weather_DayName" xml:space="preserve">
+    <value>{0}、{1}、{2}、降水確率 {3}</value>
+  </data>
+  <data name="Timer_LapName" xml:space="preserve">
+    <value>{0}: {1}、合計 {2}</value>
+  </data>
+  <data name="Calendar_DayToday" xml:space="preserve">
+    <value>{0}、今日</value>
+  </data>
+  <data name="Calc_Percent" xml:space="preserve">
+    <value>パーセント</value>
+  </data>
+  <data name="Calc_Divide" xml:space="preserve">
+    <value>割る</value>
+  </data>
+  <data name="Calc_Multiply" xml:space="preserve">
+    <value>掛ける</value>
+  </data>
+  <data name="Calc_Minus" xml:space="preserve">
+    <value>引く</value>
+  </data>
+  <data name="Calc_Plus" xml:space="preserve">
+    <value>足す</value>
+  </data>
+  <data name="Calc_Decimal" xml:space="preserve">
+    <value>小数点</value>
+  </data>
+  <data name="Calc_Equals" xml:space="preserve">
+    <value>イコール</value>
+  </data>
+  <data name="Calc_Sine" xml:space="preserve">
+    <value>サイン</value>
+  </data>
+  <data name="Calc_Cosine" xml:space="preserve">
+    <value>コサイン</value>
+  </data>
+  <data name="Calc_Tangent" xml:space="preserve">
+    <value>タンジェント</value>
+  </data>
+  <data name="Calc_NaturalLog" xml:space="preserve">
+    <value>自然対数</value>
+  </data>
+  <data name="Calc_Log" xml:space="preserve">
+    <value>常用対数</value>
+  </data>
+  <data name="Calc_Arcsine" xml:space="preserve">
+    <value>アークサイン</value>
+  </data>
+  <data name="Calc_Arccosine" xml:space="preserve">
+    <value>アークコサイン</value>
+  </data>
+  <data name="Calc_Arctangent" xml:space="preserve">
+    <value>アークタンジェント</value>
+  </data>
+  <data name="Calc_SquareRoot" xml:space="preserve">
+    <value>平方根</value>
+  </data>
+  <data name="Calc_Power" xml:space="preserve">
+    <value>べき乗</value>
+  </data>
+  <data name="Calc_OpenParenthesis" xml:space="preserve">
+    <value>左かっこ</value>
+  </data>
+  <data name="Calc_CloseParenthesis" xml:space="preserve">
+    <value>右かっこ</value>
+  </data>
+  <data name="Calc_Pi" xml:space="preserve">
+    <value>円周率</value>
+  </data>
+  <data name="Calc_Euler" xml:space="preserve">
+    <value>e、ネイピア数</value>
+  </data>
+  <data name="Calc_Factorial" xml:space="preserve">
+    <value>階乗</value>
+  </data>
+  <data name="Media_Play" xml:space="preserve">
+    <value>再生</value>
+  </data>
+  <data name="Media_Pause" xml:space="preserve">
+    <value>一時停止</value>
+  </data>
+  <data name="Media_Unmute" xml:space="preserve">
+    <value>ミュート解除</value>
+  </data>
+  <data name="Calendar_Interval" xml:space="preserve">
+    <value>間隔</value>
+  </data>
+  <data name="Calendar_EveryDay" xml:space="preserve">
+    <value>毎日</value>
+  </data>
+  <data name="Calendar_EveryDays" xml:space="preserve">
+    <value>{0} 日ごと</value>
+  </data>
+  <data name="Calendar_EveryWeek" xml:space="preserve">
+    <value>毎週</value>
+  </data>
+  <data name="Calendar_EveryWeeks" xml:space="preserve">
+    <value>{0} 週間ごと</value>
+  </data>
+  <data name="Calendar_EveryMonth" xml:space="preserve">
+    <value>毎月</value>
+  </data>
+  <data name="Calendar_EveryMonths" xml:space="preserve">
+    <value>{0} か月ごと</value>
+  </data>
+  <data name="Calendar_EveryYear" xml:space="preserve">
+    <value>毎年</value>
+  </data>
+  <data name="Calendar_EveryYears" xml:space="preserve">
+    <value>{0} 年ごと</value>
+  </data>
+  <data name="Clock_Time12" xml:space="preserve">
+    <value>tt h:mm:ss</value>
+  </data>
+  <data name="Weather_DayFormat" xml:space="preserve">
+    <value>d日(ddd)</value>
+  </data>
+</root>
