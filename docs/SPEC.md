@@ -52,8 +52,8 @@ All mini-apps implement the module contract in [ARCHITECTURE](ARCHITECTURE.md) a
 - Import/export **iCalendar (.ics)** via Ical.Net.
 - Event reminders raise toasts (same running-app caveat as alarms).
 
-### 3.5 Stocks (US/EU)
-- **Watchlist** with quote, day change, sparkline; detail view with candlestick/OHLC + volume charts (ScottPlot 5), range 1M/6M/1Y/5Y.
+### 3.5 Stocks
+- **Watchlist** with quote, day change, sparkline; detail view with candlestick/OHLC + volume charts, range 1M/6M/1Y/5Y. Charts are drawn by OmniDeck's own WPF controls, which follow the design tokens, High Contrast and screen readers; no charting library is bundled (decided 3 November 2026).
 - **Provider** behind `IOdQuoteProvider`: `TwelveData`, with the user's own API key (free Basic plan or paid). The module asks for the key on first use; it is stored via **DPAPI**, never in plaintext or logs.
   - **Coverage depends on the user's plan.** The free plan covers US stocks, ETFs and US-listed ADRs. Home-market EU listings need Grow, and indices need Pro. Symbol search (`show_plan=true`, free) labels each listing with the plan it needs, and a plan error reads "not available on your Twelve Data plan".
   - **Stooq was dropped** in P0 because it now blocks scripted clients ([spike #7](spikes/07-providers.md)).
@@ -65,7 +65,7 @@ All mini-apps implement the module contract in [ARCHITECTURE](ARCHITECTURE.md) a
 - Local files and folders, playlist (m3u load/save), subtitles (embedded + external `.srt`/`.ass`, encoding selection), audio track & device selection, speed 0.25–4×, snapshot.
 - libVLC initializes lazily on first open; the player counts as **pinned** while playback is active (governor may not suspend it). Suspend stops and disposes the player, and hibernate disposes libVLC too: playback holds 280–520 MB committed.
 - **Fullscreen** makes the module's own window cover the monitor. **Pop-out** moves the player's view, video window included, into the new window, so playback goes on; the track re-selection and seek that a second video view would need ([spike #6](spikes/06-libvlcsharp.md)) are not used.
-- **Build:** x64 only (`VlcWindowsX86Enabled` and `VlcWindowsArm64Enabled` set to false), with the trimmed plugin set: about 86 MB raw, 39 MB compressed.
+- **Build:** x64 only (`VlcWindowsX86Enabled` and `VlcWindowsArm64Enabled` set to false), with the trimmed plugin set: about 80 MB raw (as built, below).
 - **As built in P2:**
   - The player opens local files, folders and .m3u playlists, from its buttons or dropped on it, and saves the queue as an .m3u.
   - The queue and where playback stood live in the database (`media_playlists`), so they survive restarts.
@@ -122,7 +122,8 @@ All mini-apps implement the module contract in [ARCHITECTURE](ARCHITECTURE.md) a
 | CommunityToolkit.Mvvm | 8.4.2 | |
 | Serilog / Serilog.Sinks.File | 4.4.0 / 7.0.0 | |
 | Dapper / Microsoft.Data.Sqlite | 2.1.89 / 10.0.14 | |
-| ScottPlot.WPF | 5.1.59 | stocks charts |
+| Markdig | 1.5.1 | renders the legal documents |
+| Microsoft.Extensions.DependencyInjection | 10.0.14 | composition root |
 | LibVLCSharp.WPF / VideoLAN.LibVLC.Windows | 3.10.2 / 3.0.24 | media |
 | Ical.Net | 5.2.3 | calendar (v5 API) |
 | H.NotifyIcon.Wpf | 2.4.1 | tray |

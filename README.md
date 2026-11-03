@@ -17,33 +17,33 @@ It is built on WPF (.NET 10 LTS) and **WebView2**, which reuses the Edge runtime
 
 ## Planned features (v1.0)
 
-- **Native mini-apps** — clock & world clocks, countdown timer, calculator, weather (Open-Meteo), local calendar with `.ics` import/export, stock watchlist with candlestick charts (US/EU markets), and a full-codec media player (libVLC).
+- **Native mini-apps** — clock & world clocks, countdown timer, calculator, weather (Open-Meteo), local calendar with `.ics` import/export, stock watchlist with candlestick charts (Twelve Data with your own key: its free plan covers US listings, while home-market EU listings and indices need a paid plan), and a full-codec media player (libVLC).
 - **Curated web apps** — each runs in its own WebView2 profile with a per-app navigation allowlist. Web notifications become Windows toasts. Adding a new app is a JSON entry, not a release ([catalog docs](docs/WEBAPP-CATALOG.md)).
 - **Pop-out windows** — any module can move into a window of its own, and go full screen there.
-- **RAM governor** — inactive modules are automatically suspended and then hibernated, with a hard memory cap. A built-in task-manager panel shows per-module RAM with manual suspend/kill ([details](docs/RAM-GOVERNOR.md)).
+- **RAM governor** — inactive modules are automatically suspended and then hibernated, with a hard memory cap. Settings → Memory lists the running modules with their memory, and Suspend, Hibernate, Close and Keep running buttons ([details](docs/RAM-GOVERNOR.md)).
 - **Three UI presets** — Dynamic, Standard, and Comfort, implemented as design-token presets over one theme engine, with per-token overrides ([details](docs/UI-MODES.md)).
 - **Privacy** — zero telemetry, zero data collection. Everything is stored locally ([privacy policy](docs/legal/PRIVACY.md)).
 - **Languages** — English, Tiếng Việt, 日本語.
 
 ## The trade-off, stated up front
 
-Running web apps means running Chromium processes. OmniDeck manages this aggressively (suspend → hibernate → dispose), but with several web apps active it can legitimately use several GiB of RAM. The governor enforces a hard cap of **6 GiB** (configurable); when the cap is hit, least-recently-used modules are hibernated automatically. If you want a 100 MB app, this is not that app — if you want *one* app instead of six Electron installs, it is.
+Running web apps means running Chromium processes. OmniDeck manages this aggressively (suspend → hibernate → dispose), but with several web apps active it can legitimately use several GiB of RAM. The governor enforces a hard cap of **6 GiB, or half your RAM if that is less** (configurable); when the cap is hit, least-recently-used modules are hibernated automatically. If you want a 100 MB app, this is not that app — if you want *one* app instead of six Electron installs, it is.
 
 ## Known limitations of web apps
 
 These are properties of the web versions of the services, documented here so they are not reported as OmniDeck bugs:
 
-- **Spotify** runs the Web Player: audio quality is lower than the desktop app, and playback relies on DRM (Widevine), which ships with the WebView2 runtime (P0 spike #1). If a future runtime drops it, the entry is disabled with an explanation (see the [ROADMAP](docs/ROADMAP.md) risk register).
+- **Spotify** runs the Web Player: audio quality is lower than the desktop app, and playback relies on DRM (Widevine), which ships with the WebView2 runtime (P0 spike #1). If a future runtime drops it, the Spotify entry comes out of the catalog until it plays again (see the [ROADMAP](docs/ROADMAP.md) risk register).
 - **Discord** web has no native global push-to-talk and limited screen sharing. A host-side global hotkey is on the roadmap's backlog.
 - Web app availability, layout, and sign-in flows are controlled by the respective service providers and can change or break at any time.
 
 ## Install
 
 1. Requirements: **Windows 11 (24H2 or later), x64.** Windows 10 is not supported. The Microsoft Edge **WebView2 Runtime** ships with Windows 11.
-2. Download a build from [Releases](https://github.com/poli0981/OmniDeck/releases) and run `OmniDeck-win-Setup.exe` (per-user, no admin required). Every version before 1.0 is published as a **pre-release** for testing.
-3. On first run, review and acknowledge the legal documents (EULA, disclaimer, privacy policy, third-party notices), then pick a UI preset and language.
+2. Download a build from [Releases](https://github.com/poli0981/OmniDeck/releases) and run `OmniDeck-win-Setup.exe` (per-user, no admin required). Every version before 1.0 is published as a **pre-release** for testing. The `OmniDeck-win-Portable.zip` beside it is not supported yet: it still keeps its data in `%LocalAppData%\OmniDeck.Data`, and nothing removes that data when you delete the folder.
+3. On first run, review and acknowledge the legal documents (EULA, disclaimer, privacy policy, third-party notices), then pick a language and a layout preset.
 
-Updates are delivered in-app via Velopack; you can also check manually from **About**. Builds are not yet Authenticode-signed, so Windows SmartScreen may warn about an unknown publisher — see [SECURITY](SECURITY.md) for how to verify a download.
+Updates are delivered in-app via Velopack; you can also check manually from **Settings → About**. Builds are not yet Authenticode-signed, so Windows SmartScreen may warn about an unknown publisher — see [SECURITY](SECURITY.md) for how to verify a download.
 
 ## Reporting bugs
 

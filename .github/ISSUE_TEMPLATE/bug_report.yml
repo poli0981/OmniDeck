@@ -6,13 +6,13 @@ body:
   - type: markdown
     attributes:
       value: |
-        Tip: **About → Report bug** inside the app pre-fills this form (version, modules,
+        Tip: **Settings → About → Report a bug** inside the app pre-fills this form (version, modules,
         console errors) and saves a `bugreport-*.zip` you can attach below.
   - type: input
     id: version
     attributes:
       label: OmniDeck version
-      placeholder: "0.0.1-alpha.1 (1ab1b36) — shown in About"
+      placeholder: "0.2.0-alpha.4 (1a2b3c4) — shown in Settings → About"
     validations:
       required: true
   - type: input
@@ -48,7 +48,7 @@ body:
     attributes:
       label: Console errors
       description: >
-        For web app issues, paste the console errors that About → Report bug captured (they are
+        For web app issues, paste the console errors that Settings → About → Report a bug captured (they are
         in the pre-filled issue and the zip). Release builds have no DevTools, so there is no
         other way to copy them. Leave empty for native mini-apps.
       render: text
