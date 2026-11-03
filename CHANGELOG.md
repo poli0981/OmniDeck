@@ -6,6 +6,13 @@ All notable changes to OmniDeck are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.0-alpha.4] — 2026-11-03
+
+Fourth P2 alpha, the build to try out before 0.2.0: the memory governor now also rests the module
+of a minimized window. The web app list every copy downloads was updated the same day: Spotify's
+"Continue with Google, Facebook or Apple" buttons now sign in inside the app, and a Discord or
+Facebook call that is playing sound is never put to sleep.
+
 ### Fixed
 - The module on screen when you minimized OmniDeck, or closed it to the notification area, kept
   running at full size for as long as the window stayed away, even above the memory limits. It now
@@ -244,7 +251,8 @@ user-facing features yet: the window only shows the version.
 - Supported platform narrowed to Windows 11 (24H2 or later), x64.
 - App data moves to `%LocalAppData%\OmniDeck.Data`, outside Velopack's install folder.
 
-[Unreleased]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.3...HEAD
+[Unreleased]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.4...HEAD
+[0.2.0-alpha.4]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.3...v0.2.0-alpha.4
 [0.2.0-alpha.3]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.2...v0.2.0-alpha.3
 [0.2.0-alpha.2]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.1...v0.2.0-alpha.2
 [0.2.0-alpha.1]: https://github.com/poli0981/OmniDeck/compare/v0.1.1...v0.2.0-alpha.1
