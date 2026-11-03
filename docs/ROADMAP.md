@@ -1,10 +1,12 @@
-# OmniDeck — Roadmap to v1.0 (May 2027)
+# OmniDeck — Roadmap to v1.0 (January 2027)
 
-Solo-developer plan, ~29 weeks from the start of P0 (2 November 2026). Each phase has exit criteria; slipping triggers the cut order in §4, never a death march.
+Solo-developer plan from the kickoff (28 October 2026) to v1.0. Each phase has exit criteria; slipping triggers the cut order in §4, never a death march.
 
 > **Re-baselined 2026-10-28.** The first draft assumed a 20 July 2026 start and a January 2027 release. Development actually starts on 2 November 2026, so every phase keeps its original length and moves; P2 gains one buffer week for Tết (Lunar New Year, 6 February 2027). Windows 10 support was dropped at the same time ([SPEC](SPEC.md) §1).
 >
 > **Re-baselined 2026-11-02.** P0 and P1 both finished early, on 30 October 2026, so P2 started on 2 November 2026 instead of 11 January 2027. P3 and P4 keep their dates until P2 exits, and are re-baselined then.
+>
+> **Re-baselined 2026-11-03.** P2 exited with `0.2.0` on 3 November 2026, and P3 was written alongside its last days, as draft pull requests that merge once `0.2.0` is out. The remaining phases are planned with a buffer rather than their original lengths: `0.3.0` in early December 2026, the `0.9` public beta in mid-December, and `1.0` at the end of January 2027, before Tết (6 February 2027). 23 May 2027, the previous target, stays as the latest date.
 
 ## 1. Phases
 
@@ -47,20 +49,20 @@ As delivered: eight work packages (PRs #20–#25, #27 and #29) and three release
 - **P3 accessibility:** UI Automation exposes WPF-UI 4.3's navigation items as data items with no Invoke or Select pattern; keyboard users reach them with Tab and Enter. The accent swatches are announced by their hex codes.
 - **P2:** pop-out module windows, deferred by the P1 plan.
 
-### P2 — Web runner & core modules (from 2 Nov 2026; planned 11 Jan – 7 Mar 2027)
+### P2 — Web runner & core modules (11 Jan – 7 Mar 2027) — done early, 3 Nov 2026
 
 Full web runner (profiles, nav policy, SSO popups, notifications→toast, permissions, downloads, suspend/hibernate, catalog fetch) with the v1 catalog; weather; calendar (local + .ics); media player v1 on LibVLCSharp. Bug-report flow end to end (CDP capture → scrubber → prefilled issue + zip).
 
 **Exit (0.2.0):** dogfood daily — Gmail + Discord + YouTube stay signed in across hibernation; a full day's use stays under the hard cap.
 
-As delivered so far: the `0.1.1` hotfix (a tray icon that leaked GDI objects), then the plan's ten work packages and two catalog pull requests, released as `0.2.0-alpha.1` and `0.2.0-alpha.2` on 2 November 2026. `0.2.0` follows about a week of dogfooding against the exit criterion. Changed on the way:
+As delivered: the `0.1.1` hotfix (a tray icon that leaked GDI objects), then the plan's ten work packages, two catalog pull requests and a fix that lets the governor rest a minimized window's module, released as `0.2.0-alpha.1` to `0.2.0-alpha.4` on 2 and 3 November 2026, and as `0.2.0` on 3 November, once the maintainer signed it off. Changed on the way:
 
 - Downloads use WebView2's own flyout rather than a progress row of OmniDeck's, and permission questions sit in a bar above the page, because no dialog can cover WebView2 ([SPEC](SPEC.md) §4).
 - Web apps with notifications on stay resident: the time ladder skips them ([RAM-GOVERNOR](RAM-GOVERNOR.md) §3).
 - Pop-out windows move the module's view, so web pages and videos keep running through the move ([ARCHITECTURE](ARCHITECTURE.md) §2).
 - Left for later: web app favicons, `.ics` subscriptions (they would need a privacy policy update) and Discord's global push-to-talk hotkey (all in §5), and the weather charts, which came in P3, drawn by OmniDeck itself.
 
-### P3 — Stocks, presets, i18n (8 Mar – 11 Apr 2027)
+### P3 — Stocks, presets, i18n (3 Nov – early Dec 2026; planned 8 Mar – 11 Apr 2027)
 
 Stocks module (Twelve Data with the user's own key, which spike #7 left as the only provider; watchlist, candlesticks); Dynamic and Comfort presets polished to spec (UI-MODES token table); VI + JA translations; accessibility pass (text scaling, contrast themes, keyboard nav).
 
@@ -76,9 +78,9 @@ As delivered: twelve work packages, written while 0.2.0 was being dogfooded and 
 - **Accessibility:** the sidebar as lists screen readers can use, names for WPF-UI's unnamed buttons and for every row's buttons, headings and live regions, the palette's settings tabs and commands, keyboard shortcuts in pop-outs, widths that grow with the text, and High Contrast checks.
 - **Translations:** live language changes everywhere, Vietnamese and Japanese, and the rules in [TRANSLATING](TRANSLATING.md).
 
-### P4 — Beta & release (12 Apr – 23 May 2027)
+### P4 — Beta & release (mid-Dec 2026 – end of Jan 2027; planned 12 Apr – 23 May 2027)
 
-**0.9 public beta** (~18 Apr) via GitHub Releases + the community Discord; two stabilization cycles driven by bug reports; docs final pass; **v1.0 target 23 May 2027**.
+**0.9 public beta** (~mid-December 2026) via GitHub Releases + the community Discord; two stabilization cycles driven by bug reports; docs final pass; **v1.0 target end of January 2027**, 23 May 2027 at the latest.
 
 ## 2. Versioning
 

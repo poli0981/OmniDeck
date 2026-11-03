@@ -1,6 +1,6 @@
 # OmniDeck — Functional Specification
 
-Status: draft for v1.0 (target May 2027) · Applies to: Windows 11 (24H2 or later), x64 only
+Status: draft for v1.0 (target January 2027) · Applies to: Windows 11 (24H2 or later), x64 only
 
 ## 1. Goals and non-goals
 

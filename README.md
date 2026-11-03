@@ -13,7 +13,7 @@ OmniDeck combines a set of lightweight native mini-apps (weather, calculator, st
 
 It is built on WPF (.NET 10 LTS) and **WebView2**, which reuses the Edge runtime that ships with Windows 11 instead of bundling a browser engine. That is what keeps the installer small while still running full web apps.
 
-**Project status: alpha.** 0.2.0-alpha.4 (phase P2) runs the curated web apps beside the clock, timer, calculator, weather, calendar and media player, with pop-out windows and an in-app bug report. Stocks, the polished Dynamic and Comfort presets, and the Vietnamese and Japanese translations come in P3; the 0.9 public beta is planned for April 2027 and v1.0 for May 2027 ([roadmap](docs/ROADMAP.md)). Until then, expect missing features and changes between versions.
+**Project status: alpha.** 0.2.0, the end of phase P2, runs the curated web apps beside the clock, timer, calculator, weather, calendar and media player, with pop-out windows and an in-app bug report. Stocks, the polished Dynamic and Comfort presets, and the Vietnamese and Japanese translations come in P3; the 0.9 public beta is planned for December 2026 and v1.0 for the end of January 2027 ([roadmap](docs/ROADMAP.md)). Until then, expect missing features and changes between versions.
 
 ## Planned features (v1.0)
 
