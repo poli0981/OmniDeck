@@ -1,8 +1,10 @@
 using System.ComponentModel;
 using System.Globalization;
+using System.Reflection;
 using System.Resources;
 using System.Windows;
 using System.Windows.Markup;
+using Serilog;
 
 namespace OmniDeck.Core.Localization;
 
@@ -14,6 +16,8 @@ namespace OmniDeck.Core.Localization;
 /// </summary>
 public sealed class OdLocalization : INotifyPropertyChanged
 {
+    // What FollowCulture registered: each target held weakly, with the method to call on it.
+    private readonly List<(WeakReference Target, MethodInfo Method)> _followers = [];
     private ResourceManager[] _resources = [];
 
     private OdLocalization()
@@ -41,11 +45,35 @@ public sealed class OdLocalization : INotifyPropertyChanged
 
     /// <summary>
     /// Calls <paramref name="handler"/> after each change of language, holding its target weakly, so a
-    /// view model that lives as long as its view needs no unsubscribing. <paramref name="handler"/> must
-    /// be a method of that view model: nothing else would keep a lambda's closure alive.
+    /// view model that outlives no one needs no unsubscribing. <paramref name="handler"/> must be a
+    /// method of that view model: nothing else would keep a lambda's closure alive. A view model that
+    /// lets go of what its texts come from, when it is disposed, calls <see cref="UnfollowCulture"/>.
+    /// One follower that fails keeps its old texts; the others still follow.
     /// </summary>
-    public static void FollowCulture(EventHandler<EventArgs> handler) =>
-        WeakEventManager<OdLocalization, EventArgs>.AddHandler(Instance, nameof(CultureChanged), handler);
+    public static void FollowCulture(EventHandler<EventArgs> handler)
+    {
+        ArgumentNullException.ThrowIfNull(handler);
+        if (handler.Target is null)
+        {
+            throw new ArgumentException("Only an instance method can follow the culture: it is held by its target.", nameof(handler));
+        }
+
+        lock (Instance._followers)
+        {
+            Instance._followers.Add((new WeakReference(handler.Target), handler.Method));
+        }
+    }
+
+    /// <summary>Stops calling <paramref name="handler"/> on a change of language.</summary>
+    public static void UnfollowCulture(EventHandler<EventArgs> handler)
+    {
+        ArgumentNullException.ThrowIfNull(handler);
+        lock (Instance._followers)
+        {
+            Instance._followers.RemoveAll(follower => !follower.Target.IsAlive
+                || (ReferenceEquals(follower.Target.Target, handler.Target) && follower.Method == handler.Method));
+        }
+    }
 
     /// <summary>Fills a format string; numbers and dates follow the regional format, not the UI language.</summary>
     public static string Format(string key, params object?[] args) =>
@@ -100,6 +128,7 @@ public sealed class OdLocalization : INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Item[]"));
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Culture)));
         CultureChanged?.Invoke(this, EventArgs.Empty);
+        NotifyFollowers();
     }
 
     /// <summary>
@@ -119,6 +148,35 @@ public sealed class OdLocalization : INotifyPropertyChanged
                 }
             }));
         TagOpenWindows();
+    }
+
+    // Each follower is called on its own: one that throws (a view model whose database is gone, say)
+    // is logged and skipped, and the others still read their texts again.
+    private void NotifyFollowers()
+    {
+        (object? Target, MethodInfo Method)[] followers;
+        lock (_followers)
+        {
+            _followers.RemoveAll(follower => !follower.Target.IsAlive);
+            followers = [.. _followers.Select(follower => (follower.Target.Target, follower.Method))];
+        }
+
+        foreach (var (target, method) in followers)
+        {
+            if (target is null)
+            {
+                continue;
+            }
+
+            try
+            {
+                method.Invoke(target, [this, EventArgs.Empty]);
+            }
+            catch (TargetInvocationException ex)
+            {
+                Log.ForContext<OdLocalization>().Warning(ex, "{Follower} could not follow the change of language", target.GetType().Name);
+            }
+        }
     }
 
     private void TagOpenWindows()
