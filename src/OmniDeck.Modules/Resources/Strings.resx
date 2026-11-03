@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!-- The built-in modules' UI strings, English (neutral). Vietnamese and Japanese satellites arrive in P3. -->
+  <!-- The built-in modules' UI strings, English (neutral). Translations sit beside it: Strings.vi.resx and Strings.ja.resx (docs/TRANSLATING.md). -->
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
   </resheader>
