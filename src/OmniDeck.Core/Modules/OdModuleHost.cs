@@ -94,7 +94,7 @@ public sealed class OdModuleHost : IDisposable
 
             var view = await EnsureViewAsync(hosted);
             await hosted.Module.ActivateAsync();
-            HideCurrent();
+            await HideCurrentAsync();
             Current = hosted;
             hosted.LastActive = _time.GetUtcNow();
             SetState(hosted, OdModuleState.Active);
@@ -153,8 +153,7 @@ public sealed class OdModuleHost : IDisposable
             }
 
             hosted.IsPoppedOut = false;
-            hosted.LastActive = _time.GetUtcNow();
-            SetState(hosted, OdModuleState.Idle);
+            await IdleAsync(hosted);
         }
         finally
         {
@@ -184,8 +183,7 @@ public sealed class OdModuleHost : IDisposable
             {
                 if (current.State == OdModuleState.Active)
                 {
-                    current.LastActive = _time.GetUtcNow();
-                    SetState(current, OdModuleState.Idle);
+                    await IdleAsync(current);
                 }
 
                 return null;
@@ -239,7 +237,7 @@ public sealed class OdModuleHost : IDisposable
         await _gate.WaitAsync();
         try
         {
-            HideCurrent();
+            await HideCurrentAsync();
         }
         finally
         {
@@ -378,7 +376,7 @@ public sealed class OdModuleHost : IDisposable
         _http,
         _database);
 
-    private void HideCurrent()
+    private async Task HideCurrentAsync()
     {
         if (Current is not { } previous)
         {
@@ -390,9 +388,27 @@ public sealed class OdModuleHost : IDisposable
         // One the window already hid while it was away keeps its place on the ladder.
         if (previous.State == OdModuleState.Active)
         {
-            previous.LastActive = _time.GetUtcNow();
-            SetState(previous, OdModuleState.Idle);
+            await IdleAsync(previous);
         }
+    }
+
+    /// <summary>
+    /// A module that was on screen goes Idle and down the ladder, after it is told to stop what only
+    /// matters on screen. One that fails to stop is logged, and hidden all the same.
+    /// </summary>
+    private async Task IdleAsync(OdHostedModule hosted)
+    {
+        try
+        {
+            await hosted.Module.DeactivateAsync();
+        }
+        catch (Exception ex) when (ex is not OutOfMemoryException)
+        {
+            _log.Warning(ex, "Module {ModuleId} failed to deactivate", hosted.Info.Id);
+        }
+
+        hosted.LastActive = _time.GetUtcNow();
+        SetState(hosted, OdModuleState.Idle);
     }
 
     private void SetState(OdHostedModule hosted, OdModuleState state)

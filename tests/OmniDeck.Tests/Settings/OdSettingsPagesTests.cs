@@ -1,12 +1,15 @@
+using System.Globalization;
 using Microsoft.Extensions.Time.Testing;
 using OmniDeck.App.Settings;
 using OmniDeck.App.Shell;
 using OmniDeck.App.Updates;
 using OmniDeck.Core.Governor;
+using OmniDeck.Core.Localization;
 using OmniDeck.Core.Modules;
 using OmniDeck.Core.Settings;
 using OmniDeck.Core.Storage;
 using OmniDeck.Tests.Governor;
+using OmniDeck.Tests.Localization;
 using OmniDeck.Tests.Modules;
 using OmniDeck.Tests.TestSupport;
 using OmniDeck.Tests.Updates;
@@ -17,6 +20,8 @@ using Serilog.Core;
 
 namespace OmniDeck.Tests.Settings;
 
+// One test changes the UI language, which the culture tests own.
+[Collection(OdCultureCollection.Name)]
 public sealed class OdSettingsPagesTests : IDisposable
 {
     private readonly OdTempDirectory _temp = new();
@@ -67,17 +72,62 @@ public sealed class OdSettingsPagesTests : IDisposable
     }
 
     [Fact]
+    public void PreReleases_FollowThisBuild_UntilTheUserChooses()
+    {
+        using var page = NewSettingsPage();
+
+        // This build is a pre-release (0.x), so without a choice it takes pre-releases.
+        Assert.Null(_settings.Current.Prereleases);
+        Assert.True(page.ReceivePrereleases);
+
+        page.ReceivePrereleases = false;
+        Assert.False(_settings.Current.Prereleases);
+
+        page.ReceivePrereleases = true;
+        Assert.True(_settings.Current.Prereleases);
+    }
+
+    [Fact]
+    public void Lists_FollowAChangeOfLanguage_AndKeepTheirItems()
+    {
+        using var page = NewSettingsPage();
+        var language = page.Languages[0];
+        var theme = page.Themes[0];
+        var titles = new List<string?>();
+        language.PropertyChanged += (_, e) => titles.Add(e.PropertyName);
+        theme.PropertyChanged += (_, e) => titles.Add(e.PropertyName);
+        var original = OdLocalization.Instance.Culture;
+        try
+        {
+            OdLocalization.Instance.SetCulture(CultureInfo.GetCultureInfo(string.Equals(original.Name, "fr", StringComparison.Ordinal) ? "de" : "fr"));
+
+            Assert.Equal(new[] { "Title", "Title" }, titles, StringComparer.Ordinal);
+            Assert.Same(language, page.Languages[0]);
+            Assert.Same(theme, page.Themes[0]);
+            Assert.Equal("Standard", page.Preset);
+        }
+        finally
+        {
+            OdLocalization.Instance.SetCulture(original);
+        }
+    }
+
+    [Fact]
     public void Accent_SwitchesBetweenWindowsAndASwatch()
     {
         using var page = NewSettingsPage();
 
+        Assert.Null(page.SelectedSwatch);
         page.UseSystemAccent = false;
-        Assert.Equal(page.AccentSwatches[0], _settings.Current.AccentColor);
-        page.ChooseAccentCommand.Execute("#10893E");
+        Assert.Equal(page.AccentSwatches[0].Color, _settings.Current.AccentColor);
+        Assert.Equal("Blue", page.SelectedSwatch?.ToString());
+        page.SelectedSwatch = page.AccentSwatches[5];
         Assert.Equal("#10893E", _settings.Current.AccentColor);
+        Assert.Equal("Green", page.SelectedSwatch?.Name);
         page.UseSystemAccent = true;
 
         Assert.Equal("", _settings.Current.AccentColor);
+        Assert.Null(page.SelectedSwatch);
     }
 
     [Fact]
@@ -139,11 +189,14 @@ public sealed class OdSettingsPagesTests : IDisposable
         page.ShowSection(OdSettingsSection.Memory);
 
         Assert.Equal(2, page.SectionIndex);
-        Assert.Equal(new[] { "", "en" }, page.Languages.Select(l => l.Value), StringComparer.Ordinal);
+        Assert.Equal(new[] { "", "en", "vi", "ja" }, page.Languages.Select(l => l.Value), StringComparer.Ordinal);
+        Assert.Equal("Tiếng Việt", page.Languages[2].Title);
+        Assert.Equal("日本語", page.Languages[3].Title);
         Assert.Equal(new[] { "Follow Windows", "Light", "Dark" }, page.Themes.Select(t => t.Title), StringComparer.Ordinal);
         Assert.Equal(new[] { "Dynamic", "Standard", "Comfort" }, page.Presets.Select(p => p.Name), StringComparer.Ordinal);
         Assert.Equal("Larger text and targets, no motion.", page.Presets[2].Hint);
         Assert.Equal("Comfort", page.Presets[2].ToString());
+        Assert.Null(page.Presets[2].Preview);
         Assert.Equal("Dark", page.Themes[2].ToString());
         Assert.NotNull(page.Memory);
     }
@@ -153,7 +206,7 @@ public sealed class OdSettingsPagesTests : IDisposable
     {
         var meta = NewMeta();
         Assert.True(OdOnboardingViewModel.IsNeeded(meta));
-        var onboarding = new OdOnboardingViewModel(_settings, meta);
+        var onboarding = new OdOnboardingViewModel(_settings, meta, preset => new System.Windows.ResourceDictionary { ["preset"] = preset.Name });
         var finished = 0;
         onboarding.Finished += (_, _) => finished++;
 
@@ -166,7 +219,8 @@ public sealed class OdSettingsPagesTests : IDisposable
         Assert.False(OdOnboardingViewModel.IsNeeded(meta));
         Assert.Equal(1, finished);
         Assert.Equal(3, onboarding.Presets.Count);
-        Assert.Equal(2, onboarding.Languages.Count);
+        Assert.Equal("Comfort", onboarding.Presets[2].Preview!["preset"]);
+        Assert.Equal(4, onboarding.Languages.Count);
     }
 
     [Fact]

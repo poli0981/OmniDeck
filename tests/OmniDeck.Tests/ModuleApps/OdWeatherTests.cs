@@ -152,7 +152,7 @@ public sealed class OdWeatherTests : IDisposable
         await service.ForecastAsync(Hanoi, OdWeatherUnits.Metric, refresh: false, Token);
 
         Assert.Equal(3, http.Requests.Count);
-        Assert.Contains("fahrenheit", http.Requests[1].Query, StringComparison.Ordinal);
+        Assert.Contains("fahrenheit", http.Requests[1].RequestUri!.Query, StringComparison.Ordinal);
     }
 
     [Theory]
@@ -267,7 +267,7 @@ public sealed class OdWeatherTests : IDisposable
 
         Assert.Equal(OdWeatherUnits.Imperial, weather.Units);
         Assert.Equal(OdWeatherUnits.Imperial, saved[^1].Units);
-        Assert.Contains("fahrenheit", http.Requests[^1].Query, StringComparison.Ordinal);
+        Assert.Contains("fahrenheit", http.Requests[^1].RequestUri!.Query, StringComparison.Ordinal);
     });
 
     [Fact]
@@ -298,20 +298,37 @@ public sealed class OdWeatherTests : IDisposable
         Assert.Equal("No places match that name.", weather.SearchMessage);
     });
 
+    [Fact]
+    public void TheNextHoursChart_SumsTheHoursUp_AndReadsTheOneUnderTheCursor() => OdSta.Run(async () =>
+    {
+        var culture = CultureInfo.CurrentCulture;
+        CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
+        try
+        {
+            using var weather = new OdWeatherViewModel(new OdWeatherSettings { Locations = [Hanoi] }, _ => { }, NewService(new OdFakeHttp(_ => Ok(Forecast))), _time);
+            string At(int hour) => new DateTime(2026, 11, 2, hour, 0, 0, DateTimeKind.Unspecified).ToString("t", CultureInfo.CurrentCulture);
+
+            await weather.ShowAsync();
+
+            Assert.Equal(3, weather.HourlyPoints.Count);
+            Assert.Equal(28.4, weather.HourlyPoints[1].Line, 3);
+            Assert.Null(weather.HourlyPoints[1].Bar);
+            Assert.Equal($"Next 48 hours: from 25° to 28°; rain is most likely on Monday at {At(8)} (40%).", weather.HourlySummary);
+            Assert.Equal("", weather.HourlyReadout);
+
+            weather.HourlyCursor = 2;
+            Assert.Equal($"Monday at {At(19)}: 25°, Clear sky, 10% chance of rain", weather.HourlyReadout);
+            weather.HourlyCursor = -1;
+            Assert.Equal("", weather.HourlyReadout);
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = culture;
+        }
+    });
+
     private static HttpResponseMessage Ok(string json) => new(HttpStatusCode.OK) { Content = new StringContent(json) };
 
     private OdWeatherService NewService(HttpMessageHandler handler) =>
         new(new HttpClient(handler), new OdWeatherCache(_database), _time, Logger.None);
-
-    /// <summary>Answers requests without the network and remembers them.</summary>
-    private sealed class OdFakeHttp(Func<HttpRequestMessage, HttpResponseMessage> answer) : HttpMessageHandler
-    {
-        public List<Uri> Requests { get; } = [];
-
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            Requests.Add(request.RequestUri!);
-            return Task.FromResult(answer(request));
-        }
-    }
 }

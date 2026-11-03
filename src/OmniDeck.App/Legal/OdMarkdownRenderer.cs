@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Documents;
+using System.Windows.Markup;
 using System.Windows.Media;
 using Markdig;
 using Markdig.Syntax;
@@ -35,11 +36,14 @@ internal static class OdMarkdownRenderer
         ArgumentNullException.ThrowIfNull(markdown);
         ArgumentNullException.ThrowIfNull(openLink);
         // A FlowDocument defaults to a serif reading font and justified text; the app's own font reads better here.
+        // The documents exist in English only (docs/legal): they say so to screen readers and to WPF's
+        // text handling, whatever the UI language around them.
         var document = new FlowDocument
         {
             PagePadding = new Thickness(0),
             FontFamily = SystemFonts.MessageFontFamily,
             TextAlignment = TextAlignment.Left,
+            Language = XmlLanguage.GetLanguage("en"),
         };
         document.SetResourceReference(FlowDocument.FontSizeProperty, OdTokenKeys.FontBase);
         document.SetResourceReference(FlowDocument.ForegroundProperty, "TextFillColorPrimaryBrush");

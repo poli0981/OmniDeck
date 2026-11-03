@@ -1,6 +1,7 @@
 ﻿<UserControl x:Class="OmniDeck.Modules.Media.OdMediaView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:a11y="clr-namespace:OmniDeck.Core.Accessibility;assembly=OmniDeck.Core"
              xmlns:media="clr-namespace:OmniDeck.Modules.Media"
              xmlns:res="clr-namespace:OmniDeck.Core.Localization;assembly=OmniDeck.Core"
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
@@ -22,6 +23,7 @@
             <!--  Opaque where there is no picture: libVLC's video window is blank until a video plays, and stays so for audio.  -->
             <Grid Focusable="True"
                   KeyDown="OnVideoKeyDown"
+                  Loaded="OnOverlayLoaded"
                   MouseLeftButtonDown="OnVideoMouseDown">
                 <Grid.Style>
                     <Style TargetType="Grid">
@@ -38,21 +40,21 @@
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"
-                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                           Text="{Binding Message}"
-                           TextWrapping="Wrap" />
+                <a11y:OdStatusText Grid.Row="0"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                   Text="{Binding Message}"
+                                   TextWrapping="Wrap" />
                 <Border Grid.Row="1"
                         Padding="{DynamicResource Od.Padding.Card}"
                         Background="{DynamicResource SolidBackgroundFillColorSecondaryBrush}">
                     <!--  The seek bar has a row of its own, so it keeps its length beside the queue; when the bar is narrow, the volume slider gives way first.  -->
                     <StackPanel>
                         <DockPanel>
-                            <TextBlock DockPanel.Dock="Right"
-                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                       Text="{Binding TimeText}" />
+                            <a11y:OdStatusText DockPanel.Dock="Right"
+                                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                               Text="{Binding TimeText}" />
                             <TextBlock FontWeight="SemiBold"
                                        Text="{Binding Title}"
                                        TextTrimming="CharacterEllipsis" />
@@ -77,10 +79,11 @@
                                            Command="{Binding PreviousCommand}"
                                            Icon="{ui:SymbolIcon Previous24}"
                                            ToolTip="{res:OdLoc Media_Previous}" />
+                                <!--  Named for what it does now: Pause while playing, Play otherwise.  -->
                                 <ui:Button Margin="{DynamicResource Od.Padding.Control}"
-                                           AutomationProperties.Name="{res:OdLoc Media_PlayPause}"
+                                           AutomationProperties.Name="{Binding PlayPauseName}"
                                            Command="{Binding PlayPauseCommand}"
-                                           ToolTip="{res:OdLoc Media_PlayPause}">
+                                           ToolTip="{Binding PlayPauseName}">
                                     <ui:Button.Icon>
                                         <!--  Pause while playing, Play otherwise.  -->
                                         <ui:SymbolIcon>
@@ -107,11 +110,26 @@
                                            Icon="{ui:SymbolIcon Stop24}"
                                            ToolTip="{res:OdLoc Media_Stop}" />
                             </StackPanel>
+                            <!--  Mute, or Unmute once muted, with the icon to match.  -->
                             <ui:Button Grid.Column="2"
-                                       AutomationProperties.Name="{res:OdLoc Media_Mute}"
+                                       AutomationProperties.Name="{Binding MuteName}"
                                        Command="{Binding ToggleMuteCommand}"
-                                       Icon="{ui:SymbolIcon Speaker224}"
-                                       ToolTip="{res:OdLoc Media_Mute}" />
+                                       ToolTip="{Binding MuteName}">
+                                <ui:Button.Icon>
+                                    <ui:SymbolIcon>
+                                        <ui:SymbolIcon.Style>
+                                            <Style TargetType="ui:SymbolIcon">
+                                                <Setter Property="Symbol" Value="Speaker224" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Muted}" Value="True">
+                                                        <Setter Property="Symbol" Value="SpeakerMute24" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ui:SymbolIcon.Style>
+                                    </ui:SymbolIcon>
+                                </ui:Button.Icon>
+                            </ui:Button>
                             <!--  MinWidth: WPF-UI's style asks for 104 px, which a narrow column would clip, thumb and all.  -->
                             <Slider Grid.Column="3"
                                     MinWidth="0"
@@ -151,7 +169,7 @@
         </vlc:VideoView>
 
         <DockPanel Grid.Column="1"
-                   Width="300"
+                   Width="{DynamicResource Od.Width.TileWide}"
                    Visibility="{Binding ShowsQueue, Converter={StaticResource Visible}}">
             <WrapPanel Margin="{DynamicResource Od.Padding.Control}" DockPanel.Dock="Top">
                 <ui:Button Margin="{DynamicResource Od.Padding.Control}"
@@ -178,15 +196,18 @@
                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                        Text="{res:OdLoc Media_Hint}"
                        TextWrapping="Wrap" />
+            <!--  Enter plays the selected item and Delete removes it, as a double click and the item's button do.  -->
             <ListBox x:Name="Queue"
                      AutomationProperties.Name="{res:OdLoc Media_Queue}"
                      ItemsSource="{Binding Items}"
+                     KeyDown="OnQueueKeyDown"
                      MouseDoubleClick="OnQueueDoubleClick">
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type media:OdMediaItem}">
                         <DockPanel>
                             <ui:Button Margin="{DynamicResource Od.Padding.Control}"
-                                       AutomationProperties.Name="{res:OdLoc Media_Remove}"
+                                       AutomationProperties.Name="{res:OdLocRow Media_Remove,
+                                                                                Path=Title}"
                                        Command="{Binding DataContext.RemoveItemCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
                                        CommandParameter="{Binding}"
                                        DockPanel.Dock="Right"

@@ -6,6 +6,85 @@ All notable changes to OmniDeck are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0-alpha.1] — 2026-11-03
+
+First P3 alpha, with all of phase P3 in it: Stocks with your own Twelve Data key, alarms in Timer,
+charts drawn by OmniDeck itself, the finished Dynamic and Comfort layouts, an accessibility pass for
+screen readers, the keyboard and large text, and OmniDeck in Vietnamese and Japanese. 0.3.0 follows
+once this alpha has been tried out.
+
+### Added
+- Vietnamese (Tiếng Việt) and Japanese (日本語): Settings → General → Language, or the first-run setup.
+- Settings → About: Get pre-release versions. Without a choice of yours it follows the version you run, so the
+  alphas and betas keep getting alphas and betas, and from 1.0 a stable install gets stable versions only.
+- Timer: alarms at a time of day, once, every day, on weekdays or at weekends, each with an optional
+  label and a switch. They ring as a notification that opens Timer, while OmniDeck runs (in the
+  notification area too), as the screen says. A one-off alarm turns itself off once it rang; one the PC
+  slept through still rings on waking within the hour, and not after that.
+- Stocks: a watchlist of US stocks and ETFs with Twelve Data, using your own free (or paid) API key, which
+  stays on this PC encrypted for your Windows account. Add listings by searching for them; each row
+  shows the price, the day's change and a sparkline of the last month. Prices refresh only while Stocks
+  is on screen, while the market trades, and within what your key's plan allows; when credits run out
+  or Twelve Data can't be reached, the last prices stay. Choose a listing for its details: the day's
+  and the year's range, and a price chart over one month to five years that the arrow keys read out
+  bar by bar, also as a table. Delayed or indicative data, not investment advice.
+- Weather: the next 48 hours also show as a chart, the temperature as a line over the chance of rain.
+  Screen readers hear the chart sum the hours up; with the chart focused, the arrow keys read the
+  hours one by one, as the mouse does when it moves over it. The list of hours stays below it.
+- First run: each layout card shows its layout's own text sizes and colors, so the three can be
+  compared side by side before you pick one.
+- Command palette (Ctrl+K): each settings tab, Check for updates, Report a bug and Open the data folder.
+  A module's own window answers Ctrl+K too, and Ctrl+W closes it, which returns the module to the main
+  window. Whatever the palette or Ctrl+1–9 opens takes the keyboard focus.
+- Enter and Delete play or remove the selected file of the media queue, and bring back or forget the
+  selected calculation of the calculator's history.
+- The command palette finds what you type whatever its accents: "thoi tiet" finds "Thời tiết".
+
+### Changed
+- Screen readers (Narrator, NVDA, JAWS):
+  - the sidebar is two lists, the modules then Settings and the library, whose items say which one is
+    open and can be selected;
+  - a button that every row of a list has also says its row, as in "Remove, Tokyo";
+  - the title bar's, the sidebar's, the scroll bars' and the number boxes' buttons have names;
+  - calendar days give the whole date, and forecast hours and days, laps and calculations read as
+    sentences;
+  - Play and Mute say what they will do, Pause and Unmute once playing or muted, and the symbol keys of
+    the calculator their names, such as "Divide";
+  - page and section titles are headings, and status messages are read out as they change.
+- Accent colors are a list of named swatches you can pick from the keyboard; High Contrast, which uses
+  Windows' colors, hides them.
+- With large text, tiles, number boxes and the weather's columns grow with it, and the buttons of the
+  library's tiles and of the timers wrap rather than clip.
+- A change of language reaches every screen at once, and the lists you pick from keep their choice;
+  web apps follow at OmniDeck's next start. The language list names each language in itself.
+- Calendar: a repeating event's interval reads as one phrase, such as "every 2 weeks".
+- The bug report's GitHub issue stays in English, with modules by id, whatever the language of the app.
+- Fainter text (descriptions, captions, times) is darker on the light theme, so that it reads at a
+  contrast of at least 4.5:1 in every layout; in Comfort it reaches 7:1 on both themes. High Contrast
+  keeps Windows' colors.
+- Comfort has larger sidebar icons, and in every layout check boxes, radio buttons, drop-downs,
+  switches, list and menu items and sidebar items are at least as tall as the layout's touch target.
+
+### Fixed
+- Much of the text on the Settings, Library and Memory pages and in the modules, and the sidebar's labels,
+  stayed small whatever the layout, Settings → Appearance → Text size or Windows' text size said. It
+  now follows all three.
+- The selected layout card's description was hard to read on the accent color.
+- Calendar: the days outside the month were too faint to read on the light theme. They stay dimmed,
+  less so, and not at all in High Contrast.
+- Calculator: the keys lost their labels at large text sizes.
+- Media: screen readers called the player's controls "LibVLCSharp.WPF"; they are Media's now.
+
+## [0.2.0] — 2026-11-03
+
+The end of phase P2. The eight web apps of the catalog run inside OmniDeck on Microsoft Edge
+WebView2, with their notifications, site permissions and memory figures, beside the clock, timer and
+calculator and the new weather, calendar and media player modules. Any module can open in a window
+of its own, web pages go full screen, a bug report can be prepared from inside the app, and the
+memory governor rests the modules no one is looking at, a minimized window's included. The
+0.2.0-alpha.1 to 0.2.0-alpha.4 notes list all of it in detail: 0.2.0 is the same app as
+0.2.0-alpha.4. Stocks, the finished Dynamic and Comfort layouts, Vietnamese and Japanese arrive in P3.
+
 ## [0.2.0-alpha.4] — 2026-11-03
 
 Fourth P2 alpha, the build to try out before 0.2.0: the memory governor now also rests the module
@@ -251,7 +330,9 @@ user-facing features yet: the window only shows the version.
 - Supported platform narrowed to Windows 11 (24H2 or later), x64.
 - App data moves to `%LocalAppData%\OmniDeck.Data`, outside Velopack's install folder.
 
-[Unreleased]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.4...HEAD
+[Unreleased]: https://github.com/poli0981/OmniDeck/compare/v0.3.0-alpha.1...HEAD
+[0.3.0-alpha.1]: https://github.com/poli0981/OmniDeck/compare/v0.2.0...v0.3.0-alpha.1
+[0.2.0]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.4...v0.2.0
 [0.2.0-alpha.4]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.3...v0.2.0-alpha.4
 [0.2.0-alpha.3]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.2...v0.2.0-alpha.3
 [0.2.0-alpha.2]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.1...v0.2.0-alpha.2

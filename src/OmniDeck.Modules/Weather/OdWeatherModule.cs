@@ -43,13 +43,16 @@ public sealed class OdWeatherModule : IOdModule
         return Task.CompletedTask;
     }
 
-    public Task<bool> CanSuspendAsync() => Task.FromResult(true);
-
-    public Task SuspendAsync(OdSuspendReason reason)
+    /// <summary>A fetch still under way is for a screen no one sees: it stops, and the next showing starts again.</summary>
+    public Task DeactivateAsync()
     {
         _viewModel?.Cancel();
         return Task.CompletedTask;
     }
+
+    public Task<bool> CanSuspendAsync() => Task.FromResult(true);
+
+    public Task SuspendAsync(OdSuspendReason reason) => DeactivateAsync();
 
     public Task HibernateAsync()
     {

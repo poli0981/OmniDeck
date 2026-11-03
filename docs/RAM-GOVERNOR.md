@@ -56,7 +56,7 @@ The caps, the toasts and the task-manager panel all use it. The panel may show t
 - **> SoftCap:** hibernate the least-recently-used unpinned module, since Suspended frees almost no memory. Repeat on the next tick if still above.
 - **> HardCap:** force-hibernate LRU unpinned modules until below, then raise one toast summarizing what was hibernated. If the shared WebView2 processes alone keep the total above the cap (the GPU process grows with video), the toast says so instead of hibernating apps that would free nothing.
 
-Ordering hint: `RamClass.Heavy` modules (web apps, media, stocks charts) are preferred victims over `Light` ones at equal recency. Recency counts in poll intervals, so modules hidden within the same interval are equally recent.
+Ordering hint: `RamClass.Heavy` modules (web apps, media) are preferred victims over `Light` ones at equal recency. Recency counts in poll intervals, so modules hidden within the same interval are equally recent.
 
 As built in P2:
 
@@ -85,3 +85,9 @@ The scheduler is pure logic over an injected clock and an injected memory sample
 - With that page open, the seven WebView2 processes held 508 MB. The first full screen raised them to about 725 MB, mostly the GPU process's surfaces for the larger window, and they stayed there.
 
 A signed-in day of use is the P2 exit's dogfooding ([ROADMAP](ROADMAP.md) §1).
+
+**Resource soak, P3** (3 November 2026, Debug build of the P3 branches up to accessibility, c095a59, with its own data root; one 2560×1440 monitor at 100 %; Idle after 1 minute and Hibernate after 2, so that each visit rebuilt a hibernated module):
+
+- For 42 minutes a script opened one page a minute through the command palette, in turn: Weather (one saved place, with its 48-hour chart), Stocks (without a key), Calendar, Clock, Timer, Calculator, the library and Settings. The shell held 106–131 MB of private commit, 30–32 GDI and 37–41 USER objects all along.
+- Its handles stayed between 743 and 757 until minute 32, when Weather's cached forecast had turned 30 minutes old and was fetched again, the run's first web request. They peaked at 913 and settled between 793 and 807: most likely the one-time setup of that first request.
+- At minute 42, input that did not come from the script switched pages several times within seconds, which took private commit to 163 MB, and left the palette out of the script's reach. For the last 18 minutes nothing was in use: every module went to Suspended, then Hibernated, and the shell held 150 MB, 30 GDI and 37–38 USER objects and 788–804 handles.

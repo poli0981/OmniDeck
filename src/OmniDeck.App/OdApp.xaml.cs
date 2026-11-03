@@ -19,6 +19,7 @@ using OmniDeck.Core.Storage;
 using OmniDeck.Modules;
 using OmniDeck.Modules.Calendar;
 using OmniDeck.Modules.Resources;
+using OmniDeck.Modules.Timer;
 using OmniDeck.Web;
 using OmniDeck.Web.Catalog;
 using OmniDeck.Web.Resources;
@@ -101,11 +102,11 @@ public partial class OdApp
         Log.ForContext<OdApp>().Information("Database ready ({Applied} migrations applied)", applied);
 
         var settings = _services.GetRequiredService<IOdSettingsService>();
-        OdLocalization.Instance.SetCulture(OdLocalization.Instance.ResolveCulture(settings.Current.Language));
-        OdLocalization.Instance.TrackWindowLanguage();
-        settings.Changed += (_, e) => Dispatcher.Invoke(() => OdLocalization.Instance.SetCulture(OdLocalization.Instance.ResolveCulture(e.Settings.Language)));
+        FollowLanguage(settings);
+        OdAutomationNames.Register();
 
-        _services.GetRequiredService<OdThemeEngine>().Start(this);
+        var theme = _services.GetRequiredService<OdThemeEngine>();
+        theme.Start(this);
 
         // The legal gate comes first, on the first run and after each legal update; Quit ends here.
         var legal = _services.GetRequiredService<OdLegalGate>();
@@ -119,7 +120,7 @@ public partial class OdApp
         var meta = _services.GetRequiredService<IOdAppMeta>();
         if (OdOnboardingViewModel.IsNeeded(meta))
         {
-            new OdOnboardingWindow(new OdOnboardingViewModel(settings, meta)).ShowDialog();
+            new OdOnboardingWindow(new OdOnboardingViewModel(settings, meta, theme.Preview)).ShowDialog();
         }
 
         // Only now may a second launch bring the window up: never past the gate.
@@ -133,7 +134,16 @@ public partial class OdApp
         _services.GetRequiredService<OdRamGovernor>().Start();
         _services.GetRequiredService<OdUpdateWatcher>().Start();
         _services.GetRequiredService<OdReminderService>().Start();
+        _services.GetRequiredService<OdAlarmService>().Start();
         _services.GetRequiredService<OdCatalogService>().Start();
+    }
+
+    /// <summary>Puts the UI in the language the settings name, now and whenever they change.</summary>
+    private void FollowLanguage(IOdSettingsService settings)
+    {
+        OdLocalization.Instance.SetCulture(OdLocalization.Instance.ResolveCulture(settings.Current.Language));
+        OdLocalization.Instance.TrackWindowLanguage();
+        settings.Changed += (_, e) => Dispatcher.Invoke(() => OdLocalization.Instance.SetCulture(OdLocalization.Instance.ResolveCulture(e.Settings.Language)));
     }
 
     /// <summary>The main window, created once. It owns the tray icon, so it exists even while hidden.</summary>

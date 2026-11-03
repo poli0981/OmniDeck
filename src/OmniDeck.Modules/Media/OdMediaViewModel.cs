@@ -29,6 +29,7 @@ public sealed partial class OdMediaViewModel : ObservableObject, IDisposable
     private double _length;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(PlayPauseName))]
     private bool _isPlaying;
 
     /// <summary>Whether a picture shows; otherwise the screen covers libVLC's empty video window.</summary>
@@ -42,6 +43,7 @@ public sealed partial class OdMediaViewModel : ObservableObject, IDisposable
     private double _volume;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(MuteName))]
     private bool _muted;
 
     [ObservableProperty]
@@ -56,6 +58,12 @@ public sealed partial class OdMediaViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     private string _message = "";
+
+    /// <summary>What the play button does now, as screen readers and its tooltip say it: Pause while playing, Play otherwise.</summary>
+    public string PlayPauseName => IsPlaying ? OdLocalization.Get("Media_Pause") : OdLocalization.Get("Media_Play");
+
+    /// <summary>Mute, or Unmute once muted.</summary>
+    public string MuteName => Muted ? OdLocalization.Get("Media_Unmute") : OdLocalization.Get("Media_Mute");
 
     internal OdMediaViewModel(OdMediaSession session, OdMediaSettings settings, Action<OdMediaSettings> saveSettings, TimeProvider time)
     {
@@ -75,6 +83,7 @@ public sealed partial class OdMediaViewModel : ObservableObject, IDisposable
         _session.PlayerChanged += OnPlayerChanged;
         _session.Failed += OnFailed;
         Refresh();
+        OdLocalization.FollowCulture(OnCultureChanged);
     }
 
     /// <summary>The player came or went: the view hands it to its <c>VideoView</c>.</summary>
@@ -160,6 +169,7 @@ public sealed partial class OdMediaViewModel : ObservableObject, IDisposable
 
     public void Dispose()
     {
+        OdLocalization.UnfollowCulture(OnCultureChanged);
         _session.Changed -= OnSessionChanged;
         _session.PlayerChanged -= OnPlayerChanged;
         _session.Failed -= OnFailed;
@@ -249,6 +259,14 @@ public sealed partial class OdMediaViewModel : ObservableObject, IDisposable
     private void OnPlayerChanged(object? sender, EventArgs e) => PlayerChanged?.Invoke(this, EventArgs.Empty);
 
     private void OnFailed(object? sender, OdMediaFailedEventArgs e) => Message = OdLocalization.Format("Media_Failed", e.File);
+
+    // A change of language: the title and the buttons' names again.
+    private void OnCultureChanged(object? sender, EventArgs e)
+    {
+        Refresh();
+        OnPropertyChanged(nameof(PlayPauseName));
+        OnPropertyChanged(nameof(MuteName));
+    }
 
     private void Refresh()
     {

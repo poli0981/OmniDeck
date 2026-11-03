@@ -1,9 +1,13 @@
+using System.Globalization;
+using System.Text;
+
 namespace OmniDeck.Core.Search;
 
 /// <summary>
 /// The command palette's matcher (docs/SPEC.md §2): every query character must appear in order;
 /// matches at the start, after a word break and in a row score higher, so "cal" ranks
-/// "Calculator" and "Calendar" above "Local time".
+/// "Calculator" and "Calendar" above "Local time". Accents on Latin letters do not count, so
+/// "thoi tiet" finds "Thời tiết" and "d" finds "đ".
 /// </summary>
 public static class OdFuzzyMatcher
 {
@@ -16,6 +20,9 @@ public static class OdFuzzyMatcher
         {
             return 0;
         }
+
+        query = Fold(query);
+        text = Fold(text);
 
         var score = 0;
         var position = 0;
@@ -50,6 +57,39 @@ public static class OdFuzzyMatcher
             .OrderByDescending(x => x.score)
             .ThenBy(x => x.index)
             .Select(x => x.item)];
+    }
+
+    /// <summary>
+    /// <paramref name="text"/> without the accents of its Latin letters, and with đ as d. Marks on other
+    /// scripts stay: a kana's dakuten makes another sound, not an accent.
+    /// </summary>
+    internal static string Fold(string text)
+    {
+        var decomposed = text.Normalize(NormalizationForm.FormD);
+        var folded = new StringBuilder(decomposed.Length);
+        var latin = false;
+        foreach (var c in decomposed)
+        {
+            if (CharUnicodeInfo.GetUnicodeCategory(c) == UnicodeCategory.NonSpacingMark)
+            {
+                if (!latin)
+                {
+                    folded.Append(c);
+                }
+
+                continue;
+            }
+
+            latin = char.IsAsciiLetter(c) || c is 'đ' or 'Đ';
+            folded.Append(c switch
+            {
+                'đ' => 'd',
+                'Đ' => 'D',
+                _ => c,
+            });
+        }
+
+        return folded.ToString().Normalize(NormalizationForm.FormC);
     }
 
     private static int BoundaryBonus(string text, int index)

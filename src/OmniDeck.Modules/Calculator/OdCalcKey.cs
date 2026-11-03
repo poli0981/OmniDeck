@@ -16,4 +16,6 @@ public sealed record OdCalcKey(string Label, string Token, OdCalcKeyKind Kind = 
     public string AccessibleName => Name ?? Label;
 
     public bool IsPrimary => Kind == OdCalcKeyKind.Evaluate;
+
+    public override string ToString() => AccessibleName;
 }

@@ -62,10 +62,10 @@ public sealed class OdBugReporterTests : IDisposable
             Assert.StartsWith("Windows 11", report.Windows, StringComparison.Ordinal);
             Assert.Equal(("Standard", "Discord", "discord"), (report.Preset, report.Subject, report.ConsoleOf));
             Assert.Contains("TypeError at https://discord.com/app?[removed]", report.ConsoleLog, StringComparison.Ordinal);
-            Assert.Contains("### Affected module / web app\n\nDiscord\n", report.Issue, StringComparison.Ordinal);
+            Assert.Contains("### Affected module / web app\n\ndiscord\n", report.Issue, StringComparison.Ordinal);
             Assert.Contains("TypeError at https://discord.com/app?[removed]", report.Issue, StringComparison.Ordinal);
             Assert.Contains(@"Support code: 1 at %USERPROFILE%\x.cs", report.Issue, StringComparison.Ordinal);
-            Assert.Contains("| Module_clock | Active |", report.Issue, StringComparison.Ordinal);
+            Assert.Contains("| clock | Active |", report.Issue, StringComparison.Ordinal);
 
             var lines = report.Logs.Split('\n');
             Assert.Equal(OdBugReporter.LogLines, lines.Length);

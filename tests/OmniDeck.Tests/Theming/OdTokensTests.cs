@@ -21,6 +21,21 @@ public sealed class OdTokensTests
         Assert.Equal(motionMs, tokens.MotionMilliseconds);
     }
 
+    [Theory]
+    [InlineData("Dynamic", 1.5, 0, false, 16, 4.5)]
+    [InlineData("Standard", 2, 0, true, 16, 4.5)]
+    [InlineData("Comfort", 3, 6, true, 22, 7)]
+    public void Presets_SidebarChartsAndContrast_MatchTheUiModesTable(string name, double lineWeight, int maxItems, bool labels, double iconSize, double contrast)
+    {
+        var tokens = OdTokens.Compute(OdPreset.FromName(name), textScale: 2, fontScale: 1.4, motionEnabled: true);
+
+        Assert.Equal(lineWeight, tokens.ChartLineWeight);
+        Assert.Equal(maxItems, tokens.NavMaxVisibleItems);
+        Assert.Equal(labels, tokens.NavShowLabels);
+        Assert.Equal(iconSize, tokens.NavIconSize);
+        Assert.Equal(contrast, tokens.ContrastTarget);
+    }
+
     [Fact]
     public void Headings_FollowThePresetScale()
     {
@@ -29,6 +44,16 @@ public sealed class OdTokensTests
         Assert.Equal(20.15, tokens.FontH2);
         Assert.Equal(26.2, tokens.FontH1);
         Assert.Equal(13.18, tokens.FontCaption);
+    }
+
+    [Theory]
+    [InlineData(1.0, 264, 318, 178, 713)]
+    [InlineData(2.0, 527, 636, 357, 1426)]
+    public void Widths_GrowWithTheText(double textScale, double tile, double wideTile, double field, double readable)
+    {
+        var tokens = OdTokens.Compute(OdPreset.Standard, textScale, fontScale: 1, motionEnabled: true);
+
+        Assert.Equal((tile, wideTile, field, readable), (tokens.TileWidth, tokens.WideTileWidth, tokens.FieldWidth, tokens.ReadableWidth));
     }
 
     [Fact]

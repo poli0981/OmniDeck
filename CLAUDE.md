@@ -7,7 +7,7 @@
 **OmniDeck** — ứng dụng desktop **Windows 11** (24H2+, x64) gom các mini-app native (đồng hồ, hẹn giờ, máy tính, thời tiết, lịch, chứng khoán, media player) và các web app tuyển chọn (Spotify, Discord, YouTube, Google…, chạy trên WebView2) vào một cửa sổ, với **RAM governor** tự suspend/hibernate module.
 
 - Open-source **GPL-3.0**; cài & cập nhật bằng **Velopack** (per-user, không admin).
-- Trạng thái: **alpha** — P0–P2 đã xong phần code (bản 0.2.0-alpha.N đang dogfood), P3 đang làm; lịch và các mốc ở `docs/ROADMAP.md`.
+- Trạng thái: **alpha** — P0–P2 xong (0.2.0, 03/11/2026); P3 đã merge (#58–#69) và ra 0.3.0-alpha.1 (03/11/2026) để dogfood; Legal 1.2 ở #70 (người dùng merge trước tag v0.3.0), 0.3.0 ra sau đợt dogfood; lịch và các mốc ở `docs/ROADMAP.md`.
 
 ## 2. Luật vàng (KHÔNG được vi phạm)
 
@@ -29,7 +29,8 @@
 - Thư viện chính: CommunityToolkit.Mvvm, M.E.DependencyInjection, Serilog, SQLite + Dapper, WebView2 SDK, LibVLCSharp + libVLC, Ical.Net, H.NotifyIcon, Markdig (bảng version ở `docs/SPEC.md` §7). Biểu đồ tự vẽ bằng WPF, không dùng thư viện chart.
 - Test: **xUnit v3** (`xunit.v3.mtp-off`, chạy qua VSTest)
 - Analyzer (warnings = errors): .NET analyzers latest, **SonarAnalyzer.CSharp**, **Roslynator**, **Meziantou**, **ReferenceTrimmer** — khai báo trong `Directory.Build.props`
-- i18n: `.resx` EN (neutral) / VI / JA
+- i18n: `.resx` EN (neutral) / VI / JA; view model dựng chuỗi trong code phải đọc lại khi đổi ngôn ngữ (`OdLocalization.FollowCulture`), danh sách chọn đổi chữ tại chỗ (`OdLocalizedOption`); luật dịch và bảng thuật ngữ ở `docs/TRANSLATING.md`
+- Accessibility: tên cho mọi control và mọi hàng (`{res:OdLocRow …}`), dòng trạng thái là `OdStatusText`; kiểm bằng `scripts/od-drive.ps1 -Action audit` (`docs/WPFUI-CONVENTIONS.md` §7)
 
 ## 4. Bố cục
 
@@ -86,6 +87,7 @@ Required checks trên `main`: `build`, `package`, `catalog`, `lint`, `Analyze (c
 | `docs/UI-MODES.md` | Token `Od.*`, 3 preset |
 | `docs/WPFUI-CONVENTIONS.md` | Cách dùng WPF-UI |
 | `docs/WEBAPP-CATALOG.md` | Schema + luật review catalog |
+| `docs/TRANSLATING.md` | Luật dịch, cách app đổi ngôn ngữ, thuật ngữ VI/JA |
 | `docs/ROADMAP.md` | Phase P0–P4, version, rủi ro |
 | `docs/legal/*` | EULA, Disclaimer, Privacy, Third-party notices (ship trong app) |
 | `README.md`, `CONTRIBUTING.md`, `SECURITY.md`, `RELEASING.md`, `CHANGELOG.md` | Tài liệu công khai |

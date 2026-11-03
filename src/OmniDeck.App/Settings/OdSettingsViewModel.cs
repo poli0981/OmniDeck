@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OmniDeck.App.Shell;
+using OmniDeck.Core;
 using OmniDeck.Core.Localization;
 using OmniDeck.Core.Settings;
 using OmniDeck.Core.Storage;
@@ -31,6 +32,10 @@ public sealed partial class OdSettingsViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     private bool _startWithWindows;
+
+    /// <summary>Whether updates include alphas and betas: the user's choice, or what the running build is.</summary>
+    [ObservableProperty]
+    private bool _receivePrereleases;
 
     [ObservableProperty]
     private OdThemeMode _theme;
@@ -86,21 +91,36 @@ public sealed partial class OdSettingsViewModel : ObservableObject, IDisposable
         DataFolder = dataRoot.Root;
         Load(settings.Current);
         settings.Changed += OnSettingsChanged;
+        OdLocalization.FollowCulture(OnCultureChanged);
     }
 
     public IReadOnlyList<OdChoice<string>> Languages { get; } = LanguageChoices();
 
     public IReadOnlyList<OdChoice<OdThemeMode>> Themes { get; } =
     [
-        new(OdThemeMode.System, OdLocalization.Get("Theme_System")),
-        new(OdThemeMode.Light, OdLocalization.Get("Theme_Light")),
-        new(OdThemeMode.Dark, OdLocalization.Get("Theme_Dark")),
+        new(OdThemeMode.System, () => OdLocalization.Get("Theme_System")),
+        new(OdThemeMode.Light, () => OdLocalization.Get("Theme_Light")),
+        new(OdThemeMode.Dark, () => OdLocalization.Get("Theme_Dark")),
     ];
 
     public IReadOnlyList<OdPresetOption> Presets { get; } = OdPresetOption.All();
 
     /// <summary>Accent colors to pick from when the Windows accent is not used.</summary>
-    public IReadOnlyList<string> AccentSwatches { get; } = ["#0067C0", "#8764B8", "#C239B3", "#E74856", "#CA5010", "#10893E"];
+    public IReadOnlyList<OdAccentSwatch> AccentSwatches { get; } = OdAccentSwatch.All();
+
+    /// <summary>The swatch in use, or null with the Windows accent; picking one leaves the Windows accent.</summary>
+    public OdAccentSwatch? SelectedSwatch
+    {
+        get => UseSystemAccent ? null : AccentSwatches.FirstOrDefault(swatch => string.Equals(swatch.Color, AccentColor, StringComparison.OrdinalIgnoreCase));
+        set
+        {
+            if (value is not null)
+            {
+                AccentColor = value.Color;
+                UseSystemAccent = false;
+            }
+        }
+    }
 
     public OdMemoryViewModel Memory { get; }
 
@@ -110,11 +130,14 @@ public sealed partial class OdSettingsViewModel : ObservableObject, IDisposable
 
     public string DataFolder { get; }
 
-    /// <summary>The language choices: Windows' display language, then the languages OmniDeck ships.</summary>
+    /// <summary>
+    /// The language choices: Windows' display language, then the languages OmniDeck ships, each named in
+    /// itself, so that whoever reads the list finds their own language whatever the UI's.
+    /// </summary>
     public static IReadOnlyList<OdChoice<string>> LanguageChoices() =>
     [
-        new("", OdLocalization.Get("Language_System")),
-        new("en", OdLocalization.Get("Language_English")),
+        new("", () => OdLocalization.Get("Language_System")),
+        .. OdLanguages.Shipped.Select(name => new OdChoice<string>(name, OdLanguages.NativeName(name))),
     ];
 
     public void ShowSection(OdSettingsSection section) => SectionIndex = (int)section;
@@ -128,17 +151,14 @@ public sealed partial class OdSettingsViewModel : ObservableObject, IDisposable
     public void ImportFrom(string path) =>
         DataMessage = _settings.Import(path) ? OdLocalization.Get("Settings_Imported") : OdLocalization.Get("Settings_ImportFailed");
 
-    public void Dispose() => _settings.Changed -= OnSettingsChanged;
+    public void Dispose()
+    {
+        OdLocalization.UnfollowCulture(OnCultureChanged);
+        _settings.Changed -= OnSettingsChanged;
+    }
 
     [RelayCommand]
     private void OpenDataFolder() => _openFolder(DataFolder);
-
-    [RelayCommand]
-    private void ChooseAccent(string color)
-    {
-        AccentColor = color;
-        UseSystemAccent = false;
-    }
 
     partial void OnSectionIndexChanged(int value)
     {
@@ -155,6 +175,8 @@ public sealed partial class OdSettingsViewModel : ObservableObject, IDisposable
     partial void OnLanguageChanged(string value) => Apply(s => s with { Language = value });
 
     partial void OnCloseToTrayChanged(bool value) => Apply(s => s with { CloseToTray = value });
+
+    partial void OnReceivePrereleasesChanged(bool value) => Apply(s => s with { Prereleases = value });
 
     partial void OnStartWithWindowsChanged(bool value)
     {
@@ -176,11 +198,16 @@ public sealed partial class OdSettingsViewModel : ObservableObject, IDisposable
     partial void OnUseSystemAccentChanged(bool value)
     {
         // Leaving the Windows accent keeps the color already picked, or starts from the first swatch.
-        var custom = AccentColor.Length > 0 ? AccentColor : AccentSwatches[0];
+        var custom = AccentColor.Length > 0 ? AccentColor : AccentSwatches[0].Color;
         Apply(s => s with { AccentColor = value ? "" : custom });
+        OnPropertyChanged(nameof(SelectedSwatch));
     }
 
-    partial void OnAccentColorChanged(string value) => Apply(s => s with { AccentColor = UseSystemAccent ? "" : value });
+    partial void OnAccentColorChanged(string value)
+    {
+        Apply(s => s with { AccentColor = UseSystemAccent ? "" : value });
+        OnPropertyChanged(nameof(SelectedSwatch));
+    }
 
     partial void OnIdleAfterMinutesChanged(double? value) =>
         Apply(s => s with { Memory = s.Memory with { IdleAfterMinutes = WholeNumber(value, s.Memory.IdleAfterMinutes) } });
@@ -207,6 +234,33 @@ public sealed partial class OdSettingsViewModel : ObservableObject, IDisposable
 
     private void OnSettingsChanged(object? sender, OdSettingsChangedEventArgs e) => Load(e.Settings);
 
+    // The lists keep their items, whose texts change in place: the selections bound to them stay.
+    private void OnCultureChanged(object? sender, EventArgs e)
+    {
+        foreach (var choice in Languages)
+        {
+            choice.RefreshTitle();
+        }
+
+        foreach (var choice in Themes)
+        {
+            choice.RefreshTitle();
+        }
+
+        foreach (var option in Presets)
+        {
+            option.RefreshTexts();
+        }
+
+        foreach (var swatch in AccentSwatches)
+        {
+            swatch.RefreshName();
+        }
+
+        About.RefreshTexts();
+        WebApps.Refresh();
+    }
+
     /// <summary>Shows <paramref name="settings"/> without writing anything back.</summary>
     private void Load(OdSettings settings)
     {
@@ -215,6 +269,7 @@ public sealed partial class OdSettingsViewModel : ObservableObject, IDisposable
         {
             Language = settings.Language;
             CloseToTray = settings.CloseToTray;
+            ReceivePrereleases = OdUpdateChannel.IncludesPrereleases(settings.Prereleases, OdVersionInfo.FromAssembly(typeof(OdSettingsViewModel).Assembly).Version);
             StartWithWindows = _startup.IsEnabled;
             Theme = settings.Theme;
             Preset = settings.Preset;

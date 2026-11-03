@@ -20,7 +20,7 @@ These are design requirements from the [SPEC](docs/SPEC.md); each one is enforce
 - Per-user install, **no admin elevation anywhere** in the app.
 - Web apps run only from the reviewed catalog: per-app navigation allowlists, per-app cookie profiles, SSO popups restricted to listed identity domains, everything else opens in your default browser.
 - Release builds disable the WebView2 DevTools UI and browser password autosave/autofill; OmniDeck never sees or stores web credentials.
-- The only secret the app stores (optional Twelve Data API key) is encrypted with Windows DPAPI, current-user scope.
+- The only secret the app stores (optional Twelve Data API key) is encrypted with Windows DPAPI, current-user scope. It travels only to Twelve Data, in a request header rather than in a web address, and never into a log or a bug report.
 - All service calls (Open-Meteo, Twelve Data, GitHub) are HTTPS-only.
 - Bug reports scrub query strings, cookie values, and token-shaped strings before packaging; nothing is ever uploaded automatically — you attach the zip yourself.
 - No telemetry, no analytics, no crash auto-upload (see [PRIVACY](docs/legal/PRIVACY.md)).

@@ -22,6 +22,7 @@ Releases are automated by [`release.yml`](.github/workflows/release.yml), trigge
    - publishes and packages with Velopack (`scripts/pack.ps1`): self-contained `win-x64`, ReadyToRun, with the legal documents and the runtimes' notices;
    - creates **build-provenance attestations** for `Setup.exe`, the portable zip, and this version's `.nupkg` files;
    - uploads everything as a **draft** GitHub Release, attaches the **SPDX SBOM** (`sbom.spdx.json`) and **`checksums.txt`** (SHA-256 of every published asset), sets the release notes to this version's section of `CHANGELOG.md`, then **publishes** it — as a pre-release, or as the latest release for stable versions. Installed copies only see the update once every asset is in place;
+   - Installed copies offer pre-releases while a pre-release runs, or when the user turns on **Get pre-release versions** in Settings → About (`OdUpdateChannel`); a stable install offers stable releases only. Every release stays on Velopack's one `win` channel, so moving from a beta to 1.0 is an ordinary update.
    - announces the release on Discord (`DISCORD_RELEASE_WEBHOOK`) with `.github/scripts/discord_notify.py`.
 5. Check the release page: the assets are all there, and the attestation verifies:
 

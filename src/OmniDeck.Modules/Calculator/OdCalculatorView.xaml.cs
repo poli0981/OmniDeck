@@ -85,4 +85,25 @@ public partial class OdCalculatorView
             ViewModel?.RecallCommand.Execute(entry);
         }
     }
+
+    // In the history, Enter brings the selected calculation back, as a double click does, and Delete
+    // forgets it; neither reaches the keypad's keys.
+    private void OnHistoryKeyDown(object sender, KeyEventArgs e)
+    {
+        if (sender is not ListBox { SelectedItem: OdCalcHistoryEntry entry } || ViewModel is not { } calculator)
+        {
+            return;
+        }
+
+        if (e.Key == Key.Enter)
+        {
+            e.Handled = true;
+            calculator.RecallCommand.Execute(entry);
+        }
+        else if (e.Key == Key.Delete)
+        {
+            e.Handled = true;
+            calculator.ForgetCommand.Execute(entry);
+        }
+    }
 }

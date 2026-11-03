@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!-- The built-in modules' UI strings, English (neutral). Vietnamese and Japanese satellites arrive in P3. -->
+  <!-- The built-in modules' UI strings, English (neutral). Translations sit beside it: Strings.vi.resx and Strings.ja.resx (docs/TRANSLATING.md). -->
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
   </resheader>
@@ -358,11 +358,9 @@
   <data name="Calendar_Repeat" xml:space="preserve">
     <value>Repeat</value>
   </data>
-  <data name="Calendar_Every" xml:space="preserve">
-    <value>Every</value>
-  </data>
   <data name="Calendar_Until" xml:space="preserve">
     <value>until</value>
+    <comment>The label before the date a repeating event ends on. Where &quot;until&quot; cannot come before the date, use a label such as &quot;End date&quot;.</comment>
   </data>
   <data name="Calendar_RepeatNone" xml:space="preserve">
     <value>Doesn't repeat</value>
@@ -490,9 +488,6 @@
   <data name="Media_Remove" xml:space="preserve">
     <value>Remove from the queue</value>
   </data>
-  <data name="Media_PlayPause" xml:space="preserve">
-    <value>Play or pause</value>
-  </data>
   <data name="Media_Previous" xml:space="preserve">
     <value>Previous</value>
   </data>
@@ -603,5 +598,423 @@
   </data>
   <data name="Media_ExitFullscreen" xml:space="preserve">
     <value>Leave full screen (Esc)</value>
+  </data>
+  <data name="Chart_Type" xml:space="preserve">
+    <value>chart</value>
+  </data>
+  <data name="Chart_KeyboardHint" xml:space="preserve">
+    <value>The left and right arrow keys read the values one by one; Home and End go to the first and the last.</value>
+  </data>
+  <data name="Weather_ChartSummary" xml:space="preserve">
+    <value>Next 48 hours: from {0} to {1}; rain is most likely on {2} at {3} ({4}).</value>
+  </data>
+  <data name="Weather_ChartSummaryDry" xml:space="preserve">
+    <value>Next 48 hours: from {0} to {1}.</value>
+  </data>
+  <data name="Weather_ChartReadout" xml:space="preserve">
+    <value>{0} at {1}: {2}, {3}, {4} chance of rain</value>
+  </data>
+  <data name="Stocks_Name" xml:space="preserve">
+    <value>Stocks</value>
+  </data>
+  <data name="Stocks_NotAvailable" xml:space="preserve">
+    <value>N/A</value>
+  </data>
+  <data name="Stocks_Price" xml:space="preserve">
+    <value>{0} {1}</value>
+  </data>
+  <data name="Stocks_Change" xml:space="preserve">
+    <value>{0} ({1})</value>
+  </data>
+  <data name="Stocks_RowPrice" xml:space="preserve">
+    <value>{0}, {1}, {2}</value>
+  </data>
+  <data name="Stocks_RowUp" xml:space="preserve">
+    <value>{0}, {1}, {2}, up {3} percent</value>
+  </data>
+  <data name="Stocks_RowDown" xml:space="preserve">
+    <value>{0}, {1}, {2}, down {3} percent</value>
+  </data>
+  <data name="Stocks_RowNote" xml:space="preserve">
+    <value>{0}. {1}</value>
+  </data>
+  <data name="Stocks_ResultTitle" xml:space="preserve">
+    <value>{0} — {1}</value>
+  </data>
+  <data name="Stocks_ResultDetail" xml:space="preserve">
+    <value>{0}, {1}</value>
+  </data>
+  <data name="Stocks_NeedsPlan" xml:space="preserve">
+    <value>Needs Twelve Data&apos;s {0} plan</value>
+  </data>
+  <data name="Stocks_AddNamed" xml:space="preserve">
+    <value>Add {0}, {1}</value>
+  </data>
+  <data name="Stocks_IntervalStretched" xml:space="preserve">
+    <value>Prices update every {0} minutes, so that today&apos;s credits last until the close.</value>
+  </data>
+  <data name="Stocks_KeyEmpty" xml:space="preserve">
+    <value>Paste your Twelve Data API key first.</value>
+  </data>
+  <data name="Stocks_KeyBusy" xml:space="preserve">
+    <value>This key has used its credits for now. Try again in a minute.</value>
+  </data>
+  <data name="Stocks_KeyRejected" xml:space="preserve">
+    <value>Twelve Data did not accept this key. Check it and try again.</value>
+  </data>
+  <data name="Stocks_KeyOffline" xml:space="preserve">
+    <value>Twelve Data could not be reached, so the key was not saved.</value>
+  </data>
+  <data name="Stocks_KeyFailed" xml:space="preserve">
+    <value>The key could not be checked. Try again later.</value>
+  </data>
+  <data name="Stocks_SearchNone" xml:space="preserve">
+    <value>No listings match that.</value>
+  </data>
+  <data name="Stocks_SearchFailed" xml:space="preserve">
+    <value>The search did not go through. Try again later.</value>
+  </data>
+  <data name="Stocks_NotOnPlan" xml:space="preserve">
+    <value>Not available on your Twelve Data plan</value>
+  </data>
+  <data name="Stocks_NotFound" xml:space="preserve">
+    <value>Twelve Data does not know this symbol</value>
+  </data>
+  <data name="Stocks_StatusKeyRejected" xml:space="preserve">
+    <value>Twelve Data no longer accepts your key. Change it under &quot;Twelve Data key&quot; below.</value>
+  </data>
+  <data name="Stocks_StatusOffline" xml:space="preserve">
+    <value>Twelve Data can&apos;t be reached right now. These are the last prices OmniDeck received.</value>
+  </data>
+  <data name="Stocks_StatusDay" xml:space="preserve">
+    <value>Today&apos;s Twelve Data credits are spent. Prices update again after {0}.</value>
+  </data>
+  <data name="Stocks_StatusMinute" xml:space="preserve">
+    <value>This minute&apos;s Twelve Data credits are spent. The rest update at {0}.</value>
+  </data>
+  <data name="Stocks_Credits" xml:space="preserve">
+    <value>{0} of {1} Twelve Data credits left today</value>
+  </data>
+  <data name="Stocks_Plan" xml:space="preserve">
+    <value>Plan: {0}. Up to {1} credits a minute and {2} a day.</value>
+  </data>
+  <data name="Stocks_Refresh" xml:space="preserve">
+    <value>Refresh prices</value>
+  </data>
+  <data name="Stocks_SetupTitle" xml:space="preserve">
+    <value>Connect your Twelve Data key</value>
+  </data>
+  <data name="Stocks_SetupBody" xml:space="preserve">
+    <value>Stocks shows market data from Twelve Data with your own API key. A free key covers US stocks, ETFs and US-listed ADRs; European home markets and indices need a paid plan. The key stays on this PC, encrypted for your Windows account, and OmniDeck sends it only to Twelve Data.</value>
+  </data>
+  <data name="Stocks_GetKey" xml:space="preserve">
+    <value>Get a free key from Twelve Data</value>
+  </data>
+  <data name="Stocks_KeyLabel" xml:space="preserve">
+    <value>Twelve Data API key</value>
+  </data>
+  <data name="Stocks_TestAndSave" xml:space="preserve">
+    <value>Test and save</value>
+  </data>
+  <data name="Stocks_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Stocks_Empty" xml:space="preserve">
+    <value>Your watchlist is empty. Search for a company or an ETF below to add it.</value>
+  </data>
+  <data name="Stocks_Watchlist" xml:space="preserve">
+    <value>Watchlist</value>
+  </data>
+  <data name="Stocks_MoveUp" xml:space="preserve">
+    <value>Move up</value>
+  </data>
+  <data name="Stocks_MoveDown" xml:space="preserve">
+    <value>Move down</value>
+  </data>
+  <data name="Stocks_Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="Stocks_AddListing" xml:space="preserve">
+    <value>Add a listing</value>
+  </data>
+  <data name="Stocks_SearchButton" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Stocks_Search" xml:space="preserve">
+    <value>Symbol or company name</value>
+  </data>
+  <data name="Stocks_Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="Stocks_KeyPanel" xml:space="preserve">
+    <value>Twelve Data key</value>
+  </data>
+  <data name="Stocks_ChangeKey" xml:space="preserve">
+    <value>Change key</value>
+  </data>
+  <data name="Stocks_RemoveKey" xml:space="preserve">
+    <value>Remove key</value>
+  </data>
+  <data name="Stocks_Disclaimer" xml:space="preserve">
+    <value>Delayed or indicative data — not investment advice.</value>
+  </data>
+  <data name="Stocks_DataBy" xml:space="preserve">
+    <value>Market data by Twelve Data</value>
+  </data>
+  <data name="Stocks_Range1M" xml:space="preserve">
+    <value>1 month</value>
+  </data>
+  <data name="Stocks_Range6M" xml:space="preserve">
+    <value>6 months</value>
+  </data>
+  <data name="Stocks_Range1Y" xml:space="preserve">
+    <value>1 year</value>
+  </data>
+  <data name="Stocks_Range5Y" xml:space="preserve">
+    <value>5 years</value>
+  </data>
+  <data name="Stocks_Ranges" xml:space="preserve">
+    <value>Range</value>
+  </data>
+  <data name="Stocks_DetailMarket" xml:space="preserve">
+    <value>{0}, {1}</value>
+  </data>
+  <data name="Stocks_MarketOpen" xml:space="preserve">
+    <value>market open</value>
+  </data>
+  <data name="Stocks_MarketClosed" xml:space="preserve">
+    <value>market closed</value>
+  </data>
+  <data name="Stocks_DayRange" xml:space="preserve">
+    <value>Today: {0} to {1}</value>
+  </data>
+  <data name="Stocks_YearRange" xml:space="preserve">
+    <value>52 weeks: {0} to {1}</value>
+  </data>
+  <data name="Stocks_Volume" xml:space="preserve">
+    <value>Volume: {0}</value>
+  </data>
+  <data name="Stocks_SeriesUnavailable" xml:space="preserve">
+    <value>These prices are not available right now.</value>
+  </data>
+  <data name="Stocks_DetailSummary" xml:space="preserve">
+    <value>{0}, {1}: from {2} to {3} ({4}); highest {5} on {6}, lowest {7} on {8}.</value>
+  </data>
+  <data name="Stocks_DetailReadout" xml:space="preserve">
+    <value>{0}: open {1}, high {2}, low {3}, close {4}, volume {5}</value>
+  </data>
+  <data name="Stocks_CloseDetail" xml:space="preserve">
+    <value>Close the details</value>
+  </data>
+  <data name="Stocks_ShowTable" xml:space="preserve">
+    <value>Show the prices as a table</value>
+  </data>
+  <data name="Stocks_Table" xml:space="preserve">
+    <value>Prices</value>
+  </data>
+  <data name="Stocks_ColumnDate" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Stocks_ColumnOpen" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="Stocks_ColumnHigh" xml:space="preserve">
+    <value>High</value>
+  </data>
+  <data name="Stocks_ColumnLow" xml:space="preserve">
+    <value>Low</value>
+  </data>
+  <data name="Stocks_ColumnClose" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Stocks_ColumnVolume" xml:space="preserve">
+    <value>Volume</value>
+  </data>
+  <data name="Timer_Alarms" xml:space="preserve">
+    <value>Alarms</value>
+  </data>
+  <data name="Timer_AlarmsNote" xml:space="preserve">
+    <value>Alarms ring only while OmniDeck runs, in the notification area too.</value>
+  </data>
+  <data name="Timer_AlarmTime" xml:space="preserve">
+    <value>Alarm time</value>
+  </data>
+  <data name="Timer_AlarmTimeHint" xml:space="preserve">
+    <value>For example {0}</value>
+  </data>
+  <data name="Timer_AlarmBadTime" xml:space="preserve">
+    <value>That is not a time. {0}.</value>
+  </data>
+  <data name="Timer_AlarmLabel" xml:space="preserve">
+    <value>Label (optional)</value>
+  </data>
+  <data name="Timer_AlarmAdd" xml:space="preserve">
+    <value>Add alarm</value>
+  </data>
+  <data name="Timer_AlarmRepeat" xml:space="preserve">
+    <value>Repeat</value>
+  </data>
+  <data name="Timer_RepeatOnce" xml:space="preserve">
+    <value>Once</value>
+  </data>
+  <data name="Timer_RepeatDaily" xml:space="preserve">
+    <value>Every day</value>
+  </data>
+  <data name="Timer_RepeatWeekdays" xml:space="preserve">
+    <value>Weekdays</value>
+  </data>
+  <data name="Timer_RepeatWeekends" xml:space="preserve">
+    <value>Weekends</value>
+  </data>
+  <data name="Timer_AlarmNext" xml:space="preserve">
+    <value>Next: {0} {1}</value>
+  </data>
+  <data name="Timer_AlarmOff" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="Timer_AlarmTitle" xml:space="preserve">
+    <value>Alarm</value>
+  </data>
+  <data name="Timer_AlarmLabelled" xml:space="preserve">
+    <value>{0}, {1}</value>
+  </data>
+  <data name="Timer_AlarmRow" xml:space="preserve">
+    <value>{0} at {1}, {2}. {3}</value>
+  </data>
+  <data name="Timer_NoAlarms" xml:space="preserve">
+    <value>No alarms yet.</value>
+  </data>
+  <data name="Timer_AlarmDelete" xml:space="preserve">
+    <value>Delete alarm</value>
+  </data>
+  <data name="Weather_HourName" xml:space="preserve">
+    <value>{0}: {1}, {2}, {3} chance of rain</value>
+    <comment>What screen readers hear for an hour of the forecast: {0} time, {1} temperature, {2} conditions, {3} chance of rain (as 20%).</comment>
+  </data>
+  <data name="Weather_DayName" xml:space="preserve">
+    <value>{0}: {1}, {2}, {3} chance of rain</value>
+    <comment>What screen readers hear for a day of the forecast: {0} day, {1} high and low, {2} conditions, {3} chance of rain.</comment>
+  </data>
+  <data name="Timer_LapName" xml:space="preserve">
+    <value>{0}: {1}, total {2}</value>
+    <comment>What screen readers hear for a lap: {0} &quot;Lap 3&quot;, {1} its length, {2} the total at that moment.</comment>
+  </data>
+  <data name="Calendar_DayToday" xml:space="preserve">
+    <value>{0}, today</value>
+    <comment>A day of the month grid as screen readers hear it when it is today: {0} is the whole date.</comment>
+  </data>
+  <data name="Calc_Percent" xml:space="preserve">
+    <value>Percent</value>
+  </data>
+  <data name="Calc_Divide" xml:space="preserve">
+    <value>Divide</value>
+  </data>
+  <data name="Calc_Multiply" xml:space="preserve">
+    <value>Multiply</value>
+  </data>
+  <data name="Calc_Minus" xml:space="preserve">
+    <value>Minus</value>
+  </data>
+  <data name="Calc_Plus" xml:space="preserve">
+    <value>Plus</value>
+  </data>
+  <data name="Calc_Decimal" xml:space="preserve">
+    <value>Decimal point</value>
+  </data>
+  <data name="Calc_Equals" xml:space="preserve">
+    <value>Equals</value>
+  </data>
+  <data name="Calc_Sine" xml:space="preserve">
+    <value>Sine</value>
+  </data>
+  <data name="Calc_Cosine" xml:space="preserve">
+    <value>Cosine</value>
+  </data>
+  <data name="Calc_Tangent" xml:space="preserve">
+    <value>Tangent</value>
+  </data>
+  <data name="Calc_NaturalLog" xml:space="preserve">
+    <value>Natural logarithm</value>
+  </data>
+  <data name="Calc_Log" xml:space="preserve">
+    <value>Logarithm, base 10</value>
+  </data>
+  <data name="Calc_Arcsine" xml:space="preserve">
+    <value>Arcsine</value>
+  </data>
+  <data name="Calc_Arccosine" xml:space="preserve">
+    <value>Arccosine</value>
+  </data>
+  <data name="Calc_Arctangent" xml:space="preserve">
+    <value>Arctangent</value>
+  </data>
+  <data name="Calc_SquareRoot" xml:space="preserve">
+    <value>Square root</value>
+  </data>
+  <data name="Calc_Power" xml:space="preserve">
+    <value>Power</value>
+  </data>
+  <data name="Calc_OpenParenthesis" xml:space="preserve">
+    <value>Open parenthesis</value>
+  </data>
+  <data name="Calc_CloseParenthesis" xml:space="preserve">
+    <value>Close parenthesis</value>
+  </data>
+  <data name="Calc_Pi" xml:space="preserve">
+    <value>Pi</value>
+  </data>
+  <data name="Calc_Euler" xml:space="preserve">
+    <value>e, Euler&apos;s number</value>
+  </data>
+  <data name="Calc_Factorial" xml:space="preserve">
+    <value>Factorial</value>
+  </data>
+  <data name="Media_Play" xml:space="preserve">
+    <value>Play</value>
+  </data>
+  <data name="Media_Pause" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="Media_Unmute" xml:space="preserve">
+    <value>Unmute</value>
+  </data>
+  <data name="Calendar_Interval" xml:space="preserve">
+    <value>How often</value>
+  </data>
+  <data name="Calendar_EveryDay" xml:space="preserve">
+    <value>every day</value>
+  </data>
+  <data name="Calendar_EveryDays" xml:space="preserve">
+    <value>every {0} days</value>
+    <comment>An item of the repeat&apos;s interval list, after the repeat chosen (Daily): {0} is 2 to 12.</comment>
+  </data>
+  <data name="Calendar_EveryWeek" xml:space="preserve">
+    <value>every week</value>
+  </data>
+  <data name="Calendar_EveryWeeks" xml:space="preserve">
+    <value>every {0} weeks</value>
+    <comment>An item of the interval list when the event repeats weekly: {0} is 2 to 12.</comment>
+  </data>
+  <data name="Calendar_EveryMonth" xml:space="preserve">
+    <value>every month</value>
+  </data>
+  <data name="Calendar_EveryMonths" xml:space="preserve">
+    <value>every {0} months</value>
+    <comment>An item of the interval list when the event repeats monthly: {0} is 2 to 12.</comment>
+  </data>
+  <data name="Calendar_EveryYear" xml:space="preserve">
+    <value>every year</value>
+  </data>
+  <data name="Calendar_EveryYears" xml:space="preserve">
+    <value>every {0} years</value>
+    <comment>An item of the interval list when the event repeats yearly: {0} is 2 to 12.</comment>
+  </data>
+  <data name="Clock_Time12" xml:space="preserve">
+    <value>h:mm:ss tt</value>
+    <comment>A .NET time format, not words: h the hour, mm the minutes, ss the seconds, tt AM or PM in the region&apos;s own words. Put tt where your language puts it (Japanese: tt h:mm:ss).</comment>
+  </data>
+  <data name="Weather_DayFormat" xml:space="preserve">
+    <value>ddd d</value>
+    <comment>A .NET date format, not words: ddd the short day name, d the day of the month. Order them as your language does (Japanese: d日(ddd)).</comment>
   </data>
 </root>

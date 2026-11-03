@@ -51,7 +51,8 @@
                                Icon="{ui:SymbolIcon ArrowExportLtr24}"
                                ToolTip="{res:OdLoc Calendar_Export}" />
                 </StackPanel>
-                <TextBlock FontSize="{DynamicResource Od.Font.H1}"
+                <TextBlock AutomationProperties.HeadingLevel="Level1"
+                           FontSize="{DynamicResource Od.Font.H1}"
                            FontWeight="SemiBold"
                            Text="{res:OdLoc Calendar_Name}" />
             </DockPanel>
@@ -94,6 +95,7 @@
                            ToolTip="{res:OdLoc Calendar_Next}" />
                 <TextBlock Margin="{DynamicResource Od.Padding.Control}"
                            VerticalAlignment="Center"
+                           AutomationProperties.HeadingLevel="Level2"
                            FontSize="{DynamicResource Od.Font.H2}"
                            FontWeight="SemiBold"
                            Text="{Binding PeriodText}" />
@@ -143,15 +145,13 @@
                                   ItemsSource="{Binding Repeats}"
                                   SelectedItem="{Binding EditRepeat}"
                                   ToolTip="{res:OdLoc Calendar_Repeat}" />
-                        <TextBlock Margin="{DynamicResource Od.Padding.Control}"
-                                   VerticalAlignment="Center"
-                                   Text="{res:OdLoc Calendar_Every}"
-                                   Visibility="{Binding IsRepeating, Converter={StaticResource Visible}}" />
+                        <!--  Each interval reads as a whole phrase ("every 2 weeks"): no sentence is built from pieces.  -->
                         <ComboBox Margin="{DynamicResource Od.Padding.Control}"
                                   VerticalAlignment="Center"
-                                  AutomationProperties.Name="{res:OdLoc Calendar_Every}"
+                                  AutomationProperties.Name="{res:OdLoc Calendar_Interval}"
                                   ItemsSource="{Binding Intervals}"
-                                  SelectedItem="{Binding EditInterval}"
+                                  SelectedValue="{Binding EditInterval}"
+                                  SelectedValuePath="Value"
                                   Visibility="{Binding IsRepeating, Converter={StaticResource Visible}}" />
                         <TextBlock Margin="{DynamicResource Od.Padding.Control}"
                                    VerticalAlignment="Center"
@@ -237,15 +237,19 @@
                                 <Border.Style>
                                     <Style TargetType="Border">
                                         <Style.Triggers>
+                                            <!--  Dimmed outside the month, but never below AA, and not at all in High Contrast.  -->
                                             <DataTrigger Binding="{Binding IsInPeriod}" Value="False">
-                                                <Setter Property="Opacity" Value="0.55" />
+                                                <Setter Property="Opacity" Value="{DynamicResource Od.Opacity.Dim}" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </Border.Style>
                                 <StackPanel>
+                                    <!--  Screen readers hear the whole date; the cell shows only its number.  -->
                                     <ui:Button HorizontalAlignment="Left"
                                                Appearance="Transparent"
+                                               AutomationProperties.HelpText="{res:OdLoc Calendar_New}"
+                                               AutomationProperties.Name="{Binding}"
                                                Command="{Binding DataContext.NewEventCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                CommandParameter="{Binding}"
                                                ToolTip="{res:OdLoc Calendar_New}">
@@ -277,7 +281,8 @@
                             <StackPanel Margin="{DynamicResource Od.Margin.Item}">
                                 <DockPanel>
                                     <ui:Button Appearance="Transparent"
-                                               AutomationProperties.Name="{res:OdLoc Calendar_New}"
+                                               AutomationProperties.Name="{res:OdLocRow Calendar_New,
+                                                                                        Path=.}"
                                                Command="{Binding DataContext.NewEventCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                CommandParameter="{Binding}"
                                                DockPanel.Dock="Right"

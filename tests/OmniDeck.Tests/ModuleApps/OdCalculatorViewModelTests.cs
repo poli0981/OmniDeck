@@ -151,9 +151,15 @@ public sealed class OdCalculatorViewModelTests
         Assert.Equal(15, calculator.ScientificKeys.Count);
         Assert.Equal("Clear", Key("C").AccessibleName);
         Assert.Equal("7", Key("7").AccessibleName);
+        Assert.Equal("Divide", Key("÷").ToString());
+        Assert.Equal("Minus", Key("−").AccessibleName);
+        Assert.Equal("Square root", calculator.ScientificKeys.Single(key => string.Equals(key.Label, "√(", StringComparison.Ordinal)).AccessibleName);
         Assert.True(Key("=").IsPrimary);
         Assert.False(Key("7").IsPrimary);
         Assert.False(calculator.HistoryIsEmpty);
+
+        calculator.ForgetCommand.Execute(calculator.History[0]);
+        Assert.True(calculator.HistoryIsEmpty);
     }
 
     private static void Type(OdCalculatorViewModel calculator, params string[] tokens)

@@ -1,13 +1,17 @@
+using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using OmniDeck.Core.Localization;
 using OmniDeck.Core.Settings;
 using OmniDeck.Core.Storage;
+using OmniDeck.Core.Theming;
 
 namespace OmniDeck.App.Settings;
 
 /// <summary>
-/// First-run setup, right after the legal gate: the language and the UI preset. A preset applies as
-/// soon as it is picked, so the window itself is the preview. Get started records that setup is done.
+/// First-run setup, right after the legal gate: the language and the UI preset. Each preset card
+/// previews its preset with the layer the theme engine builds for it, and a preset applies to the
+/// whole window as soon as it is picked. Get started records that setup is done.
 /// </summary>
 public sealed partial class OdOnboardingViewModel : ObservableObject
 {
@@ -20,13 +24,15 @@ public sealed partial class OdOnboardingViewModel : ObservableObject
     [ObservableProperty]
     private string _preset;
 
-    public OdOnboardingViewModel(IOdSettingsService settings, IOdAppMeta meta)
+    public OdOnboardingViewModel(IOdSettingsService settings, IOdAppMeta meta, Func<OdPreset, ResourceDictionary>? preview = null)
     {
         ArgumentNullException.ThrowIfNull(settings);
         _settings = settings;
         _meta = meta;
         _language = settings.Current.Language;
         _preset = settings.Current.Preset;
+        Presets = OdPresetOption.All(preview);
+        OdLocalization.FollowCulture(OnCultureChanged);
     }
 
     /// <summary>Raised once the user is done.</summary>
@@ -34,7 +40,7 @@ public sealed partial class OdOnboardingViewModel : ObservableObject
 
     public IReadOnlyList<OdChoice<string>> Languages { get; } = OdSettingsViewModel.LanguageChoices();
 
-    public IReadOnlyList<OdPresetOption> Presets { get; } = OdPresetOption.All();
+    public IReadOnlyList<OdPresetOption> Presets { get; }
 
     /// <summary>Whether this is the first run, so setup still has to happen.</summary>
     public static bool IsNeeded(IOdAppMeta meta)
@@ -51,6 +57,20 @@ public sealed partial class OdOnboardingViewModel : ObservableObject
     }
 
     partial void OnLanguageChanged(string value) => _settings.Update(s => s with { Language = value });
+
+    // Picking a language here switches it at once: the lists' texts follow, in place.
+    private void OnCultureChanged(object? sender, EventArgs e)
+    {
+        foreach (var choice in Languages)
+        {
+            choice.RefreshTitle();
+        }
+
+        foreach (var option in Presets)
+        {
+            option.RefreshTexts();
+        }
+    }
 
     partial void OnPresetChanged(string value) => _settings.Update(s => s with { Preset = value });
 }

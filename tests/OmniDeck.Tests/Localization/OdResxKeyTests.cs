@@ -12,9 +12,11 @@ using OmniDeck.Modules.Calendar;
 using OmniDeck.Modules.Clock;
 using OmniDeck.Modules.Media;
 using OmniDeck.Modules.Resources;
+using OmniDeck.Modules.Stocks;
 using OmniDeck.Modules.Timer;
 using OmniDeck.Modules.Weather;
 using OmniDeck.Tests.Modules;
+using OmniDeck.Tests.Stocks;
 using OmniDeck.Tests.TestSupport;
 using OmniDeck.Web.Apps;
 using OmniDeck.Web.Resources;
@@ -112,14 +114,14 @@ public sealed partial class OdResxKeyTests
             // Names and categories travel as keys in OdModuleInfo; the shell resolves them.
             using var timers = new OdTimerService(TimeProvider.System, new OdFakeNotifier());
             var calendar = new OdCalendarModule(new OdCalendarStore(new OdDatabase(Path.Combine(Path.GetTempPath(), "unused.db"), pooling: false)));
-            IOdModule[] modules = [new OdClockModule(), new OdTimerModule(timers), new OdCalculatorModule(), new OdWeatherModule(), calendar, new OdMediaModule()];
+            IOdModule[] modules = [new OdClockModule(), new OdTimerModule(timers), new OdCalculatorModule(), new OdWeatherModule(), new OdStocksModule(new OdMemorySecrets()), calendar, new OdMediaModule()];
             keys.UnionWith(modules.SelectMany(module => new[] { module.Info.NameKey, module.Info.CategoryKey }));
         }
 
         return keys;
     }
 
-    // {res:OdLoc Key} in XAML; OdLocalization.Get("Key"), .Format("Key", ...) and Localized("Key") in code.
-    [GeneratedRegex(@"(?:OdLoc\s+|(?:Get|Format|Localized)\("")(?<key>[A-Z][A-Za-z]*_[A-Za-z0-9_]+)\b", RegexOptions.CultureInvariant, matchTimeoutMilliseconds: 2000)]
+    // {res:OdLoc Key} and {res:OdLocRow Key, ...} in XAML; OdLocalization.Get("Key"), .Format("Key", ...) and Localized("Key") in code.
+    [GeneratedRegex(@"(?:OdLoc(?:Row)?\s+|(?:Get|Format|Localized)\("")(?<key>[A-Z][A-Za-z0-9]*_[A-Za-z0-9_]+)\b", RegexOptions.CultureInvariant, matchTimeoutMilliseconds: 2000)]
     private static partial Regex UiKey();
 }

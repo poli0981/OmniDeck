@@ -57,7 +57,7 @@ public sealed class OdBugReporter(
             Windows = windows,
             Preset = preset,
             Subject = subject,
-            Issue = OdScrubber.Scrub(Issue(windows, preset, subject, errors, error)),
+            Issue = OdScrubber.Scrub(Issue(windows, preset, hosted?.Info.Id ?? "OmniDeck in general", errors, error)),
             SystemInfo = OdScrubber.Scrub(SystemInfo(windows, preset)),
             Logs = OdScrubber.Scrub(LogTail()),
             ConsoleLog = web is null ? null : OdScrubber.Scrub(OdConsoleLog.Write(web.Console.All)),
@@ -75,6 +75,7 @@ public sealed class OdBugReporter(
         return string.IsNullOrEmpty(display) ? $"Windows 11 ({build}{revision})" : $"Windows 11 {display} ({build}{revision})";
     }
 
+    // The issue is for the maintainer: it stays in English whatever the UI language, so modules go by id.
     private string Issue(string windows, string preset, string subject, string consoleErrors, string? error)
     {
         var issue = new StringBuilder();
@@ -96,7 +97,7 @@ public sealed class OdBugReporter(
         {
             var hidden = module.State == OdModuleState.Active ? "" : ((int)(now - module.LastActive).TotalMinutes).ToString(CultureInfo.InvariantCulture) + " min";
             var memory = snapshot?.For(module.Info.Id) is { } bytes ? OdBytes.Format(bytes) : "";
-            modules.Append(CultureInfo.InvariantCulture, $"| {module.Info.Title} | {module.State} | {hidden} | {memory} |\n");
+            modules.Append(CultureInfo.InvariantCulture, $"| {module.Info.Id} | {module.State} | {hidden} | {memory} |\n");
         }
 
         Section(issue, "Modules", modules.ToString().TrimEnd());

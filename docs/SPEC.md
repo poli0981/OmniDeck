@@ -1,6 +1,6 @@
 # OmniDeck — Functional Specification
 
-Status: draft for v1.0 (target May 2027) · Applies to: Windows 11 (24H2 or later), x64 only
+Status: draft for v1.0 (target January 2027) · Applies to: Windows 11 (24H2 or later), x64 only
 
 ## 1. Goals and non-goals
 
@@ -38,6 +38,7 @@ All mini-apps implement the module contract in [ARCHITECTURE](ARCHITECTURE.md) a
 - World clock: multiple time zones, 12/24 h.
 - Countdown timer and stopwatch; finished timers raise a Windows toast (works while minimized to tray).
 - Alarms fire only while OmniDeck is running (tray counts as running); this limitation is stated in the UI.
+- **As built in P3:** alarms live in Timer: a time of day, once, daily, on weekdays or at weekends, with an optional label and an on/off switch. `OdAlarmService` keeps them in a settings document of their own and outlives the module, like the timers. A one-off alarm turns itself off once it rang; one that came due while OmniDeck was closed is not shown later, and one the PC slept through rings on waking only within the hour. A time that a daylight-saving change skips rings once the clock is past the gap, and one that happens twice rings the first time.
 
 ### 3.2 Calculator
 - Standard + scientific modes, calculation history (session-scoped), copy result.
@@ -59,6 +60,13 @@ All mini-apps implement the module contract in [ARCHITECTURE](ARCHITECTURE.md) a
   - **Stooq was dropped** in P0 because it now blocks scripted clients ([spike #7](spikes/07-providers.md)).
 - Client-side **sliding-window rate limiting**: ≤ 8 credits per rolling 60 s and the plan's daily budget, counting failed calls. Watchlist refreshes use batch quotes. On limit or error, keep the last cached values and show `N/A` for missing fields; never delete cached data on network failure.
 - Every stocks screen carries the data disclaimer footer ("delayed/indicative data — not investment advice"), mirrored in [DISCLAIMER](legal/DISCLAIMER.md).
+
+- **As built in P3:**
+  - The first screen explains the key and links to Twelve Data's sign-up page; "Test and save" spends one credit on `api_usage` and keeps the key only if Twelve Data accepts it, along with the plan's limits. The key panel shows the plan and changes or removes the key; removing it keeps the watchlist and its last figures.
+  - The watchlist (in the module's settings document) shows each listing's price, the day's change with its sign and direction, a sparkline of the last month and the time of the price; screen readers hear each row as one sentence. Delete removes a row, Alt+Up and Alt+Down move it, and its context menu does the same.
+  - Search costs nothing and labels every listing the key's plan does not reach ("Needs Twelve Data's Grow plan"); those cannot be added, and a listing that fails for its plan or as unknown is not asked for again that session.
+  - Quotes refresh only while Stocks is on screen: every 15 minutes while the US market trades, once more about 20 minutes after the close for the final price, then not until the next session. A year of daily bars, fetched once per trading day, serves the sparklines. 100 credits a day are kept back for what the user asks for, and when the rest would not last the session the refresh interval grows and the screen says so. A minute or a day without credits, a rejected key or an unreachable service shows in a bar above the list, over the last figures.
+  - The footer of every Stocks screen reads "Delayed or indicative data — not investment advice." with a link to Twelve Data.
 
 ### 3.6 Media player
 - Engine: **LibVLCSharp + VideoLAN.LibVLC.Windows (x64)**, plugins trimmed to codecs/demux/audio/video output.
@@ -98,8 +106,8 @@ All mini-apps implement the module contract in [ARCHITECTURE](ARCHITECTURE.md) a
 
 ## 5. Cross-cutting requirements
 
-- **i18n:** all shell and mini-app strings in `.resx`, EN (neutral) / VI / JA.
-- **Accessibility:** honor Windows text scaling (multiplies the preset font token) and High Contrast (overrides palette tokens); full keyboard navigation of the shell.
+- **i18n:** all shell and mini-app strings in `.resx`, EN (neutral) / VI / JA. As built in P3, a change of language reaches every screen at once, web apps at the next start; the rules and the glossaries are in [TRANSLATING](TRANSLATING.md).
+- **Accessibility:** honor Windows text scaling (multiplies the preset font token) and High Contrast (overrides palette tokens); full keyboard navigation of the shell. As built in P3: screen readers get the sidebar as lists, names for every control and row, headings and live regions; widths grow with the text; the conventions are in [WPFUI-CONVENTIONS](WPFUI-CONVENTIONS.md) §7.
 - **Storage:** everything lives under the data root `%LocalAppData%\OmniDeck.Data`: SQLite (`omnideck.db`, via Dapper) for module data; `settings.json` for configuration; Serilog rolling files under `logs\` (7-day retention). Never inside `%LocalAppData%\OmniDeck`, which is Velopack's install folder and is deleted on uninstall and reinstall ([ARCHITECTURE](ARCHITECTURE.md) §5).
 - **Updates:** Velopack against GitHub Releases; per-user install; delta updates.
 - **Security:** see [SECURITY](../SECURITY.md) — no admin, DevTools UI off in release builds, password autosave off, DPAPI for the only secret (Twelve Data key), HTTPS-only service calls; in CI, NuGet Audit (restore fails on moderate+ advisories, transitive packages included) and Dependency Review.

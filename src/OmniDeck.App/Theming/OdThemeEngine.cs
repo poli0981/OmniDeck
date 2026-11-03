@@ -62,6 +62,17 @@ public sealed class OdThemeEngine : IDisposable
     }
 
     /// <summary>
+    /// The preset layer <paramref name="preset"/> would have now, at the Windows text size, the user's
+    /// font scale and the current theme, for a card that previews it (docs/UI-MODES.md §5).
+    /// </summary>
+    public ResourceDictionary Preview(OdPreset preset)
+    {
+        ArgumentNullException.ThrowIfNull(preset);
+        var tokens = OdTokens.Compute(preset, _textScale, _settings.Current.FontScale, motionEnabled: false);
+        return OdThemeResources.Build(tokens, Variant());
+    }
+
+    /// <summary>
     /// Records Windows' look as it is <paramref name="now"/>; true when it differs from the look the
     /// theme was last applied for.
     /// </summary>
@@ -95,7 +106,7 @@ public sealed class OdThemeEngine : IDisposable
             _textScale,
             settings.FontScale,
             settings.MotionEnabled && SystemParameters.ClientAreaAnimation);
-        OdThemeResources.Apply(_app.Resources, OdThemeResources.Build(Current));
+        OdThemeResources.Apply(_app.Resources, OdThemeResources.Build(Current, Variant()));
         _log.Debug("Preset {Preset} applied (text scale {TextScale}, font scale {FontScale})", Current.PresetName, _textScale, settings.FontScale);
         Applied?.Invoke(this, EventArgs.Empty);
     }
@@ -121,6 +132,16 @@ public sealed class OdThemeEngine : IDisposable
         };
         return (followSystem, theme, accent);
     }
+
+    /// <summary>The palette the window shows now: the preset's text palette applies to Light and Dark only.</summary>
+    private static OdThemeVariant Variant() => SystemParameters.HighContrast
+        ? OdThemeVariant.HighContrast
+        : ApplicationThemeManager.GetAppTheme() switch
+        {
+            ApplicationTheme.Dark => OdThemeVariant.Dark,
+            ApplicationTheme.HighContrast => OdThemeVariant.HighContrast,
+            _ => OdThemeVariant.Light,
+        };
 
     private static ApplicationTheme SystemAppTheme()
     {

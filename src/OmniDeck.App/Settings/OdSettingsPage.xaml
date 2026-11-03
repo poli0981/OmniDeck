@@ -1,27 +1,30 @@
 ﻿<UserControl x:Class="OmniDeck.App.Settings.OdSettingsPage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:a11y="clr-namespace:OmniDeck.Core.Accessibility;assembly=OmniDeck.Core"
              xmlns:res="clr-namespace:OmniDeck.Core.Localization;assembly=OmniDeck.Core"
              xmlns:settings="clr-namespace:OmniDeck.App.Settings"
              xmlns:shell="clr-namespace:OmniDeck.App.Shell"
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             FontSize="{DynamicResource Od.Font.Base}"
              Foreground="{DynamicResource TextFillColorPrimaryBrush}">
-    <!--  The navigation view's frame does not pass the window's text color down: pages set their own.  -->
+    <!--  The navigation view's frame does not pass the window's text color and size down: pages set their own.  -->
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="Visible" />
     </UserControl.Resources>
     <DockPanel Margin="{DynamicResource Od.Padding.Card}">
         <TextBlock Margin="{DynamicResource Od.Margin.Item}"
+                   AutomationProperties.HeadingLevel="Level1"
                    DockPanel.Dock="Top"
                    FontSize="{DynamicResource Od.Font.H1}"
                    FontWeight="SemiBold"
                    Text="{res:OdLoc Settings_Title}" />
-        <TabControl SelectedIndex="{Binding SectionIndex}">
+        <TabControl AutomationProperties.Name="{res:OdLoc Settings_Title}" SelectedIndex="{Binding SectionIndex}">
             <TabItem Header="{res:OdLoc Settings_General}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="{DynamicResource Od.Padding.Control}">
                         <ui:CardControl Margin="{DynamicResource Od.Margin.Item}" Header="{res:OdLoc Settings_Language}">
-                            <ComboBox MinWidth="200"
+                            <ComboBox MinWidth="{DynamicResource Od.Width.Field}"
                                       AutomationProperties.Name="{res:OdLoc Settings_Language}"
                                       DisplayMemberPath="Title"
                                       ItemsSource="{Binding Languages}"
@@ -42,7 +45,7 @@
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="{DynamicResource Od.Padding.Control}">
                         <ui:CardControl Margin="{DynamicResource Od.Margin.Item}" Header="{res:OdLoc Settings_Theme}">
-                            <ComboBox MinWidth="200"
+                            <ComboBox MinWidth="{DynamicResource Od.Width.Field}"
                                       AutomationProperties.Name="{res:OdLoc Settings_Theme}"
                                       DisplayMemberPath="Title"
                                       ItemsSource="{Binding Themes}"
@@ -71,9 +74,7 @@
                                         <TextBlock FontSize="{DynamicResource Od.Font.H2}"
                                                    FontWeight="SemiBold"
                                                    Text="{Binding Title}" />
-                                        <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                                   Text="{Binding Hint}"
-                                                   TextWrapping="Wrap" />
+                                        <TextBlock Style="{StaticResource PresetHint}" Text="{Binding Hint}" />
                                     </StackPanel>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
@@ -96,30 +97,43 @@
                         <ui:CardControl Margin="{DynamicResource Od.Margin.Item}" Header="{res:OdLoc Settings_Motion}">
                             <ui:ToggleSwitch AutomationProperties.Name="{res:OdLoc Settings_Motion}" IsChecked="{Binding MotionEnabled}" />
                         </ui:CardControl>
-                        <ui:CardControl Margin="{DynamicResource Od.Margin.Item}" Header="{res:OdLoc Settings_AccentSystem}">
-                            <ui:ToggleSwitch AutomationProperties.Name="{res:OdLoc Settings_AccentSystem}" IsChecked="{Binding UseSystemAccent}" />
-                        </ui:CardControl>
-                        <ItemsControl Margin="{DynamicResource Od.Margin.Item}"
-                                      Focusable="False"
-                                      ItemsSource="{Binding AccentSwatches}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Horizontal" />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Button Width="{DynamicResource Od.HitTarget.Min}"
-                                            Height="{DynamicResource Od.HitTarget.Min}"
-                                            Margin="{DynamicResource Od.Padding.Control}"
-                                            AutomationProperties.Name="{Binding}"
-                                            Background="{Binding}"
-                                            Command="{Binding DataContext.ChooseAccentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                            CommandParameter="{Binding}"
-                                            ToolTip="{Binding}" />
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+                        <!--  High Contrast uses Windows' colors, the accent included (docs/UI-MODES.md §4): no accent to pick there.  -->
+                        <StackPanel>
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Path=(SystemParameters.HighContrast)}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+                            <ui:CardControl Margin="{DynamicResource Od.Margin.Item}" Header="{res:OdLoc Settings_AccentSystem}">
+                                <ui:ToggleSwitch AutomationProperties.Name="{res:OdLoc Settings_AccentSystem}" IsChecked="{Binding UseSystemAccent}" />
+                            </ui:CardControl>
+                            <ListBox Margin="{DynamicResource Od.Margin.Item}"
+                                     AutomationProperties.Name="{res:OdLoc Settings_AccentColors}"
+                                     Background="Transparent"
+                                     BorderThickness="0"
+                                     ItemsSource="{Binding AccentSwatches}"
+                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                     SelectedItem="{Binding SelectedSwatch}">
+                                <ListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel />
+                                    </ItemsPanelTemplate>
+                                </ListBox.ItemsPanel>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type settings:OdAccentSwatch}">
+                                        <Border Width="{DynamicResource Od.HitTarget.Min}"
+                                                Height="{DynamicResource Od.HitTarget.Min}"
+                                                Background="{Binding Color}"
+                                                CornerRadius="{DynamicResource Od.Corner.Radius}"
+                                                ToolTip="{Binding Name}" />
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
@@ -129,7 +143,7 @@
                     <WrapPanel Margin="{DynamicResource Od.Padding.Control}" DockPanel.Dock="Top">
                         <StackPanel Margin="{DynamicResource Od.Padding.Control}">
                             <TextBlock Text="{res:OdLoc Settings_IdleAfter}" />
-                            <ui:NumberBox Width="180"
+                            <ui:NumberBox Width="{DynamicResource Od.Width.Field}"
                                           AutomationProperties.Name="{res:OdLoc Settings_IdleAfter}"
                                           MaxDecimalPlaces="0"
                                           Maximum="10080"
@@ -138,7 +152,7 @@
                         </StackPanel>
                         <StackPanel Margin="{DynamicResource Od.Padding.Control}">
                             <TextBlock Text="{res:OdLoc Settings_HibernateAfter}" />
-                            <ui:NumberBox Width="180"
+                            <ui:NumberBox Width="{DynamicResource Od.Width.Field}"
                                           AutomationProperties.Name="{res:OdLoc Settings_HibernateAfter}"
                                           MaxDecimalPlaces="0"
                                           Maximum="10080"
@@ -147,7 +161,7 @@
                         </StackPanel>
                         <StackPanel Margin="{DynamicResource Od.Padding.Control}">
                             <TextBlock Text="{res:OdLoc Settings_SoftCap}" />
-                            <ui:NumberBox Width="180"
+                            <ui:NumberBox Width="{DynamicResource Od.Width.Field}"
                                           AutomationProperties.Name="{res:OdLoc Settings_SoftCap}"
                                           MaxDecimalPlaces="0"
                                           Minimum="0"
@@ -155,7 +169,7 @@
                         </StackPanel>
                         <StackPanel Margin="{DynamicResource Od.Padding.Control}">
                             <TextBlock Text="{res:OdLoc Settings_HardCap}" />
-                            <ui:NumberBox Width="180"
+                            <ui:NumberBox Width="{DynamicResource Od.Width.Field}"
                                           AutomationProperties.Name="{res:OdLoc Settings_HardCap}"
                                           MaxDecimalPlaces="0"
                                           Minimum="0"
@@ -196,6 +210,8 @@
                                             <ui:Button Grid.Column="1"
                                                        Margin="{DynamicResource Od.Padding.Control}"
                                                        VerticalAlignment="Center"
+                                                       AutomationProperties.Name="{res:OdLocRow WebApps_ResetPermissions,
+                                                                                                Path=Name}"
                                                        Command="{Binding DataContext.ResetPermissionsCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                        CommandParameter="{Binding}"
                                                        Content="{res:OdLoc WebApps_ResetPermissions}"
@@ -203,6 +219,8 @@
                                             <ui:ToggleSwitch Grid.Column="2"
                                                              Margin="{DynamicResource Od.Padding.Control}"
                                                              VerticalAlignment="Center"
+                                                             AutomationProperties.Name="{res:OdLocRow WebApps_Notifications,
+                                                                                                      Path=Name}"
                                                              Command="{Binding DataContext.ToggleNotificationsCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                              CommandParameter="{Binding}"
                                                              Content="{res:OdLoc WebApps_Notifications}"
@@ -214,6 +232,7 @@
                         </ItemsControl>
 
                         <TextBlock Margin="{DynamicResource Od.Margin.Item}"
+                                   AutomationProperties.HeadingLevel="Level2"
                                    FontSize="{DynamicResource Od.Font.H2}"
                                    FontWeight="SemiBold"
                                    Text="{res:OdLoc WebApps_DataTitle}" />
@@ -228,6 +247,8 @@
                                         <DockPanel>
                                             <ui:Button Margin="{DynamicResource Od.Padding.Control}"
                                                        VerticalAlignment="Center"
+                                                       AutomationProperties.Name="{res:OdLocRow WebApps_ClearData,
+                                                                                                Path=AppNames}"
                                                        Command="{Binding DataContext.ClearDataCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                        CommandParameter="{Binding}"
                                                        Content="{res:OdLoc WebApps_ClearData}"
@@ -240,9 +261,9 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <TextBlock Margin="{DynamicResource Od.Padding.Control}"
-                                   Text="{Binding Message}"
-                                   TextWrapping="Wrap" />
+                        <a11y:OdStatusText Margin="{DynamicResource Od.Padding.Control}"
+                                           Text="{Binding Message}"
+                                           TextWrapping="Wrap" />
 
                         <TextBlock Margin="{DynamicResource Od.Padding.Control}"
                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
@@ -270,14 +291,15 @@
                                    Click="OnImportClick"
                                    Content="{res:OdLoc Settings_Import}" />
                     </StackPanel>
-                    <TextBlock Margin="{DynamicResource Od.Padding.Control}" Text="{Binding DataMessage}" />
+                    <a11y:OdStatusText Margin="{DynamicResource Od.Padding.Control}" Text="{Binding DataMessage}" />
                 </StackPanel>
             </TabItem>
 
             <TabItem Header="{res:OdLoc Settings_About}">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="{DynamicResource Od.Padding.Control}" DataContext="{Binding About}">
-                        <TextBlock FontSize="{DynamicResource Od.Font.H2}"
+                        <TextBlock AutomationProperties.HeadingLevel="Level2"
+                                   FontSize="{DynamicResource Od.Font.H2}"
                                    FontWeight="SemiBold"
                                    Text="{res:OdLoc App_Name}" />
                         <TextBlock Margin="{DynamicResource Od.Margin.Item}" Text="{Binding VersionText}" />
@@ -294,9 +316,18 @@
                                        Command="{Binding ReportBugCommand}"
                                        Content="{res:OdLoc About_ReportBug}" />
                         </StackPanel>
+                        <a11y:OdStatusText Margin="{DynamicResource Od.Margin.Item}"
+                                           AutomationProperties.LiveSetting="Polite"
+                                           Text="{Binding StatusText}"
+                                           TextWrapping="Wrap" />
+                        <ui:CardControl Margin="{DynamicResource Od.Margin.Item}" Header="{res:OdLoc About_Prereleases}">
+                            <ui:CardControl.Content>
+                                <ui:ToggleSwitch AutomationProperties.Name="{res:OdLoc About_Prereleases}" IsChecked="{Binding DataContext.ReceivePrereleases, RelativeSource={RelativeSource AncestorType=TabItem}}" />
+                            </ui:CardControl.Content>
+                        </ui:CardControl>
                         <TextBlock Margin="{DynamicResource Od.Margin.Item}"
-                                   AutomationProperties.LiveSetting="Polite"
-                                   Text="{Binding StatusText}"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                   Text="{res:OdLoc About_PrereleasesNote}"
                                    TextWrapping="Wrap" />
                         <TextBlock Margin="{DynamicResource Od.Padding.Control}"
                                    FontWeight="SemiBold"

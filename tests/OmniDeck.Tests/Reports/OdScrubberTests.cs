@@ -9,6 +9,7 @@ public sealed class OdScrubberTests
     [InlineData("Cookie: __Secure-1PSID=abc; SID=def", "Cookie: [removed]")]
     [InlineData("set-cookie=session=xyz", "set-cookie=[removed]")]
     [InlineData("Authorization: Bearer abc.def-ghi", "Authorization: Bearer [removed]")]
+    [InlineData("Authorization: apikey 1a2b3c4d5e6f", "Authorization: apikey [removed]")]
     [InlineData("jwt eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.sig_nature here", "jwt [removed] here")]
     [InlineData("mail jane.doe+x@example.co.uk now", "mail [email] now")]
     [InlineData("channel 1234567890123456789 and 12345", "channel [id] and 12345")]

@@ -1,6 +1,8 @@
 ﻿<UserControl x:Class="OmniDeck.Modules.Weather.OdWeatherView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:a11y="clr-namespace:OmniDeck.Core.Accessibility;assembly=OmniDeck.Core"
+             xmlns:charts="clr-namespace:OmniDeck.Modules.Charts"
              xmlns:res="clr-namespace:OmniDeck.Core.Localization;assembly=OmniDeck.Core"
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              xmlns:weather="clr-namespace:OmniDeck.Modules.Weather">
@@ -26,12 +28,13 @@
                           SelectedItem="{Binding SelectedUnits}"
                           ToolTip="{res:OdLoc Weather_Units}" />
                 <StackPanel>
-                    <TextBlock FontSize="{DynamicResource Od.Font.H1}"
-                               FontWeight="SemiBold"
-                               Text="{res:OdLoc Weather_Name}" />
-                    <TextBlock FontSize="{DynamicResource Od.Font.Caption}"
-                               Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                               Text="{Binding Updated}" />
+                    <a11y:OdStatusText AutomationProperties.HeadingLevel="Level1"
+                                       FontSize="{DynamicResource Od.Font.H1}"
+                                       FontWeight="SemiBold"
+                                       Text="{res:OdLoc Weather_Name}" />
+                    <a11y:OdStatusText FontSize="{DynamicResource Od.Font.Caption}"
+                                       Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                       Text="{Binding Updated}" />
                 </StackPanel>
             </DockPanel>
 
@@ -55,7 +58,8 @@
                     <DataTemplate DataType="{x:Type weather:OdWeatherLocation}">
                         <DockPanel>
                             <ui:Button Appearance="Transparent"
-                                       AutomationProperties.Name="{res:OdLoc Weather_Remove}"
+                                       AutomationProperties.Name="{res:OdLocRow Weather_Remove,
+                                                                                Path=Name}"
                                        Command="{Binding DataContext.RemoveCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
                                        CommandParameter="{Binding}"
                                        DockPanel.Dock="Right"
@@ -96,9 +100,16 @@
                 </ui:Card>
 
                 <TextBlock Margin="{DynamicResource Od.Margin.Item}"
+                           AutomationProperties.HeadingLevel="Level2"
                            FontSize="{DynamicResource Od.Font.H2}"
                            FontWeight="SemiBold"
                            Text="{res:OdLoc Weather_Next48Hours}" />
+                <charts:OdLineBarChart Margin="{DynamicResource Od.Margin.Item}"
+                                       CursorIndex="{Binding HourlyCursor}"
+                                       Points="{Binding HourlyPoints}"
+                                       Readout="{Binding HourlyReadout}"
+                                       Summary="{Binding HourlySummary}"
+                                       ValueSuffix="°" />
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                     <ItemsControl Focusable="False" ItemsSource="{Binding Hours}">
                         <ItemsControl.ItemsPanel>
@@ -127,10 +138,11 @@
                 </ScrollViewer>
 
                 <TextBlock Margin="{DynamicResource Od.Margin.Item}"
+                           AutomationProperties.HeadingLevel="Level2"
                            FontSize="{DynamicResource Od.Font.H2}"
                            FontWeight="SemiBold"
                            Text="{res:OdLoc Weather_Next7Days}" />
-                <ItemsControl MaxWidth="720"
+                <ItemsControl MaxWidth="{DynamicResource Od.Width.Readable}"
                               HorizontalAlignment="Left"
                               Focusable="False"
                               ItemsSource="{Binding Days}">
@@ -169,6 +181,7 @@
             </StackPanel>
 
             <TextBlock Margin="{DynamicResource Od.Margin.Item}"
+                       AutomationProperties.HeadingLevel="Level2"
                        FontSize="{DynamicResource Od.Font.H2}"
                        FontWeight="SemiBold"
                        Text="{res:OdLoc Weather_AddPlace}" />
@@ -199,8 +212,8 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type weather:OdWeatherLocation}">
                         <DockPanel Margin="{DynamicResource Od.Padding.Control}">
-                            <ui:Button AutomationProperties.HelpText="{Binding Description}"
-                                       AutomationProperties.Name="{res:OdLoc Weather_Add}"
+                            <ui:Button AutomationProperties.Name="{res:OdLocRow Weather_Add,
+                                                                                Path=Description}"
                                        Command="{Binding DataContext.AddCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                        CommandParameter="{Binding}"
                                        Content="{res:OdLoc Weather_Add}"

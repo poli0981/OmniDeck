@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- The web runner's UI strings, Japanese. A key missing here shows in English (Strings.resx). -->
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Category_Web" xml:space="preserve">
+    <value>Web アプリ</value>
+  </data>
+  <data name="Web_NoRuntime" xml:space="preserve">
+    <value>Web アプリには Microsoft Edge WebView2 ランタイムが必要です。通常は Windows 11 に含まれていますが、この PC にはインストールされていません。</value>
+  </data>
+  <data name="Web_GetRuntime" xml:space="preserve">
+    <value>WebView2 ランタイムを入手</value>
+  </data>
+  <data name="Web_Crashed" xml:space="preserve">
+    <value>{0} は動作を停止しました。</value>
+  </data>
+  <data name="Web_Reload" xml:space="preserve">
+    <value>再読み込み</value>
+  </data>
+  <data name="Web_LinkHeldBack" xml:space="preserve">
+    <value>{0} が同じリンクを繰り返しブラウザーに送信したため、OmniDeck は一時的にそのリンクを開くのを止めました。</value>
+  </data>
+  <data name="Web_Dismiss" xml:space="preserve">
+    <value>閉じる</value>
+  </data>
+  <data name="Web_NotificationTitle" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+  <data name="Web_NotificationFallback" xml:space="preserve">
+    <value>新しい通知</value>
+  </data>
+  <data name="Web_Allow" xml:space="preserve">
+    <value>許可</value>
+  </data>
+  <data name="Web_Block" xml:space="preserve">
+    <value>ブロック</value>
+  </data>
+  <data name="Web_AskMicrophone" xml:space="preserve">
+    <value>{0} がマイクの使用を求めています。</value>
+  </data>
+  <data name="Web_AskCamera" xml:space="preserve">
+    <value>{0} がカメラの使用を求めています。</value>
+  </data>
+  <data name="Web_AskGeolocation" xml:space="preserve">
+    <value>{0} が位置情報の取得を求めています。</value>
+  </data>
+  <data name="Web_AskClipboardRead" xml:space="preserve">
+    <value>{0} がクリップボードの内容の読み取りを求めています。</value>
+  </data>
+  <data name="Web_AskOtherSensors" xml:space="preserve">
+    <value>{0} がデバイスのモーション センサーの使用を求めています。</value>
+  </data>
+  <data name="Web_AskMultipleAutomaticDownloads" xml:space="preserve">
+    <value>{0} が複数のファイルの一括ダウンロードを求めています。</value>
+  </data>
+  <data name="Web_AskFileReadWrite" xml:space="preserve">
+    <value>{0} がこの PC のファイルを開いて変更する許可を求めています。</value>
+  </data>
+  <data name="Web_AskLocalFonts" xml:space="preserve">
+    <value>{0} がこの PC にインストールされているフォントの使用を求めています。</value>
+  </data>
+  <data name="Web_AskMidiSystemExclusiveMessages" xml:space="preserve">
+    <value>{0} が MIDI デバイスの完全な制御を求めています。</value>
+  </data>
+  <data name="Web_AskWindowManagement" xml:space="preserve">
+    <value>{0} が画面上にウィンドウを配置する許可を求めています。</value>
+  </data>
+  <data name="Web_KindMicrophone" xml:space="preserve">
+    <value>マイク</value>
+  </data>
+  <data name="Web_KindCamera" xml:space="preserve">
+    <value>カメラ</value>
+  </data>
+  <data name="Web_KindGeolocation" xml:space="preserve">
+    <value>位置情報</value>
+  </data>
+  <data name="Web_KindClipboardRead" xml:space="preserve">
+    <value>クリップボード</value>
+  </data>
+  <data name="Web_KindOtherSensors" xml:space="preserve">
+    <value>モーション センサー</value>
+  </data>
+  <data name="Web_KindMultipleAutomaticDownloads" xml:space="preserve">
+    <value>一括ダウンロード</value>
+  </data>
+  <data name="Web_KindFileReadWrite" xml:space="preserve">
+    <value>ファイル</value>
+  </data>
+  <data name="Web_KindLocalFonts" xml:space="preserve">
+    <value>フォント</value>
+  </data>
+  <data name="Web_KindMidiSystemExclusiveMessages" xml:space="preserve">
+    <value>MIDI デバイス</value>
+  </data>
+  <data name="Web_KindWindowManagement" xml:space="preserve">
+    <value>ウィンドウの配置</value>
+  </data>
+</root>

@@ -1,8 +1,9 @@
+using OmniDeck.Core.Localization;
+
 namespace OmniDeck.Modules.Weather;
 
-/// <summary>A choice in the units list; a null <paramref name="Units"/> follows the region.</summary>
-public sealed record OdWeatherUnitsOption(OdWeatherUnits? Units, string Label)
+/// <summary>A choice in the units list; null <see cref="Units"/> follows the region.</summary>
+public sealed class OdWeatherUnitsOption(OdWeatherUnits? units, Func<string> label) : OdLocalizedOption(label)
 {
-    /// <summary>What screen readers announce for the choice.</summary>
-    public override string ToString() => Label;
+    public OdWeatherUnits? Units { get; } = units;
 }

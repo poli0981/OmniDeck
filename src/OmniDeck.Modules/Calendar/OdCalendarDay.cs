@@ -1,3 +1,6 @@
+using System.Globalization;
+using OmniDeck.Core.Localization;
+
 namespace OmniDeck.Modules.Calendar;
 
 /// <summary>
@@ -11,4 +14,11 @@ public sealed record OdCalendarDay(DateOnly Date, string Label, bool IsInPeriod,
     public bool IsEmpty => Items.Count == 0;
 
     public bool HasMore => More is not null;
+
+    /// <summary>The whole date, as screen readers name the day's cell; the cell itself shows only its number.</summary>
+    public override string ToString()
+    {
+        var date = Date.ToString("D", CultureInfo.CurrentCulture);
+        return IsToday ? OdLocalization.Format("Calendar_DayToday", date) : date;
+    }
 }

@@ -202,16 +202,4 @@ public sealed class OdCatalogTests : IDisposable
 
     private OdCatalogService NewService(string saved, HttpMessageHandler handler) =>
         new(new HttpClient(handler), _meta, saved, OdCatalog.Empty, _time, Logger.None);
-
-    /// <summary>Answers requests without the network and remembers them.</summary>
-    private sealed class OdFakeHttp(Func<HttpRequestMessage, HttpResponseMessage> answer) : HttpMessageHandler
-    {
-        public List<HttpRequestMessage> Requests { get; } = [];
-
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            Requests.Add(request);
-            return Task.FromResult(answer(request));
-        }
-    }
 }

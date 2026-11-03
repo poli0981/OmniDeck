@@ -273,17 +273,23 @@ public sealed class OdShellViewModelTests : IDisposable
     });
 
     [Fact]
-    public void PaletteEntries_OpenModules_ShowTheLibrary_AndQuit() => OdSta.Run(async () =>
+    public void PaletteEntries_OpenModules_TheLibrary_EachSettingsTab_AndTheShellsCommands() => OdSta.Run(async () =>
     {
         using var host = NewHost();
         using var shell = NewShell(host);
 
         var entries = shell.PaletteEntries();
         var requested = new List<OdSettingsSection>();
+        var commands = new List<OdShellCommand>();
         shell.SettingsSectionRequested += (_, e) => requested.Add(e.Section);
+        shell.CommandRequested += (_, e) => commands.Add(e.Command);
 
-        Assert.Equal(new[] { "Module_clock", "Module_timer", "Module_calc", "Module library", "Settings", "Running modules", "Quit OmniDeck" }, entries.Select(e => e.Title), StringComparer.Ordinal);
+        Assert.Equal(
+            new[] { "Module_clock", "Module_timer", "Module_calc", "Module library", "Settings", "General", "Appearance", "Memory", "Web apps", "Data", "About", "Running modules", "Check for updates", "Report a bug", "Open the data folder", "Quit OmniDeck" },
+            entries.Select(e => e.Title),
+            StringComparer.Ordinal);
         Assert.Equal("Command", entries[^1].Detail);
+        Assert.Equal("Settings", entries[6].Detail);
         await entries[1].RunAsync();
         Assert.Equal("timer", shell.CurrentTarget);
         await entries[4].RunAsync();
@@ -291,11 +297,16 @@ public sealed class OdShellViewModelTests : IDisposable
         Assert.Null(host.Current);
         await entries[3].RunAsync();
         Assert.Equal(OdShellViewModel.LibraryTarget, shell.CurrentTarget);
-        await entries[5].RunAsync();
-        Assert.Equal(OdShellViewModel.SettingsTarget, shell.CurrentTarget);
-        Assert.Equal(new[] { OdSettingsSection.Memory }, requested);
-        Assert.False(_lifetime.IsQuitting);
         await entries[6].RunAsync();
+        Assert.Equal(OdShellViewModel.SettingsTarget, shell.CurrentTarget);
+        await entries[11].RunAsync();
+        await entries[12].RunAsync();
+        await entries[13].RunAsync();
+        await entries[14].RunAsync();
+        Assert.Equal(new[] { OdSettingsSection.Appearance, OdSettingsSection.Memory, OdSettingsSection.About }, requested);
+        Assert.Equal(new[] { OdShellCommand.CheckForUpdates, OdShellCommand.ReportBug, OdShellCommand.OpenDataFolder }, commands);
+        Assert.False(_lifetime.IsQuitting);
+        await entries[15].RunAsync();
         Assert.True(_lifetime.IsQuitting);
     });
 

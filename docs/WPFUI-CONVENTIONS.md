@@ -89,21 +89,36 @@ Snackbar/dialog services need a presenter host registered from the shell window 
 
 ## 6. Theming with Od.* tokens
 
-- Module views consume **`Od.*` tokens only** (fonts, spacing, radius, motion — see [UI-MODES](UI-MODES.md)). CI greps for literal `FontSize=` in module views.
+- Module views consume **`Od.*` tokens only** (fonts, spacing, radius, motion — see [UI-MODES](UI-MODES.md)). CI greps every view for a literal `FontSize`, and for a literal `Margin`, `Padding` or `CornerRadius` other than zero.
+- Text size reaches views through property inheritance, and three things in WPF-UI 4.3 cut it off:
+  - the navigation view's frame passes neither the text color nor the size into its pages, so each page and the module stage set `Foreground` and `FontSize` themselves;
+  - `ListBox` is styled at 14 px and `ToolTip` at 12 px, so `OdStyles.xaml` restyles both from the tokens;
+  - the sidebar item template sets 14 px on its label, so the shell gives its items a label template of its own (`NavLabel`).
 - Colors come from WPF-UI theme resources via `DynamicResource` (e.g. `TextFillColorPrimaryBrush`, `ControlFillColorDefaultBrush` — look keys up in the Gallery/theme dictionaries, don't guess). Never hardcode a brush.
 - Preset dictionaries may override WPF-UI resource keys **deliberately and documented** — each override gets a comment stating why.
 - Accent color (user override in Appearance settings) goes through `ApplicationAccentColorManager` — one call site in the theme engine, nowhere else.
 - Dark/light is an axis independent of presets; both palettes must pass the contrast targets in UI-MODES for every preset.
 
-## 7. Icons
+## 7. Accessibility
+
+What screen readers and the keyboard need, and what WPF-UI 4.3 leaves out (P3; `scripts/od-drive.ps1 -Action audit` lists what is still missing on a screen):
+
+- **Sidebar.** WPF-UI hosts the items in plain item controls, whose peers wrap each item in a data item that can be neither invoked nor selected. `OdNavigationView`'s peer lists `OdNavItem`s instead, as two lists (the modules, then Settings and the library) of list items with Invoke and SelectionItem. Both are subclasses, so they take WPF-UI's styles by name; a test lays the view out on WPF-UI's own dictionaries to catch a template that changes.
+- **Template parts.** `OdAutomationNames` names the buttons WPF-UI leaves unnamed, or named after a glyph such as "CaretUp24": the title bar's (Maximize turns into Restore), the sidebar's pane button (Open or Close navigation), the scroll bar, slider and number box buttons, and the password box's reveal button. An editable combo box's text box, which takes the focus, gets its combo box's name. It names each on its first layout: WPF raises `Loaded` only on elements that handle it themselves.
+- **Lists.** Screen readers name a list item after its data's `ToString()`, which for a record lists all its members: every item type overrides it, as a sentence where the row shows several values. A button that every row has is named after its row too, with `{res:OdLocRow Key, Path=…}` ("Remove, Tokyo"; `LabelPath=` when the row provides the label).
+- **State.** A button whose job changes is named for what it does now (Play or Pause, Mute or Unmute), and so is its tooltip.
+- **Headings and live regions.** Page titles are `AutomationProperties.HeadingLevel="Level1"` and section titles `Level2`. A status line is an `OdStatusText`: WPF knows `LiveSetting`, but makes a change heard only when the element raises the event, which a `TextBlock` never does.
+- **Keyboard.** Ctrl+K opens the palette in pop-outs too, where Ctrl+W closes the window; the palette and Ctrl+1–9 move the focus into the page they open. Enter and Delete act on the selected item of the media queue and the calculator's history. In a web app the shell's shortcuts come first: WebView2's WPF control hands Ctrl and Alt keys to WPF before the page sees them, so Ctrl+K opens the palette rather than, say, Discord's quick switcher.
+
+## 8. Icons
 
 WPF-UI ships Fluent System Icons (MIT). **Segoe Fluent Icons cannot be redistributed** (font EULA); it is present on every supported Windows 11 build, but we still stick to `SymbolRegular`/`SymbolFilled` glyphs so the UI never depends on a system font version. We do not bundle the font.
 
-## 8. Hard rules
+## 9. Hard rules
 
 - Never mix WPF-UI with Material Design In XAML (or any second UI kit) in this app.
 - `ui:` controls subclass their native counterparts — code and tests targeting base types (`ButtonBase`, `TextBoxBase`) keep working; don't duplicate logic per control flavor.
 - XamlStyler formats everything, including `ui:` attributes (upstream uses XamlStyler themselves).
-- High Contrast: when active, WPF-UI/system colors win over presets ([UI-MODES](UI-MODES.md) §4) — verify in the P3 accessibility pass.
+- High Contrast: when active, WPF-UI/system colors win over presets ([UI-MODES](UI-MODES.md) §4). Colors come from theme keys only (the charts included); `Od.Opacity.Dim` is 1 there, and the accent swatches are hidden.
 - `FluentWindow` chrome + child-HWND content (LibVLCSharp `VideoView`): fullscreen passed P0 spike #6, and media pop-out passed in P2 by moving the same view, whose overlay must not be owned by a closing window ([ARCHITECTURE](ARCHITECTURE.md) §2).
 - Version bumps of `WPF-UI*` packages are Dependabot PRs like any other, but read the release notes first — v3→v4 proved this library will rename APIs between majors.

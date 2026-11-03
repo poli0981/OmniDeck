@@ -408,6 +408,43 @@ public sealed class OdModuleHostTests : IDisposable
         Assert.False(await host.IsPinnedAsync("timer"));
     });
 
+    [Fact]
+    public void AModuleLeavingTheScreen_IsToldSo_Once() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        await host.ShowAsync("clock");
+
+        await host.ShowAsync("timer");
+        Assert.Equal(1, _clock.Deactivations);
+
+        await host.SetMainWindowAwayAsync(away: true);
+        await host.SetMainWindowAwayAsync(away: true);
+        Assert.Equal(1, _timer.Deactivations);
+
+        await host.SetMainWindowAwayAsync(away: false);
+        await host.HideAsync();
+        Assert.Equal(2, _timer.Deactivations);
+        await host.HideAsync();
+        Assert.Equal(2, _timer.Deactivations);
+
+        await host.PopOutAsync("clock");
+        await host.DockAsync("clock");
+        Assert.Equal(2, _clock.Deactivations);
+    });
+
+    [Fact]
+    public void AModuleThatFailsToDeactivate_IsHiddenAllTheSame() => OdSta.Run(async () =>
+    {
+        using var host = NewHost();
+        await host.ShowAsync("clock");
+        _clock.ThrowOnDeactivate = true;
+
+        await host.ShowAsync("timer");
+
+        Assert.Equal(OdModuleState.Idle, host.Find("clock")?.State);
+        Assert.Same(host.Find("timer"), host.Current);
+    });
+
     private OdModuleHost NewHost(params IOdModule[] more) => new(
         [_clock, _timer, .. more],
         new OdDatabase(_temp.Combine("omnideck.db"), pooling: false),

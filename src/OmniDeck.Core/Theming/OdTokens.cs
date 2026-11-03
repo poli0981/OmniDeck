@@ -17,7 +17,9 @@ public sealed record OdTokens(
     int MotionMilliseconds,
     double ChartLineWeight,
     int NavMaxVisibleItems,
-    bool NavShowLabels)
+    bool NavShowLabels,
+    double ContrastTarget,
+    double NavIconSize)
 {
     /// <summary>The range of the user's font-size slider (docs/UI-MODES.md §3).</summary>
     public const double MinFontScale = 0.85;
@@ -26,6 +28,18 @@ public sealed record OdTokens(
 
     /// <summary>Windows text size runs from 100 % to 225 %.</summary>
     public const double MaxTextScale = 2.25;
+
+    /// <summary>The width of a tile, such as a module in the library: it grows with the text, so its title and buttons fit.</summary>
+    public double TileWidth => Pixels(FontBase * 17);
+
+    /// <summary>The width of a wider tile, such as a clock or a countdown.</summary>
+    public double WideTileWidth => Pixels(FontBase * 20.5);
+
+    /// <summary>The width of a short field, such as a number box, a name or a drop-down of a few words.</summary>
+    public double FieldWidth => Pixels(FontBase * 11.5);
+
+    /// <summary>The widest a column of text runs: about 720 px at Standard's base size.</summary>
+    public double ReadableWidth => Pixels(FontBase * 46);
 
     /// <summary>
     /// Applies the user's font scale and the Windows text size on top of <paramref name="preset"/>
@@ -47,8 +61,12 @@ public sealed record OdTokens(
             MotionMilliseconds: motionEnabled ? preset.MotionMilliseconds : 0,
             preset.ChartLineWeight,
             preset.NavMaxVisibleItems,
-            preset.NavShowLabels);
+            preset.NavShowLabels,
+            preset.ContrastTarget,
+            preset.NavIconSize);
     }
 
     private static double Round(double value) => Math.Round(value, 2, MidpointRounding.AwayFromZero);
+
+    private static double Pixels(double value) => Math.Round(value, MidpointRounding.AwayFromZero);
 }
