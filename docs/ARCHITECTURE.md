@@ -15,7 +15,7 @@ src/
   OmniDeck.App/        WPF shell: windows, navigation, tray and notifications, command
                        palette, theme engine, legal gate, onboarding, settings UI,
                        task-manager panel, update service (Velopack)
-  OmniDeck.Core/       contracts (IOdModule, IOdNotifier, IOdQuoteProvider, ...), module
+  OmniDeck.Core/       contracts (IOdModule, IOdNotifier, IOdSecretStore, ...), module
                        host, RAM governor, storage (SQLite/Dapper, settings), theme
                        tokens, legal acknowledgment, bug-report composer, i18n helpers
   OmniDeck.Modules/    built-in mini-apps: Clock, Timer, Calculator, Weather,
@@ -127,11 +127,11 @@ A single scheduler owns all state transitions. Inputs: per-module visibility + l
 
 All app data lives under the **data root** `%LocalAppData%\OmniDeck.Data`:
 
-- `omnideck.db` — SQLite via Dapper. Tables per module (`calendar_events`, `stocks_watchlist`, `stocks_quotes_cache`, `weather_cache`, `media_playlists`, …) plus `app_meta` (legal acknowledgment, schema version). Migrations = ordered idempotent SQL scripts executed at startup.
+- `omnideck.db` — SQLite via Dapper. Tables per module (`calendar_events`, `stocks_quotes_cache`, `stocks_series_cache`, `weather_cache`, `media_playlists`, …; the stocks watchlist lives in the module's settings document) plus `app_meta` (legal acknowledgment, schema version). Migrations = ordered idempotent SQL scripts executed at startup.
 - `settings.json` — typed settings tree; import/export from the Data settings page.
 - `WebView2\` — the WebView2 user data folder (profiles, cookies, caches).
 - `logs\`, `reports\` — Serilog rolling files and bug-report zips.
-- Secrets: only the optional Twelve Data key, encrypted with DPAPI (`ProtectedData`, CurrentUser scope).
+- Secrets: only the optional Twelve Data key, encrypted with DPAPI (`ProtectedData`, CurrentUser scope, OmniDeck's own entropy) in `secrets\twelvedata.bin` by `IOdSecretStore`. It is not in `settings.json`, so a settings export never carries it, and the scrubber takes `Authorization: apikey` values out of bug reports.
 
 Why not `%LocalAppData%\OmniDeck`: that is Velopack's install folder (packId `OmniDeck`). Velopack deletes it entirely on uninstall and when Setup is run again over an existing install, so nothing the user owns may live there. The data root is a sibling folder that survives updates and reinstalls; the Velopack uninstall hook (`VelopackApp.Build().OnBeforeUninstallFastCallback`, P1) deletes it on uninstall, as PRIVACY promises. It is local, not roaming, because WebView2 caches can reach several GiB.
 

@@ -152,7 +152,7 @@ public sealed class OdWeatherTests : IDisposable
         await service.ForecastAsync(Hanoi, OdWeatherUnits.Metric, refresh: false, Token);
 
         Assert.Equal(3, http.Requests.Count);
-        Assert.Contains("fahrenheit", http.Requests[1].Query, StringComparison.Ordinal);
+        Assert.Contains("fahrenheit", http.Requests[1].RequestUri!.Query, StringComparison.Ordinal);
     }
 
     [Theory]
@@ -267,7 +267,7 @@ public sealed class OdWeatherTests : IDisposable
 
         Assert.Equal(OdWeatherUnits.Imperial, weather.Units);
         Assert.Equal(OdWeatherUnits.Imperial, saved[^1].Units);
-        Assert.Contains("fahrenheit", http.Requests[^1].Query, StringComparison.Ordinal);
+        Assert.Contains("fahrenheit", http.Requests[^1].RequestUri!.Query, StringComparison.Ordinal);
     });
 
     [Fact]
@@ -331,16 +331,4 @@ public sealed class OdWeatherTests : IDisposable
 
     private OdWeatherService NewService(HttpMessageHandler handler) =>
         new(new HttpClient(handler), new OdWeatherCache(_database), _time, Logger.None);
-
-    /// <summary>Answers requests without the network and remembers them.</summary>
-    private sealed class OdFakeHttp(Func<HttpRequestMessage, HttpResponseMessage> answer) : HttpMessageHandler
-    {
-        public List<Uri> Requests { get; } = [];
-
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            Requests.Add(request.RequestUri!);
-            return Task.FromResult(answer(request));
-        }
-    }
 }

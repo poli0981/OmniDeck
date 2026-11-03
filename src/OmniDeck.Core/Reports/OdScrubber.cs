@@ -5,7 +5,7 @@ namespace OmniDeck.Core.Reports;
 /// <summary>
 /// Takes what could identify the user out of text before it goes into a bug report
 /// (docs/legal/PRIVACY.md §3): the user's profile folder, query strings and fragments of URLs, cookie
-/// values, token-shaped values (bearer tokens, JWTs, long hex or base64 runs), email addresses, and
+/// values, token-shaped values (bearer and API keys, JWTs, long hex or base64 runs), email addresses, and
 /// numeric ids of 15 digits or more, such as Discord's (docs/spikes/04-cdp-console.md).
 /// </summary>
 public static partial class OdScrubber
@@ -39,7 +39,8 @@ public static partial class OdScrubber
     [GeneratedRegex(@"(?<name>\b(?:set-)?cookie\s*[:=]\s*)[^\r\n]+", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture, matchTimeoutMilliseconds: 1000)]
     private static partial Regex Cookie();
 
-    [GeneratedRegex(@"(?<scheme>\bbearer)\s+[a-z0-9\-._~+/]+=*", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture, matchTimeoutMilliseconds: 1000)]
+    // Authorization values: bearer tokens, and the "apikey" scheme Twelve Data takes.
+    [GeneratedRegex(@"(?<scheme>\b(?:bearer|apikey))\s+[a-z0-9\-._~+/]+=*", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture, matchTimeoutMilliseconds: 1000)]
     private static partial Regex Bearer();
 
     [GeneratedRegex(@"\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*", RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture, matchTimeoutMilliseconds: 1000)]
