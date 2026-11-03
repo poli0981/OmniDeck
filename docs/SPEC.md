@@ -60,6 +60,13 @@ All mini-apps implement the module contract in [ARCHITECTURE](ARCHITECTURE.md) a
 - Client-side **sliding-window rate limiting**: ≤ 8 credits per rolling 60 s and the plan's daily budget, counting failed calls. Watchlist refreshes use batch quotes. On limit or error, keep the last cached values and show `N/A` for missing fields; never delete cached data on network failure.
 - Every stocks screen carries the data disclaimer footer ("delayed/indicative data — not investment advice"), mirrored in [DISCLAIMER](legal/DISCLAIMER.md).
 
+- **As built in P3:**
+  - The first screen explains the key and links to Twelve Data's sign-up page; "Test and save" spends one credit on `api_usage` and keeps the key only if Twelve Data accepts it, along with the plan's limits. The key panel shows the plan and changes or removes the key; removing it keeps the watchlist and its last figures.
+  - The watchlist (in the module's settings document) shows each listing's price, the day's change with its sign and direction, a sparkline of the last month and the time of the price; screen readers hear each row as one sentence. Delete removes a row, Alt+Up and Alt+Down move it, and its context menu does the same.
+  - Search costs nothing and labels every listing the key's plan does not reach ("Needs Twelve Data's Grow plan"); those cannot be added, and a listing that fails for its plan or as unknown is not asked for again that session.
+  - Quotes refresh only while Stocks is on screen: every 15 minutes while the US market trades, once more about 20 minutes after the close for the final price, then not until the next session. A year of daily bars, fetched once per trading day, serves the sparklines. 100 credits a day are kept back for what the user asks for, and when the rest would not last the session the refresh interval grows and the screen says so. A minute or a day without credits, a rejected key or an unreachable service shows in a bar above the list, over the last figures.
+  - The footer of every Stocks screen reads "Delayed or indicative data — not investment advice." with a link to Twelve Data.
+
 ### 3.6 Media player
 - Engine: **LibVLCSharp + VideoLAN.LibVLC.Windows (x64)**, plugins trimmed to codecs/demux/audio/video output.
 - Local files and folders, playlist (m3u load/save), subtitles (embedded + external `.srt`/`.ass`, encoding selection), audio track & device selection, speed 0.25–4×, snapshot.

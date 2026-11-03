@@ -7,6 +7,12 @@ All notable changes to OmniDeck are documented here. The format follows
 ## [Unreleased]
 
 ### Added
+- Stocks: a watchlist of US stocks and ETFs with Twelve Data, using your own free (or paid) API key, which
+  stays on this PC encrypted for your Windows account. Add listings by searching for them; each row
+  shows the price, the day's change and a sparkline of the last month. Prices refresh only while Stocks
+  is on screen, while the market trades, and within what your key's plan allows; when credits run out
+  or Twelve Data can't be reached, the last prices stay. Delayed or indicative data, not investment
+  advice.
 - Weather: the next 48 hours also show as a chart, the temperature as a line over the chance of rain.
   Screen readers hear the chart sum the hours up; with the chart focused, the arrow keys read the
   hours one by one, as the mouse does when it moves over it. The list of hours stays below it.

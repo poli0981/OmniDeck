@@ -619,4 +619,151 @@
   <data name="Weather_ChartReadout" xml:space="preserve">
     <value>{0} at {1}: {2}, {3}, {4} chance of rain</value>
   </data>
+  <data name="Stocks_Name" xml:space="preserve">
+    <value>Stocks</value>
+  </data>
+  <data name="Stocks_NotAvailable" xml:space="preserve">
+    <value>N/A</value>
+  </data>
+  <data name="Stocks_Price" xml:space="preserve">
+    <value>{0} {1}</value>
+  </data>
+  <data name="Stocks_Change" xml:space="preserve">
+    <value>{0} ({1})</value>
+  </data>
+  <data name="Stocks_RowPrice" xml:space="preserve">
+    <value>{0}, {1}, {2}</value>
+  </data>
+  <data name="Stocks_RowUp" xml:space="preserve">
+    <value>{0}, {1}, {2}, up {3} percent</value>
+  </data>
+  <data name="Stocks_RowDown" xml:space="preserve">
+    <value>{0}, {1}, {2}, down {3} percent</value>
+  </data>
+  <data name="Stocks_RowNote" xml:space="preserve">
+    <value>{0}. {1}</value>
+  </data>
+  <data name="Stocks_ResultTitle" xml:space="preserve">
+    <value>{0} — {1}</value>
+  </data>
+  <data name="Stocks_ResultDetail" xml:space="preserve">
+    <value>{0}, {1}</value>
+  </data>
+  <data name="Stocks_NeedsPlan" xml:space="preserve">
+    <value>Needs Twelve Data&apos;s {0} plan</value>
+  </data>
+  <data name="Stocks_AddNamed" xml:space="preserve">
+    <value>Add {0}, {1}</value>
+  </data>
+  <data name="Stocks_IntervalStretched" xml:space="preserve">
+    <value>Prices update every {0} minutes, so that today&apos;s credits last until the close.</value>
+  </data>
+  <data name="Stocks_KeyEmpty" xml:space="preserve">
+    <value>Paste your Twelve Data API key first.</value>
+  </data>
+  <data name="Stocks_KeyBusy" xml:space="preserve">
+    <value>This key has used its credits for now. Try again in a minute.</value>
+  </data>
+  <data name="Stocks_KeyRejected" xml:space="preserve">
+    <value>Twelve Data did not accept this key. Check it and try again.</value>
+  </data>
+  <data name="Stocks_KeyOffline" xml:space="preserve">
+    <value>Twelve Data could not be reached, so the key was not saved.</value>
+  </data>
+  <data name="Stocks_KeyFailed" xml:space="preserve">
+    <value>The key could not be checked. Try again later.</value>
+  </data>
+  <data name="Stocks_SearchNone" xml:space="preserve">
+    <value>No listings match that.</value>
+  </data>
+  <data name="Stocks_SearchFailed" xml:space="preserve">
+    <value>The search did not go through. Try again later.</value>
+  </data>
+  <data name="Stocks_NotOnPlan" xml:space="preserve">
+    <value>Not available on your Twelve Data plan</value>
+  </data>
+  <data name="Stocks_NotFound" xml:space="preserve">
+    <value>Twelve Data does not know this symbol</value>
+  </data>
+  <data name="Stocks_StatusKeyRejected" xml:space="preserve">
+    <value>Twelve Data no longer accepts your key. Change it under &quot;Twelve Data key&quot; below.</value>
+  </data>
+  <data name="Stocks_StatusOffline" xml:space="preserve">
+    <value>Twelve Data can&apos;t be reached right now. These are the last prices OmniDeck received.</value>
+  </data>
+  <data name="Stocks_StatusDay" xml:space="preserve">
+    <value>Today&apos;s Twelve Data credits are spent. Prices update again after {0}.</value>
+  </data>
+  <data name="Stocks_StatusMinute" xml:space="preserve">
+    <value>This minute&apos;s Twelve Data credits are spent. The rest update at {0}.</value>
+  </data>
+  <data name="Stocks_Credits" xml:space="preserve">
+    <value>{0} of {1} Twelve Data credits left today</value>
+  </data>
+  <data name="Stocks_Plan" xml:space="preserve">
+    <value>Plan: {0}. Up to {1} credits a minute and {2} a day.</value>
+  </data>
+  <data name="Stocks_Refresh" xml:space="preserve">
+    <value>Refresh prices</value>
+  </data>
+  <data name="Stocks_SetupTitle" xml:space="preserve">
+    <value>Connect your Twelve Data key</value>
+  </data>
+  <data name="Stocks_SetupBody" xml:space="preserve">
+    <value>Stocks shows market data from Twelve Data with your own API key. A free key covers US stocks, ETFs and US-listed ADRs; European home markets and indices need a paid plan. The key stays on this PC, encrypted for your Windows account, and OmniDeck sends it only to Twelve Data.</value>
+  </data>
+  <data name="Stocks_GetKey" xml:space="preserve">
+    <value>Get a free key from Twelve Data</value>
+  </data>
+  <data name="Stocks_KeyLabel" xml:space="preserve">
+    <value>Twelve Data API key</value>
+  </data>
+  <data name="Stocks_TestAndSave" xml:space="preserve">
+    <value>Test and save</value>
+  </data>
+  <data name="Stocks_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Stocks_Empty" xml:space="preserve">
+    <value>Your watchlist is empty. Search for a company or an ETF below to add it.</value>
+  </data>
+  <data name="Stocks_Watchlist" xml:space="preserve">
+    <value>Watchlist</value>
+  </data>
+  <data name="Stocks_MoveUp" xml:space="preserve">
+    <value>Move up</value>
+  </data>
+  <data name="Stocks_MoveDown" xml:space="preserve">
+    <value>Move down</value>
+  </data>
+  <data name="Stocks_Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="Stocks_AddListing" xml:space="preserve">
+    <value>Add a listing</value>
+  </data>
+  <data name="Stocks_SearchButton" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Stocks_Search" xml:space="preserve">
+    <value>Symbol or company name</value>
+  </data>
+  <data name="Stocks_Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="Stocks_KeyPanel" xml:space="preserve">
+    <value>Twelve Data key</value>
+  </data>
+  <data name="Stocks_ChangeKey" xml:space="preserve">
+    <value>Change key</value>
+  </data>
+  <data name="Stocks_RemoveKey" xml:space="preserve">
+    <value>Remove key</value>
+  </data>
+  <data name="Stocks_Disclaimer" xml:space="preserve">
+    <value>Delayed or indicative data — not investment advice.</value>
+  </data>
+  <data name="Stocks_DataBy" xml:space="preserve">
+    <value>Market data by Twelve Data</value>
+  </data>
 </root>
