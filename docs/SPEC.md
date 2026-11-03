@@ -106,8 +106,8 @@ All mini-apps implement the module contract in [ARCHITECTURE](ARCHITECTURE.md) a
 
 ## 5. Cross-cutting requirements
 
-- **i18n:** all shell and mini-app strings in `.resx`, EN (neutral) / VI / JA.
-- **Accessibility:** honor Windows text scaling (multiplies the preset font token) and High Contrast (overrides palette tokens); full keyboard navigation of the shell.
+- **i18n:** all shell and mini-app strings in `.resx`, EN (neutral) / VI / JA. As built in P3, a change of language reaches every screen at once, web apps at the next start; the rules and the glossaries are in [TRANSLATING](TRANSLATING.md).
+- **Accessibility:** honor Windows text scaling (multiplies the preset font token) and High Contrast (overrides palette tokens); full keyboard navigation of the shell. As built in P3: screen readers get the sidebar as lists, names for every control and row, headings and live regions; widths grow with the text; the conventions are in [WPFUI-CONVENTIONS](WPFUI-CONVENTIONS.md) §7.
 - **Storage:** everything lives under the data root `%LocalAppData%\OmniDeck.Data`: SQLite (`omnideck.db`, via Dapper) for module data; `settings.json` for configuration; Serilog rolling files under `logs\` (7-day retention). Never inside `%LocalAppData%\OmniDeck`, which is Velopack's install folder and is deleted on uninstall and reinstall ([ARCHITECTURE](ARCHITECTURE.md) §5).
 - **Updates:** Velopack against GitHub Releases; per-user install; delta updates.
 - **Security:** see [SECURITY](../SECURITY.md) — no admin, DevTools UI off in release builds, password autosave off, DPAPI for the only secret (Twelve Data key), HTTPS-only service calls; in CI, NuGet Audit (restore fails on moderate+ advisories, transitive packages included) and Dependency Review.

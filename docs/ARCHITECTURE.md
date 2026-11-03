@@ -10,16 +10,19 @@ Directory.Build.props  shared build settings: nullable, warnings as errors, anal
                        NuGet Audit, product metadata and dev-build version
 global.json            pinned .NET SDK
 .config/               dotnet-tools.json: vpk, dotnet-sonarscanner, XamlStyler
-scripts/               pack.ps1 (publish + Velopack), validate-catalog.ps1, make-icon.ps1
+scripts/               pack.ps1 (publish + Velopack), validate-catalog.ps1, make-icon.ps1,
+                       od-drive.ps1 (drives and audits a development build; not in CI)
 src/
   OmniDeck.App/        WPF shell: windows, navigation, tray and notifications, command
                        palette, theme engine, legal gate, onboarding, settings UI,
                        task-manager panel, update service (Velopack)
   OmniDeck.Core/       contracts (IOdModule, IOdNotifier, IOdSecretStore, ...), module
                        host, RAM governor, storage (SQLite/Dapper, settings), theme
-                       tokens, legal acknowledgment, bug-report composer, i18n helpers
+                       tokens and contrast, legal acknowledgment, bug-report composer,
+                       i18n (OdLocalization, OdLocRow, OdLanguages), live regions
   OmniDeck.Modules/    built-in mini-apps: Clock, Timer, Calculator, Weather,
-                       Calendar, Stocks, Media — one folder per module   (P1)
+                       Calendar, Stocks, Media — one folder per module   (P1),
+                       and Charts, the charts they draw themselves      (P3)
   OmniDeck.Web/        web runner: environment/profile management, catalog loader,
                        navigation policy, notifications bridge, permissions,
                        sign-in health, CDP console capture                (P2)

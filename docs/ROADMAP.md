@@ -58,13 +58,23 @@ As delivered so far: the `0.1.1` hotfix (a tray icon that leaked GDI objects), t
 - Downloads use WebView2's own flyout rather than a progress row of OmniDeck's, and permission questions sit in a bar above the page, because no dialog can cover WebView2 ([SPEC](SPEC.md) §4).
 - Web apps with notifications on stay resident: the time ladder skips them ([RAM-GOVERNOR](RAM-GOVERNOR.md) §3).
 - Pop-out windows move the module's view, so web pages and videos keep running through the move ([ARCHITECTURE](ARCHITECTURE.md) §2).
-- Left for later: web app favicons, `.ics` subscriptions (they would need a privacy policy update) and Discord's global push-to-talk hotkey (all in §5), and the weather charts, which wait for ScottPlot in P3.
+- Left for later: web app favicons, `.ics` subscriptions (they would need a privacy policy update) and Discord's global push-to-talk hotkey (all in §5), and the weather charts, which came in P3, drawn by OmniDeck itself.
 
 ### P3 — Stocks, presets, i18n (8 Mar – 11 Apr 2027)
 
 Stocks module (Twelve Data with the user's own key, which spike #7 left as the only provider; watchlist, candlesticks); Dynamic and Comfort presets polished to spec (UI-MODES token table); VI + JA translations; accessibility pass (text scaling, contrast themes, keyboard nav).
 
 **Exit (0.3.0):** feature-complete against SPEC v1 scope.
+
+As delivered: twelve work packages, written while 0.2.0 was being dogfooded and opened as draft pull requests (#58–#69) that merge in order once 0.2.0 is tagged:
+
+- **Charts** drawn by OmniDeck itself rather than ScottPlot: candlesticks with volume, a line over bars, sparklines; each is one control screen readers read (a summary, then the values under the cursor as the arrow keys move it). Weather got its 48-hour chart from them.
+- **Stocks** on Twelve Data with the user's own key, kept with DPAPI: a watchlist that refreshes only while on screen and within the key's credits, and a listing's details from one month to five years, as a chart or a table.
+- **Alarms** in Timer, at a time of day, once, daily, on weekdays or at weekends.
+- **Updates** can include pre-releases or not: the choice follows the running version until the user makes one, so 1.0 installs stay on stable versions.
+- **Presets** to the token table: text palettes that reach 4.5:1 everywhere and 7:1 in Comfort, minimum touch targets on every control, larger sidebar icons in Comfort, and live previews in the first-run setup. Text size now reaches pages and modules, which WPF-UI's navigation frame had cut off. Dynamic's gradient accents were cut (text over a gradient changes contrast across it).
+- **Accessibility:** the sidebar as lists screen readers can use, names for WPF-UI's unnamed buttons and for every row's buttons, headings and live regions, the palette's settings tabs and commands, keyboard shortcuts in pop-outs, widths that grow with the text, and High Contrast checks.
+- **Translations:** live language changes everywhere, Vietnamese and Japanese, and the rules in [TRANSLATING](TRANSLATING.md).
 
 ### P4 — Beta & release (12 Apr – 23 May 2027)
 
