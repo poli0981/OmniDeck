@@ -17,13 +17,14 @@ It is built on WPF (.NET 10 LTS) and **WebView2**, which reuses the Edge runtime
 
 ## Planned features (v1.0)
 
-- **Native mini-apps** — clock & world clocks, countdown timer, calculator, weather (Open-Meteo), local calendar with `.ics` import/export, stock watchlist with candlestick charts (Twelve Data with your own key: its free plan covers US listings, while home-market EU listings and indices need a paid plan), and a full-codec media player (libVLC).
+- **Native mini-apps** — clock & world clocks, countdown timer, stopwatch and alarms, calculator, weather (Open-Meteo), local calendar with `.ics` import/export, stock watchlist with candlestick charts (Twelve Data with your own key: its free plan covers US listings, while home-market EU listings and indices need a paid plan), and a full-codec media player (libVLC).
 - **Curated web apps** — each runs in its own WebView2 profile with a per-app navigation allowlist. Web notifications become Windows toasts. Adding a new app is a JSON entry, not a release ([catalog docs](docs/WEBAPP-CATALOG.md)).
 - **Pop-out windows** — any module can move into a window of its own, and go full screen there.
 - **RAM governor** — inactive modules are automatically suspended and then hibernated, with a hard memory cap. Settings → Memory lists the running modules with their memory, and Suspend, Hibernate, Close and Keep running buttons ([details](docs/RAM-GOVERNOR.md)).
 - **Three UI presets** — Dynamic, Standard, and Comfort, implemented as design-token presets over one theme engine, with per-token overrides ([details](docs/UI-MODES.md)).
 - **Privacy** — zero telemetry, zero data collection. Everything is stored locally ([privacy policy](docs/legal/PRIVACY.md)).
-- **Languages** — English, Tiếng Việt, 日本語.
+- **Languages** — English, Tiếng Việt, 日本語, switched live from Settings.
+- **Accessibility** — screen readers (Narrator, NVDA, JAWS), keyboard throughout, Windows text size and High Contrast.
 
 ## The trade-off, stated up front
 
@@ -59,6 +60,7 @@ Use **Settings → About → Report a bug** inside the app, or **Report bug** on
 | [UI-MODES](docs/UI-MODES.md) | Design tokens and the three presets |
 | [WPFUI-CONVENTIONS](docs/WPFUI-CONVENTIONS.md) | How the codebase uses WPF-UI: windows, controls, theming, navigation |
 | [WEBAPP-CATALOG](docs/WEBAPP-CATALOG.md) | Catalog schema and how to propose new web apps |
+| [TRANSLATING](docs/TRANSLATING.md) | How the translations work, and the Vietnamese and Japanese glossaries |
 | [ROADMAP](docs/ROADMAP.md) | Phases P0–P4 to v1.0, versioning, risk register |
 | [CHANGELOG](CHANGELOG.md) | Release history |
 | [CONTRIBUTING](CONTRIBUTING.md) | Dev setup, code style, quality gates |
