@@ -12,7 +12,7 @@ body:
     id: version
     attributes:
       label: OmniDeck version
-      placeholder: "0.2.0-alpha.4 (1a2b3c4) — shown in Settings → About"
+      placeholder: "0.2.0 (1a2b3c4) — shown in Settings → About"
     validations:
       required: true
   - type: input
