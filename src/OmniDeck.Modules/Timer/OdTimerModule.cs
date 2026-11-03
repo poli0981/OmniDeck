@@ -41,6 +41,13 @@ public sealed class OdTimerModule(OdTimerService service) : IOdModule
         return Task.CompletedTask;
     }
 
+    /// <summary>Off screen there is nothing to show the time to.</summary>
+    public Task DeactivateAsync()
+    {
+        _viewModel?.StopTicking();
+        return Task.CompletedTask;
+    }
+
     public Task<bool> CanSuspendAsync() => Task.FromResult(true);
 
     public Task SuspendAsync(OdSuspendReason reason)

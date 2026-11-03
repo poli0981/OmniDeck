@@ -20,6 +20,13 @@ public interface IOdModule
     /// <summary>The module became visible.</summary>
     Task ActivateAsync();
 
+    /// <summary>
+    /// The module left the screen (another one shows, its window went away, or its own window closed):
+    /// stop what only matters on screen, such as refreshes and ticking. Its view is kept; nothing is
+    /// released yet. Most modules have nothing to stop.
+    /// </summary>
+    Task DeactivateAsync() => Task.CompletedTask;
+
     /// <summary>Returning <see langword="false"/> pins the module, for example while media plays.</summary>
     Task<bool> CanSuspendAsync();
 
