@@ -19,6 +19,7 @@ using OmniDeck.Core.Storage;
 using OmniDeck.Modules;
 using OmniDeck.Modules.Calendar;
 using OmniDeck.Modules.Resources;
+using OmniDeck.Modules.Timer;
 using OmniDeck.Web;
 using OmniDeck.Web.Catalog;
 using OmniDeck.Web.Resources;
@@ -133,6 +134,7 @@ public partial class OdApp
         _services.GetRequiredService<OdRamGovernor>().Start();
         _services.GetRequiredService<OdUpdateWatcher>().Start();
         _services.GetRequiredService<OdReminderService>().Start();
+        _services.GetRequiredService<OdAlarmService>().Start();
         _services.GetRequiredService<OdCatalogService>().Start();
     }
 

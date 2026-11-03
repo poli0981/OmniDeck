@@ -20,6 +20,7 @@ public static class OdModulesServiceCollectionExtensions
         // The timer service outlives the Timer module's views, and the tray starts quick timers on it.
         services.AddSingleton<OdTimerService>();
         services.AddSingleton<IOdQuickTimer>(provider => provider.GetRequiredService<OdTimerService>());
+        services.AddSingleton<OdAlarmService>();
 
         // Events outlive the Calendar module's views, and reminders fire whether or not it was opened.
         services.AddSingleton<OdCalendarStore>();

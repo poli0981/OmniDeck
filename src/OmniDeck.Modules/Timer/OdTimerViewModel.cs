@@ -41,16 +41,22 @@ public sealed partial class OdTimerViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private bool _hasNoCountdowns = true;
 
-    public OdTimerViewModel(OdTimerService service, TimeProvider time)
+    public OdTimerViewModel(OdTimerService service, TimeProvider time, OdAlarmService? alarms = null)
     {
         ArgumentNullException.ThrowIfNull(service);
         _service = service;
         _time = time;
+        Alarms = alarms is null ? null : new OdAlarmsViewModel(alarms);
         service.Changed += OnServiceChanged;
         Sync();
     }
 
     public ObservableCollection<OdCountdownViewModel> Countdowns { get; } = [];
+
+    /// <summary>The alarms, when the app gave the module its alarm service.</summary>
+    public OdAlarmsViewModel? Alarms { get; }
+
+    public bool HasAlarms => Alarms is not null;
 
     /// <summary>The one-click durations.</summary>
     public IReadOnlyList<OdTimerPreset> Presets { get; } =
@@ -95,6 +101,7 @@ public sealed partial class OdTimerViewModel : ObservableObject, IDisposable
     {
         StopTicking();
         _service.Changed -= OnServiceChanged;
+        Alarms?.Dispose();
     }
 
     /// <summary>Adds a countdown from the form and starts it.</summary>

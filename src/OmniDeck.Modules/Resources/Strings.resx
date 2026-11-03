@@ -835,4 +835,61 @@
   <data name="Stocks_ColumnVolume" xml:space="preserve">
     <value>Volume</value>
   </data>
+  <data name="Timer_Alarms" xml:space="preserve">
+    <value>Alarms</value>
+  </data>
+  <data name="Timer_AlarmsNote" xml:space="preserve">
+    <value>Alarms ring only while OmniDeck runs, in the notification area too.</value>
+  </data>
+  <data name="Timer_AlarmTime" xml:space="preserve">
+    <value>Alarm time</value>
+  </data>
+  <data name="Timer_AlarmTimeHint" xml:space="preserve">
+    <value>For example {0}</value>
+  </data>
+  <data name="Timer_AlarmBadTime" xml:space="preserve">
+    <value>That is not a time. {0}.</value>
+  </data>
+  <data name="Timer_AlarmLabel" xml:space="preserve">
+    <value>Label (optional)</value>
+  </data>
+  <data name="Timer_AlarmAdd" xml:space="preserve">
+    <value>Add alarm</value>
+  </data>
+  <data name="Timer_AlarmRepeat" xml:space="preserve">
+    <value>Repeat</value>
+  </data>
+  <data name="Timer_RepeatOnce" xml:space="preserve">
+    <value>Once</value>
+  </data>
+  <data name="Timer_RepeatDaily" xml:space="preserve">
+    <value>Every day</value>
+  </data>
+  <data name="Timer_RepeatWeekdays" xml:space="preserve">
+    <value>Weekdays</value>
+  </data>
+  <data name="Timer_RepeatWeekends" xml:space="preserve">
+    <value>Weekends</value>
+  </data>
+  <data name="Timer_AlarmNext" xml:space="preserve">
+    <value>Next: {0} {1}</value>
+  </data>
+  <data name="Timer_AlarmOff" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="Timer_AlarmTitle" xml:space="preserve">
+    <value>Alarm</value>
+  </data>
+  <data name="Timer_AlarmLabelled" xml:space="preserve">
+    <value>{0}, {1}</value>
+  </data>
+  <data name="Timer_AlarmRow" xml:space="preserve">
+    <value>{0} at {1}, {2}. {3}</value>
+  </data>
+  <data name="Timer_NoAlarms" xml:space="preserve">
+    <value>No alarms yet.</value>
+  </data>
+  <data name="Timer_AlarmDelete" xml:space="preserve">
+    <value>Delete alarm</value>
+  </data>
 </root>

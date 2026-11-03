@@ -8,7 +8,7 @@ namespace OmniDeck.Modules.Timer;
 /// The Timer module. Countdowns and the stopwatch live in <see cref="OdTimerService"/>, so the module
 /// can always be suspended or hibernated, and closing it leaves running timers running.
 /// </summary>
-public sealed class OdTimerModule(OdTimerService service) : IOdModule
+public sealed class OdTimerModule(OdTimerService service, OdAlarmService? alarms = null) : IOdModule
 {
     /// <summary>The module's id, which its notifications open when clicked.</summary>
     internal const string Id = "timer";
@@ -27,7 +27,7 @@ public sealed class OdTimerModule(OdTimerService service) : IOdModule
 
     public FrameworkElement CreateView()
     {
-        _viewModel = new OdTimerViewModel(service, _time);
+        _viewModel = new OdTimerViewModel(service, _time, alarms);
         return new OdTimerView { DataContext = _viewModel };
     }
 
