@@ -13,9 +13,10 @@ namespace OmniDeck.App.Shell;
 /// <summary>
 /// Names the buttons inside WPF-UI's templates that screen readers reach with no name, or with a
 /// glyph's name such as "CaretUp24": the title bar's buttons, the sidebar's pane button, the scroll bar,
-/// slider and number box buttons, and the password box's reveal button. An editable combo box's text
-/// box, which takes the focus, gets its combo box's name. Registered once, for every window, on the
-/// first layout of each such button: WPF raises Loaded only on elements that handle it themselves.
+/// slider and number box buttons, a text box's clear button and the password box's reveal button. An
+/// editable combo box's text box, which takes the focus, gets its combo box's name. Registered once,
+/// for every window, on the first layout of each such button: WPF raises Loaded only on elements that
+/// handle it themselves.
 /// </summary>
 internal static class OdAutomationNames
 {
@@ -29,6 +30,7 @@ internal static class OdAutomationNames
         ["PART_InlineIncrementButton"] = Localized("A11y_Increase"),
         ["PART_InlineDecrementButton"] = Localized("A11y_Decrease"),
         ["RevealButton"] = Localized("A11y_ShowPassword"),
+        ["PART_ClearButton"] = Localized("A11y_Clear"),
         ["PageUp"] = Localized("A11y_PageUp"),
         ["PageDown"] = Localized("A11y_PageDown"),
         ["PageLeft"] = Localized("A11y_PageLeft"),

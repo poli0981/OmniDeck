@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- The web runner's UI strings, Vietnamese. A key missing here shows in English (Strings.resx). -->
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Category_Web" xml:space="preserve">
+    <value>Ứng dụng web</value>
+  </data>
+  <data name="Web_NoRuntime" xml:space="preserve">
+    <value>Ứng dụng web cần Microsoft Edge WebView2 Runtime. Windows 11 thường có sẵn thành phần này, nhưng PC này không có.</value>
+  </data>
+  <data name="Web_GetRuntime" xml:space="preserve">
+    <value>Tải WebView2 Runtime</value>
+  </data>
+  <data name="Web_Crashed" xml:space="preserve">
+    <value>{0} đã ngừng hoạt động.</value>
+  </data>
+  <data name="Web_Reload" xml:space="preserve">
+    <value>Tải lại</value>
+  </data>
+  <data name="Web_LinkHeldBack" xml:space="preserve">
+    <value>{0} liên tục gửi cùng một liên kết đến trình duyệt của bạn, nên OmniDeck tạm ngừng mở liên kết đó.</value>
+  </data>
+  <data name="Web_Dismiss" xml:space="preserve">
+    <value>Bỏ qua</value>
+  </data>
+  <data name="Web_NotificationTitle" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+  <data name="Web_NotificationFallback" xml:space="preserve">
+    <value>Thông báo mới</value>
+  </data>
+  <data name="Web_Allow" xml:space="preserve">
+    <value>Cho phép</value>
+  </data>
+  <data name="Web_Block" xml:space="preserve">
+    <value>Chặn</value>
+  </data>
+  <data name="Web_AskMicrophone" xml:space="preserve">
+    <value>{0} muốn dùng micrô của bạn.</value>
+  </data>
+  <data name="Web_AskCamera" xml:space="preserve">
+    <value>{0} muốn dùng máy ảnh của bạn.</value>
+  </data>
+  <data name="Web_AskGeolocation" xml:space="preserve">
+    <value>{0} muốn biết vị trí của bạn.</value>
+  </data>
+  <data name="Web_AskClipboardRead" xml:space="preserve">
+    <value>{0} muốn đọc nội dung bạn đã sao chép.</value>
+  </data>
+  <data name="Web_AskOtherSensors" xml:space="preserve">
+    <value>{0} muốn dùng cảm biến chuyển động trên thiết bị của bạn.</value>
+  </data>
+  <data name="Web_AskMultipleAutomaticDownloads" xml:space="preserve">
+    <value>{0} muốn tải xuống nhiều tệp cùng lúc.</value>
+  </data>
+  <data name="Web_AskFileReadWrite" xml:space="preserve">
+    <value>{0} muốn mở và thay đổi tệp trên PC này.</value>
+  </data>
+  <data name="Web_AskLocalFonts" xml:space="preserve">
+    <value>{0} muốn dùng phông chữ đã cài đặt trên PC này.</value>
+  </data>
+  <data name="Web_AskMidiSystemExclusiveMessages" xml:space="preserve">
+    <value>{0} muốn toàn quyền điều khiển thiết bị MIDI của bạn.</value>
+  </data>
+  <data name="Web_AskWindowManagement" xml:space="preserve">
+    <value>{0} muốn bố trí cửa sổ trên các màn hình của bạn.</value>
+  </data>
+  <data name="Web_KindMicrophone" xml:space="preserve">
+    <value>Micrô</value>
+  </data>
+  <data name="Web_KindCamera" xml:space="preserve">
+    <value>Máy ảnh</value>
+  </data>
+  <data name="Web_KindGeolocation" xml:space="preserve">
+    <value>Vị trí</value>
+  </data>
+  <data name="Web_KindClipboardRead" xml:space="preserve">
+    <value>Bảng tạm</value>
+  </data>
+  <data name="Web_KindOtherSensors" xml:space="preserve">
+    <value>Cảm biến chuyển động</value>
+  </data>
+  <data name="Web_KindMultipleAutomaticDownloads" xml:space="preserve">
+    <value>Tải xuống nhiều tệp</value>
+  </data>
+  <data name="Web_KindFileReadWrite" xml:space="preserve">
+    <value>Tệp</value>
+  </data>
+  <data name="Web_KindLocalFonts" xml:space="preserve">
+    <value>Phông chữ</value>
+  </data>
+  <data name="Web_KindMidiSystemExclusiveMessages" xml:space="preserve">
+    <value>Thiết bị MIDI</value>
+  </data>
+  <data name="Web_KindWindowManagement" xml:space="preserve">
+    <value>Bố trí cửa sổ</value>
+  </data>
+</root>

@@ -122,7 +122,8 @@ switch ($Action) {
     'open' {
         # The title bar's search box opens the palette; Enter is posted to the palette's own window.
         $shell = $windows | Where-Object { $_.Current.NativeWindowHandle -eq [int] $main } | Select-Object -First 1
-        $search = New-Object System.Windows.Automation.AndCondition((Named 'Search modules and commands'), (New-Object System.Windows.Automation.PropertyCondition($ae::ControlTypeProperty, [System.Windows.Automation.ControlType]::Button)))
+        # By automation ID, which no language changes.
+        $search = New-Object System.Windows.Automation.PropertyCondition($ae::AutomationIdProperty, 'PaletteButton')
         $shell.FindFirst($scope::Descendants, $search).GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern).Invoke()
 
         # The palette is a window the main one owns: UI Automation lists it beside the main window or under it.

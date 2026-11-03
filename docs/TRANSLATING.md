@@ -37,3 +37,42 @@ A translation holds only the keys it translates: a key it lacks shows in English
 - `OdResxKeyTests`: every key the sources use exists in English, and every English key is used.
 - `OdTranslationTests`: a translation has only English keys, the English placeholders, and no empty text.
 - The tests run in US English, so they pass on Vietnamese and Japanese Windows.
+
+## 6. Vietnamese
+
+**Voice.** Short and plain, as Windows says it in Vietnamese: labels and buttons are bare phrases ("Lưu", "Xóa nơi này"), messages are whole sentences. Address the reader as "bạn" only where English says "you", and keep "vui lòng" for the rare request. Tones go on the modern position, as Windows writes them: "hóa", "thủy", "khóa".
+
+**Terms.** Windows' own Vietnamese terms where Windows has one.
+
+| English | Tiếng Việt |
+|---|---|
+| module | mô-đun |
+| web app | ứng dụng web |
+| sidebar | thanh bên |
+| module library | thư viện mô-đun |
+| pin / unpin | ghim / bỏ ghim |
+| pop out / return to main window | mở trong cửa sổ riêng / về cửa sổ chính |
+| command palette | bảng lệnh |
+| Settings / Appearance | Cài đặt / Giao diện |
+| layout (preset): Dynamic, Standard, Comfort | bố cục: Năng động, Tiêu chuẩn, Dễ nhìn |
+| theme: Light, Dark, Follow Windows | chủ đề: Sáng, Tối, Theo Windows |
+| accent color | màu nhấn |
+| text size | cỡ chữ |
+| animations | hiệu ứng chuyển động |
+| High Contrast | độ tương phản cao |
+| notification area | khu vực thông báo |
+| memory: suspend, hibernate, keep running | bộ nhớ: tạm dừng, ngủ đông, luôn chạy |
+| sign in / sign-in data | đăng nhập / dữ liệu đăng nhập |
+| permission | quyền |
+| pre-release (alpha, beta) | bản thử nghiệm |
+| report a bug | báo lỗi |
+| check for updates | kiểm tra bản cập nhật |
+| data folder | thư mục dữ liệu |
+| timer, countdown, stopwatch, lap, alarm | hẹn giờ, đếm ngược, bấm giờ, vòng, báo thức |
+| event, reminder, repeat | sự kiện, lời nhắc, lặp lại |
+| forecast, chance of rain, feels like | dự báo, khả năng mưa, cảm giác như |
+| watchlist, listing, API key, plan, credits | danh sách theo dõi, mã, khóa API, gói, lượt gọi |
+| queue, playlist, subtitles | hàng chờ, danh sách phát, phụ đề |
+| local time, time zone | giờ địa phương, múi giờ |
+
+**Formats.** `Clock_Time12` stays `h:mm:ss tt` and `Weather_DayFormat` stays `ddd d`: the region gives "SA"/"CH" and "T2"…"CN".

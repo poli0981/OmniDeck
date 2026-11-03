@@ -564,4 +564,7 @@ Support code: {0}
     <value>Ctrl+K</value>
     <comment>The search box&apos;s tooltip: the shortcut that opens it, with the key names your keyboards show.</comment>
   </data>
+  <data name="A11y_Clear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
 </root>
