@@ -151,7 +151,11 @@ public sealed partial class OdSettingsViewModel : ObservableObject, IDisposable
     public void ImportFrom(string path) =>
         DataMessage = _settings.Import(path) ? OdLocalization.Get("Settings_Imported") : OdLocalization.Get("Settings_ImportFailed");
 
-    public void Dispose() => _settings.Changed -= OnSettingsChanged;
+    public void Dispose()
+    {
+        OdLocalization.UnfollowCulture(OnCultureChanged);
+        _settings.Changed -= OnSettingsChanged;
+    }
 
     [RelayCommand]
     private void OpenDataFolder() => _openFolder(DataFolder);

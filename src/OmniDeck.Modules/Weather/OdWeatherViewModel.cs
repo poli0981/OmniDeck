@@ -130,6 +130,7 @@ public sealed partial class OdWeatherViewModel : ObservableObject, IDisposable
 
     public void Dispose()
     {
+        OdLocalization.UnfollowCulture(OnCultureChanged);
         _work.Cancel();
         _work.Dispose();
     }

@@ -50,7 +50,11 @@ public sealed partial class OdAlarmsViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private string? _message;
 
-    public void Dispose() => _service.Changed -= OnChanged;
+    public void Dispose()
+    {
+        OdLocalization.UnfollowCulture(OnCultureChanged);
+        _service.Changed -= OnChanged;
+    }
 
     [RelayCommand]
     private void Add()

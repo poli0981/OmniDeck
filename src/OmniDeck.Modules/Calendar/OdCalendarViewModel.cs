@@ -199,7 +199,11 @@ public sealed partial class OdCalendarViewModel : ObservableObject, IDisposable
     /// <summary>Reports a file that could not be read or written.</summary>
     public void Report(string message) => Message = message;
 
-    public void Dispose() => _store.Changed -= OnStoreChanged;
+    public void Dispose()
+    {
+        OdLocalization.UnfollowCulture(OnCultureChanged);
+        _store.Changed -= OnStoreChanged;
+    }
 
     [RelayCommand]
     private void ShowMonth() => Mode = OdCalendarMode.Month;
