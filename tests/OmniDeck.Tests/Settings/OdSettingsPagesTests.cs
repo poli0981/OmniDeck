@@ -1,12 +1,15 @@
+using System.Globalization;
 using Microsoft.Extensions.Time.Testing;
 using OmniDeck.App.Settings;
 using OmniDeck.App.Shell;
 using OmniDeck.App.Updates;
 using OmniDeck.Core.Governor;
+using OmniDeck.Core.Localization;
 using OmniDeck.Core.Modules;
 using OmniDeck.Core.Settings;
 using OmniDeck.Core.Storage;
 using OmniDeck.Tests.Governor;
+using OmniDeck.Tests.Localization;
 using OmniDeck.Tests.Modules;
 using OmniDeck.Tests.TestSupport;
 using OmniDeck.Tests.Updates;
@@ -17,6 +20,8 @@ using Serilog.Core;
 
 namespace OmniDeck.Tests.Settings;
 
+// One test changes the UI language, which the culture tests own.
+[Collection(OdCultureCollection.Name)]
 public sealed class OdSettingsPagesTests : IDisposable
 {
     private readonly OdTempDirectory _temp = new();
@@ -80,6 +85,31 @@ public sealed class OdSettingsPagesTests : IDisposable
 
         page.ReceivePrereleases = true;
         Assert.True(_settings.Current.Prereleases);
+    }
+
+    [Fact]
+    public void Lists_FollowAChangeOfLanguage_AndKeepTheirItems()
+    {
+        using var page = NewSettingsPage();
+        var language = page.Languages[0];
+        var theme = page.Themes[0];
+        var titles = new List<string?>();
+        language.PropertyChanged += (_, e) => titles.Add(e.PropertyName);
+        theme.PropertyChanged += (_, e) => titles.Add(e.PropertyName);
+        var original = OdLocalization.Instance.Culture;
+        try
+        {
+            OdLocalization.Instance.SetCulture(CultureInfo.GetCultureInfo(string.Equals(original.Name, "fr", StringComparison.Ordinal) ? "de" : "fr"));
+
+            Assert.Equal(new[] { "Title", "Title" }, titles, StringComparer.Ordinal);
+            Assert.Same(language, page.Languages[0]);
+            Assert.Same(theme, page.Themes[0]);
+            Assert.Equal("Standard", page.Preset);
+        }
+        finally
+        {
+            OdLocalization.Instance.SetCulture(original);
+        }
     }
 
     [Fact]
