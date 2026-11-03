@@ -46,13 +46,13 @@ public sealed partial class OdCalculatorViewModel : ObservableObject
         [
             new("C", "", OdCalcKeyKind.Clear, OdLocalization.Get("Calc_Clear")),
             new("⌫", "", OdCalcKeyKind.Backspace, OdLocalization.Get("Calc_Backspace")),
-            new("%"), new("÷"),
-            new("7"), new("8"), new("9"), new("×"),
-            new("4"), new("5"), new("6"), new("−", "-"),
-            new("1"), new("2"), new("3"), new("+"),
+            Named("%", OdLocalization.Get("Calc_Percent")), Named("÷", OdLocalization.Get("Calc_Divide")),
+            new("7"), new("8"), new("9"), Named("×", OdLocalization.Get("Calc_Multiply")),
+            new("4"), new("5"), new("6"), new("−", "-", OdCalcKeyKind.Input, OdLocalization.Get("Calc_Minus")),
+            new("1"), new("2"), new("3"), Named("+", OdLocalization.Get("Calc_Plus")),
             new("±", "", OdCalcKeyKind.Negate, OdLocalization.Get("Calc_Negate")),
-            new("0"), new("."),
-            new("=", "", OdCalcKeyKind.Evaluate),
+            new("0"), Named(".", OdLocalization.Get("Calc_Decimal")),
+            new("=", "", OdCalcKeyKind.Evaluate, OdLocalization.Get("Calc_Equals")),
         ];
     }
 
@@ -65,10 +65,16 @@ public sealed partial class OdCalculatorViewModel : ObservableObject
     /// <summary>The scientific keys (five per row); functions type their "(", which the user closes.</summary>
     public IReadOnlyList<OdCalcKey> ScientificKeys { get; } =
     [
-        new("sin("), new("cos("), new("tan("), new("ln("), new("log("),
-        new("asin("), new("acos("), new("atan("), new("√("), new("^"),
-        new("("), new(")"), new("π"), new("e"), new("!"),
+        Named("sin(", OdLocalization.Get("Calc_Sine")), Named("cos(", OdLocalization.Get("Calc_Cosine")), Named("tan(", OdLocalization.Get("Calc_Tangent")),
+        Named("ln(", OdLocalization.Get("Calc_NaturalLog")), Named("log(", OdLocalization.Get("Calc_Log")),
+        Named("asin(", OdLocalization.Get("Calc_Arcsine")), Named("acos(", OdLocalization.Get("Calc_Arccosine")), Named("atan(", OdLocalization.Get("Calc_Arctangent")),
+        Named("√(", OdLocalization.Get("Calc_SquareRoot")), Named("^", OdLocalization.Get("Calc_Power")),
+        Named("(", OdLocalization.Get("Calc_OpenParenthesis")), Named(")", OdLocalization.Get("Calc_CloseParenthesis")),
+        Named("π", OdLocalization.Get("Calc_Pi")), Named("e", OdLocalization.Get("Calc_Euler")), Named("!", OdLocalization.Get("Calc_Factorial")),
     ];
+
+    /// <summary>An input key that types its own label, with the name screen readers say for its symbol.</summary>
+    private static OdCalcKey Named(string label, string name) => new(label, label, OdCalcKeyKind.Input, name);
 
     /// <summary>Starts a new session: an empty display and no history.</summary>
     public void Reset()
@@ -188,6 +194,10 @@ public sealed partial class OdCalculatorViewModel : ObservableObject
 
     [RelayCommand]
     private void ClearHistory() => History.Clear();
+
+    /// <summary>Removes one calculation from the history.</summary>
+    [RelayCommand]
+    private void Forget(OdCalcHistoryEntry entry) => History.Remove(entry);
 
     partial void OnIsScientificChanged(bool value) => Save();
 

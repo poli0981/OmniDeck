@@ -22,7 +22,8 @@
         <ui:TitleBar Title="{res:OdLoc Onboarding_Title}" Grid.Row="0" />
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="{DynamicResource Od.Padding.Card}">
-                <TextBlock FontSize="{DynamicResource Od.Font.H1}"
+                <TextBlock AutomationProperties.HeadingLevel="Level1"
+                           FontSize="{DynamicResource Od.Font.H1}"
                            FontWeight="SemiBold"
                            Text="{res:OdLoc Onboarding_Title}" />
                 <TextBlock Margin="{DynamicResource Od.Margin.Item}"
@@ -30,7 +31,7 @@
                            Text="{res:OdLoc Onboarding_Intro}"
                            TextWrapping="Wrap" />
                 <TextBlock FontWeight="SemiBold" Text="{res:OdLoc Settings_Language}" />
-                <ComboBox Width="260"
+                <ComboBox Width="{DynamicResource Od.Width.Tile}"
                           Margin="{DynamicResource Od.Margin.Item}"
                           HorizontalAlignment="Left"
                           AutomationProperties.Name="{res:OdLoc Settings_Language}"

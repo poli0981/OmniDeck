@@ -34,6 +34,21 @@ public static class OdTokenKeys
     public const string NavMaxVisibleItems = "Od.Nav.MaxVisibleItems";
     public const string NavShowLabels = "Od.Nav.ShowLabels";
 
+    /// <summary>
+    /// The opacity of what is dimmed but still in use, such as the days outside the month: 0.7 keeps
+    /// primary text above 4.5:1 on the light theme, and High Contrast dims nothing.
+    /// </summary>
+    public const string DimOpacity = "Od.Opacity.Dim";
+
+    /// <summary>Widths that grow with the text (<see cref="OdTokens.TileWidth"/> and the next ones).</summary>
+    public const string WidthTile = "Od.Width.Tile";
+
+    public const string WidthTileWide = "Od.Width.TileWide";
+
+    public const string WidthField = "Od.Width.Field";
+
+    public const string WidthReadable = "Od.Width.Readable";
+
     /// <summary>The size of the sidebar's icons.</summary>
     public const string NavIconSize = "Od.Nav.IconSize";
 

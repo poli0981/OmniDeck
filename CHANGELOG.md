@@ -25,8 +25,27 @@ All notable changes to OmniDeck are documented here. The format follows
   hours one by one, as the mouse does when it moves over it. The list of hours stays below it.
 - First run: each layout card shows its layout's own text sizes and colors, so the three can be
   compared side by side before you pick one.
+- Command palette (Ctrl+K): each settings tab, Check for updates, Report a bug and Open the data folder.
+  A module's own window answers Ctrl+K too, and Ctrl+W closes it, which returns the module to the main
+  window. Whatever the palette or Ctrl+1–9 opens takes the keyboard focus.
+- Enter and Delete play or remove the selected file of the media queue, and bring back or forget the
+  selected calculation of the calculator's history.
 
 ### Changed
+- Screen readers (Narrator, NVDA, JAWS):
+  - the sidebar is two lists, the modules then Settings and the library, whose items say which one is
+    open and can be selected;
+  - a button that every row of a list has also says its row, as in "Remove, Tokyo";
+  - the title bar's, the sidebar's, the scroll bars' and the number boxes' buttons have names;
+  - calendar days give the whole date, and forecast hours and days, laps and calculations read as
+    sentences;
+  - Play and Mute say what they will do, Pause and Unmute once playing or muted, and the symbol keys of
+    the calculator their names, such as "Divide";
+  - page and section titles are headings, and status messages are read out as they change.
+- Accent colors are a list of named swatches you can pick from the keyboard; High Contrast, which uses
+  Windows' colors, hides them.
+- With large text, tiles, number boxes and the weather's columns grow with it, and the buttons of the
+  library's tiles and of the timers wrap rather than clip.
 - Fainter text (descriptions, captions, times) is darker on the light theme, so that it reads at a
   contrast of at least 4.5:1 in every layout; in Comfort it reaches 7:1 on both themes. High Contrast
   keeps Windows' colors.
@@ -38,6 +57,10 @@ All notable changes to OmniDeck are documented here. The format follows
   stayed small whatever the layout, Settings → Appearance → Text size or Windows' text size said. It
   now follows all three.
 - The selected layout card's description was hard to read on the accent color.
+- Calendar: the days outside the month were too faint to read on the light theme. They stay dimmed,
+  less so, and not at all in High Contrast.
+- Calculator: the keys lost their labels at large text sizes.
+- Media: screen readers called the player's controls "LibVLCSharp.WPF"; they are Media's now.
 
 ## [0.2.0-alpha.4] — 2026-11-03
 

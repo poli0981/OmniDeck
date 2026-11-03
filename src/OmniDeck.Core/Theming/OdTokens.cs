@@ -29,6 +29,18 @@ public sealed record OdTokens(
     /// <summary>Windows text size runs from 100 % to 225 %.</summary>
     public const double MaxTextScale = 2.25;
 
+    /// <summary>The width of a tile, such as a module in the library: it grows with the text, so its title and buttons fit.</summary>
+    public double TileWidth => Pixels(FontBase * 17);
+
+    /// <summary>The width of a wider tile, such as a clock or a countdown.</summary>
+    public double WideTileWidth => Pixels(FontBase * 20.5);
+
+    /// <summary>The width of a short field, such as a number box, a name or a drop-down of a few words.</summary>
+    public double FieldWidth => Pixels(FontBase * 11.5);
+
+    /// <summary>The widest a column of text runs: about 720 px at Standard's base size.</summary>
+    public double ReadableWidth => Pixels(FontBase * 46);
+
     /// <summary>
     /// Applies the user's font scale and the Windows text size on top of <paramref name="preset"/>
     /// (docs/UI-MODES.md §3–4). Motion is off when the user or Windows turned it off, or the preset has none.
@@ -55,4 +67,6 @@ public sealed record OdTokens(
     }
 
     private static double Round(double value) => Math.Round(value, 2, MidpointRounding.AwayFromZero);
+
+    private static double Pixels(double value) => Math.Round(value, MidpointRounding.AwayFromZero);
 }

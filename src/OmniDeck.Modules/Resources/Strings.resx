@@ -490,9 +490,6 @@
   <data name="Media_Remove" xml:space="preserve">
     <value>Remove from the queue</value>
   </data>
-  <data name="Media_PlayPause" xml:space="preserve">
-    <value>Play or pause</value>
-  </data>
   <data name="Media_Previous" xml:space="preserve">
     <value>Previous</value>
   </data>
@@ -891,5 +888,96 @@
   </data>
   <data name="Timer_AlarmDelete" xml:space="preserve">
     <value>Delete alarm</value>
+  </data>
+  <data name="Weather_HourName" xml:space="preserve">
+    <value>{0}: {1}, {2}, {3} chance of rain</value>
+    <comment>What screen readers hear for an hour of the forecast: {0} time, {1} temperature, {2} conditions, {3} chance of rain (as 20%).</comment>
+  </data>
+  <data name="Weather_DayName" xml:space="preserve">
+    <value>{0}: {1}, {2}, {3} chance of rain</value>
+    <comment>What screen readers hear for a day of the forecast: {0} day, {1} high and low, {2} conditions, {3} chance of rain.</comment>
+  </data>
+  <data name="Timer_LapName" xml:space="preserve">
+    <value>{0}: {1}, total {2}</value>
+    <comment>What screen readers hear for a lap: {0} &quot;Lap 3&quot;, {1} its length, {2} the total at that moment.</comment>
+  </data>
+  <data name="Calendar_DayToday" xml:space="preserve">
+    <value>{0}, today</value>
+    <comment>A day of the month grid as screen readers hear it when it is today: {0} is the whole date.</comment>
+  </data>
+  <data name="Calc_Percent" xml:space="preserve">
+    <value>Percent</value>
+  </data>
+  <data name="Calc_Divide" xml:space="preserve">
+    <value>Divide</value>
+  </data>
+  <data name="Calc_Multiply" xml:space="preserve">
+    <value>Multiply</value>
+  </data>
+  <data name="Calc_Minus" xml:space="preserve">
+    <value>Minus</value>
+  </data>
+  <data name="Calc_Plus" xml:space="preserve">
+    <value>Plus</value>
+  </data>
+  <data name="Calc_Decimal" xml:space="preserve">
+    <value>Decimal point</value>
+  </data>
+  <data name="Calc_Equals" xml:space="preserve">
+    <value>Equals</value>
+  </data>
+  <data name="Calc_Sine" xml:space="preserve">
+    <value>Sine</value>
+  </data>
+  <data name="Calc_Cosine" xml:space="preserve">
+    <value>Cosine</value>
+  </data>
+  <data name="Calc_Tangent" xml:space="preserve">
+    <value>Tangent</value>
+  </data>
+  <data name="Calc_NaturalLog" xml:space="preserve">
+    <value>Natural logarithm</value>
+  </data>
+  <data name="Calc_Log" xml:space="preserve">
+    <value>Logarithm, base 10</value>
+  </data>
+  <data name="Calc_Arcsine" xml:space="preserve">
+    <value>Arcsine</value>
+  </data>
+  <data name="Calc_Arccosine" xml:space="preserve">
+    <value>Arccosine</value>
+  </data>
+  <data name="Calc_Arctangent" xml:space="preserve">
+    <value>Arctangent</value>
+  </data>
+  <data name="Calc_SquareRoot" xml:space="preserve">
+    <value>Square root</value>
+  </data>
+  <data name="Calc_Power" xml:space="preserve">
+    <value>Power</value>
+  </data>
+  <data name="Calc_OpenParenthesis" xml:space="preserve">
+    <value>Open parenthesis</value>
+  </data>
+  <data name="Calc_CloseParenthesis" xml:space="preserve">
+    <value>Close parenthesis</value>
+  </data>
+  <data name="Calc_Pi" xml:space="preserve">
+    <value>Pi</value>
+  </data>
+  <data name="Calc_Euler" xml:space="preserve">
+    <value>e, Euler&apos;s number</value>
+  </data>
+  <data name="Calc_Factorial" xml:space="preserve">
+    <value>Factorial</value>
+  </data>
+  <data name="Media_Play" xml:space="preserve">
+    <value>Play</value>
+  </data>
+  <data name="Media_Pause" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="Media_Unmute" xml:space="preserve">
+    <value>Unmute</value>
   </data>
 </root>

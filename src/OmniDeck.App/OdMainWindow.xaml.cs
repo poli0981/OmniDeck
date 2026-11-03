@@ -6,6 +6,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Threading;
 using H.NotifyIcon.Core;
 using OmniDeck.App.Diagnostics;
 using OmniDeck.App.Legal;
@@ -54,7 +55,7 @@ public partial class OdMainWindow : INavigationViewPageProvider
     private readonly Dictionary<string, OdPopOutWindow> _popOuts = new(StringComparer.Ordinal);
     private readonly Dictionary<string, Rect> _popOutBounds = new(StringComparer.Ordinal);
     private OdPanePlacement? _paneBeforeFullscreen;
-    private readonly Dictionary<string, NavigationViewItem> _moduleItems = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, OdNavItem> _moduleItems = new(StringComparer.Ordinal);
     private readonly NavigationViewItemSeparator _pinnedSeparator = new();
     private readonly OdTrayIcon _trayIcon = new();
     private bool? _navLabels;
@@ -90,11 +91,7 @@ public partial class OdMainWindow : INavigationViewPageProvider
         DataContext = shell;
         _library = new OdLibraryPage { DataContext = shell };
         _settingsPage = new OdSettingsPage { DataContext = settingsPage };
-        shell.SettingsSectionRequested += (_, e) => settingsPage.ShowSection(e.Section);
-        settingsPage.About.LegalRequested += (_, _) =>
-            new OdLegalWindow(new OdLegalViewModel(legalGate, OdApp.LegalFolder, readOnly: true)) { Owner = this }.Show();
-        settingsPage.About.BugReportRequested += (sender, args) => _ = bugReports.ShowAsync(error: null);
-        bugReportRequests.Requested += (sender, args) => _ = bugReports.ShowAsync(args.Error);
+        ListenForRequests(shell, settingsPage, legalGate, bugReports, bugReportRequests);
         _stage = new OdModuleStage { DataContext = shell };
         _host = host;
         _cover = new OdWindowCover(this);
@@ -188,6 +185,34 @@ public partial class OdMainWindow : INavigationViewPageProvider
 
     private static Binding Localized(string key) => new($"[{key}]") { Source = OdLocalization.Instance, Mode = BindingMode.OneWay };
 
+    /// <summary>What the palette, the settings page and a crash ask the window to show.</summary>
+    private void ListenForRequests(OdShellViewModel shell, OdSettingsViewModel settingsPage, OdLegalGate legalGate, OdBugReportFlow bugReports, OdBugReportRequests bugReportRequests)
+    {
+        shell.SettingsSectionRequested += (_, e) => settingsPage.ShowSection(e.Section);
+        shell.CommandRequested += (_, e) => Run(e.Command, settingsPage, bugReports);
+        settingsPage.About.LegalRequested += (_, _) =>
+            new OdLegalWindow(new OdLegalViewModel(legalGate, OdApp.LegalFolder, readOnly: true)) { Owner = this }.Show();
+        settingsPage.About.BugReportRequested += (sender, args) => _ = bugReports.ShowAsync(error: null);
+        bugReportRequests.Requested += (sender, args) => _ = bugReports.ShowAsync(args.Error);
+    }
+
+    /// <summary>Carries out a command the palette ran.</summary>
+    private static void Run(OdShellCommand command, OdSettingsViewModel settingsPage, OdBugReportFlow bugReports)
+    {
+        switch (command)
+        {
+            case OdShellCommand.CheckForUpdates when settingsPage.About.CheckCommand.CanExecute(null):
+                _ = settingsPage.About.CheckCommand.ExecuteAsync(null);
+                break;
+            case OdShellCommand.ReportBug:
+                _ = bugReports.ShowAsync(error: null);
+                break;
+            case OdShellCommand.OpenDataFolder:
+                settingsPage.OpenDataFolderCommand.Execute(null);
+                break;
+        }
+    }
+
     /// <summary>A sidebar icon at the preset's size: larger in Comfort (docs/UI-MODES.md §2).</summary>
     private static SymbolIcon NavIcon(SymbolRegular symbol)
     {
@@ -197,24 +222,27 @@ public partial class OdMainWindow : INavigationViewPageProvider
     }
 
     /// <summary>
-    /// Gives a sidebar item the preset's text size and minimum hit target (docs/UI-MODES.md §2): WPF-UI
-    /// draws its labels at 14 px and its items 40 px tall whatever the preset.
+    /// A sidebar item screen readers can use (<see cref="OdNavItem"/>), at the preset's text size and
+    /// minimum hit target (docs/UI-MODES.md §2): WPF-UI draws its labels at 14 px and its items 40 px
+    /// tall whatever the preset. Being a subclass, it takes WPF-UI's style by name.
     /// </summary>
-    private NavigationViewItem FollowPreset(NavigationViewItem item)
+    private OdNavItem NavItem(SymbolRegular icon, string target, Type pageType)
     {
-        item.ContentTemplate = (DataTemplate)FindResource("NavLabel");
+        var item = new OdNavItem
+        {
+            Style = (Style)FindResource(typeof(NavigationViewItem)),
+            Icon = NavIcon(icon),
+            TargetPageTag = target,
+            TargetPageType = pageType,
+            ContentTemplate = (DataTemplate)FindResource("NavLabel"),
+        };
         item.SetResourceReference(MinHeightProperty, OdTokenKeys.HitTargetMin);
         return item;
     }
 
-    private NavigationViewItem ShellItem(string target, Binding title, SymbolRegular icon, Type pageType)
+    private OdNavItem ShellItem(string target, Binding title, SymbolRegular icon, Type pageType)
     {
-        var item = FollowPreset(new NavigationViewItem
-        {
-            Icon = NavIcon(icon),
-            TargetPageTag = target,
-            TargetPageType = pageType,
-        });
+        var item = NavItem(icon, target, pageType);
         item.SetBinding(ContentControl.ContentProperty, title);
         item.SetBinding(AutomationProperties.NameProperty, title);
         item.SetBinding(ToolTipProperty, title);
@@ -298,7 +326,7 @@ public partial class OdMainWindow : INavigationViewPageProvider
         }
     }
 
-    private NavigationViewItem ModuleItem(OdModuleItemViewModel module)
+    private OdNavItem ModuleItem(OdModuleItemViewModel module)
     {
         var pin = new MenuItem { Command = _shell.TogglePinCommand, CommandParameter = module };
         var popOut = new MenuItem { CommandParameter = module };
@@ -312,13 +340,8 @@ public partial class OdMainWindow : INavigationViewPageProvider
             popOut.Command = module.IsPoppedOut ? _shell.PopInCommand : _shell.PopOutCommand;
         };
 
-        var item = FollowPreset(new NavigationViewItem
-        {
-            Icon = NavIcon(OdSymbolConverter.Parse(module.Info.Icon)),
-            TargetPageTag = module.Id,
-            TargetPageType = typeof(OdModuleStage),
-            ContextMenu = menu,
-        });
+        var item = NavItem(OdSymbolConverter.Parse(module.Info.Icon), module.Id, typeof(OdModuleStage));
+        item.ContextMenu = menu;
         item.SetBinding(ContentControl.ContentProperty, new Binding(nameof(OdModuleItemViewModel.Title)) { Source = module });
         item.SetBinding(AutomationProperties.NameProperty, new Binding(nameof(OdModuleItemViewModel.Title)) { Source = module });
         item.SetBinding(ToolTipProperty, new Binding(nameof(OdModuleItemViewModel.Title)) { Source = module });
@@ -378,26 +401,61 @@ public partial class OdMainWindow : INavigationViewPageProvider
         if (e.Key == Key.K)
         {
             e.Handled = true;
-            await OpenPaletteAsync();
+            await OpenPaletteAsync(this);
         }
         else if (_shell.ShortcutTarget(e.Key, NavMaxVisibleItems) is { } target)
         {
             e.Handled = true;
             await _shell.NavigateAsync(target);
+            FocusPageSoon();
         }
     }
 
-    private async void OnSearchClick(object sender, RoutedEventArgs e) => await OpenPaletteAsync();
+    private async void OnSearchClick(object sender, RoutedEventArgs e) => await OpenPaletteAsync(this);
 
-    private async Task OpenPaletteAsync()
+    /// <summary>
+    /// The command palette over <paramref name="owner"/>. What it runs happens in the main window, which
+    /// comes forward first when the palette was opened from a pop-out; a popped-out module brings its own
+    /// window back to the front.
+    /// </summary>
+    private async Task OpenPaletteAsync(Window owner)
     {
         var palette = new OdCommandPaletteViewModel(_shell.PaletteEntries());
-        new OdCommandPaletteWindow(palette, this).ShowDialog();
+        new OdCommandPaletteWindow(palette, owner).ShowDialog();
         if (palette.Chosen is { } chosen)
         {
+            if (owner != this)
+            {
+                Present();
+            }
+
             await chosen.RunAsync();
+            if (!_dialogs.IsOpen)
+            {
+                FocusPageSoon();
+            }
         }
     }
+
+    /// <summary>
+    /// Moves the keyboard into the page on screen once it is shown, as after a palette choice or a Ctrl+1–9
+    /// shortcut: the keyboard otherwise stays where the palette left it, outside the page.
+    /// </summary>
+    private void FocusPageSoon() => _ = Dispatcher.InvokeAsync(
+        () =>
+        {
+            FrameworkElement page = _shell.CurrentTarget switch
+            {
+                OdShellViewModel.LibraryTarget => _library,
+                OdShellViewModel.SettingsTarget => _settingsPage,
+                _ => _stage,
+            };
+            if (IsActive && !page.IsKeyboardFocusWithin)
+            {
+                page.MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
+            }
+        },
+        DispatcherPriority.Input);
 
     private void OnClosing(object? sender, CancelEventArgs e)
     {
@@ -512,6 +570,7 @@ public partial class OdMainWindow : INavigationViewPageProvider
     private void OpenPopOut(OdModuleItemViewModel item, FrameworkElement view)
     {
         var window = new OdPopOutWindow(item, view, this);
+        window.PaletteRequested += async (_, _) => await OpenPaletteAsync(window);
         if (_popOutBounds.TryGetValue(item.Id, out var bounds))
         {
             window.Left = bounds.Left;

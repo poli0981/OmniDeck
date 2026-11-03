@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 using System.Windows.Input;
 using Microsoft.Win32;
 using OmniDeck.Core.Localization;
@@ -90,6 +91,34 @@ public partial class OdMediaView
         if (Queue.SelectedItem is OdMediaItem item)
         {
             ViewModel?.PlayItemCommand.Execute(item);
+        }
+    }
+
+    private void OnQueueKeyDown(object sender, KeyEventArgs e)
+    {
+        if (Queue.SelectedItem is not OdMediaItem item || ViewModel is not { } model)
+        {
+            return;
+        }
+
+        if (e.Key == Key.Enter)
+        {
+            e.Handled = true;
+            model.PlayItemCommand.Execute(item);
+        }
+        else if (e.Key == Key.Delete)
+        {
+            e.Handled = true;
+            model.RemoveItemCommand.Execute(item);
+        }
+    }
+
+    // libVLC's overlay is a window of its own, which screen readers name: after the module, not after the library.
+    private void OnOverlayLoaded(object sender, RoutedEventArgs e)
+    {
+        if (Window.GetWindow((DependencyObject)sender) is { } overlay && overlay != Window.GetWindow(this))
+        {
+            overlay.SetBinding(Window.TitleProperty, new Binding("[Media_Name]") { Source = OdLocalization.Instance, Mode = BindingMode.OneWay });
         }
     }
 

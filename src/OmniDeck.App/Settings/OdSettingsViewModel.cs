@@ -105,7 +105,21 @@ public sealed partial class OdSettingsViewModel : ObservableObject, IDisposable
     public IReadOnlyList<OdPresetOption> Presets { get; } = OdPresetOption.All();
 
     /// <summary>Accent colors to pick from when the Windows accent is not used.</summary>
-    public IReadOnlyList<string> AccentSwatches { get; } = ["#0067C0", "#8764B8", "#C239B3", "#E74856", "#CA5010", "#10893E"];
+    public IReadOnlyList<OdAccentSwatch> AccentSwatches { get; } = OdAccentSwatch.All();
+
+    /// <summary>The swatch in use, or null with the Windows accent; picking one leaves the Windows accent.</summary>
+    public OdAccentSwatch? SelectedSwatch
+    {
+        get => UseSystemAccent ? null : AccentSwatches.FirstOrDefault(swatch => string.Equals(swatch.Color, AccentColor, StringComparison.OrdinalIgnoreCase));
+        set
+        {
+            if (value is not null)
+            {
+                AccentColor = value.Color;
+                UseSystemAccent = false;
+            }
+        }
+    }
 
     public OdMemoryViewModel Memory { get; }
 
@@ -137,13 +151,6 @@ public sealed partial class OdSettingsViewModel : ObservableObject, IDisposable
 
     [RelayCommand]
     private void OpenDataFolder() => _openFolder(DataFolder);
-
-    [RelayCommand]
-    private void ChooseAccent(string color)
-    {
-        AccentColor = color;
-        UseSystemAccent = false;
-    }
 
     partial void OnSectionIndexChanged(int value)
     {
@@ -183,11 +190,16 @@ public sealed partial class OdSettingsViewModel : ObservableObject, IDisposable
     partial void OnUseSystemAccentChanged(bool value)
     {
         // Leaving the Windows accent keeps the color already picked, or starts from the first swatch.
-        var custom = AccentColor.Length > 0 ? AccentColor : AccentSwatches[0];
+        var custom = AccentColor.Length > 0 ? AccentColor : AccentSwatches[0].Color;
         Apply(s => s with { AccentColor = value ? "" : custom });
+        OnPropertyChanged(nameof(SelectedSwatch));
     }
 
-    partial void OnAccentColorChanged(string value) => Apply(s => s with { AccentColor = UseSystemAccent ? "" : value });
+    partial void OnAccentColorChanged(string value)
+    {
+        Apply(s => s with { AccentColor = UseSystemAccent ? "" : value });
+        OnPropertyChanged(nameof(SelectedSwatch));
+    }
 
     partial void OnIdleAfterMinutesChanged(double? value) =>
         Apply(s => s with { Memory = s.Memory with { IdleAfterMinutes = WholeNumber(value, s.Memory.IdleAfterMinutes) } });

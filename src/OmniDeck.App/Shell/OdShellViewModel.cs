@@ -59,6 +59,9 @@ public sealed partial class OdShellViewModel : ObservableObject, IDisposable
     /// <summary>Raised when a settings tab should come to the front, such as the palette's "Running modules".</summary>
     public event EventHandler<OdSettingsSectionEventArgs>? SettingsSectionRequested;
 
+    /// <summary>Raised when the palette runs a command the window carries out (<see cref="OdShellCommand"/>).</summary>
+    public event EventHandler<OdShellCommandEventArgs>? CommandRequested;
+
     /// <summary>A module moved into a window of its own, which shows <see cref="OdPopOutEventArgs.View"/>.</summary>
     public event EventHandler<OdPopOutEventArgs>? PopOutOpened;
 
@@ -167,16 +170,29 @@ public sealed partial class OdShellViewModel : ObservableObject, IDisposable
         }
     }
 
-    /// <summary>The palette's entries in the current language: every module, then the shell commands.</summary>
+    /// <summary>
+    /// The palette's entries in the current language (docs/SPEC.md §2): every module, the library and
+    /// each settings tab, then the shell's commands.
+    /// </summary>
     public IReadOnlyList<OdPaletteEntry> PaletteEntries()
     {
         var command = OdLocalization.Get("Shell_PaletteCommand");
+        var settings = OdLocalization.Get("Settings_Title");
         return
         [
             .. Library.Select(item => new OdPaletteEntry(item.Title, item.Category, item.Info.Icon, () => NavigateAsync(item.Id))),
             new(OdLocalization.Get("Shell_LibraryTitle"), command, "Apps24", () => NavigateAsync(LibraryTarget)),
-            new(OdLocalization.Get("Settings_Title"), command, "Settings24", () => NavigateAsync(SettingsTarget)),
+            new(settings, command, "Settings24", () => NavigateAsync(SettingsTarget)),
+            new(OdLocalization.Get("Settings_General"), settings, "Options24", () => ShowSettingsAsync(OdSettingsSection.General)),
+            new(OdLocalization.Get("Settings_Appearance"), settings, "PaintBrush24", () => ShowSettingsAsync(OdSettingsSection.Appearance)),
+            new(OdLocalization.Get("Settings_Memory"), settings, "DataUsage24", () => ShowSettingsAsync(OdSettingsSection.Memory)),
+            new(OdLocalization.Get("Settings_WebApps"), settings, "Globe24", () => ShowSettingsAsync(OdSettingsSection.WebApps)),
+            new(OdLocalization.Get("Settings_Data"), settings, "Database24", () => ShowSettingsAsync(OdSettingsSection.Data)),
+            new(OdLocalization.Get("Settings_About"), settings, "Info24", () => ShowSettingsAsync(OdSettingsSection.About)),
             new(OdLocalization.Get("Memory_Title"), command, "DataUsage24", () => ShowSettingsAsync(OdSettingsSection.Memory)),
+            new(OdLocalization.Get("About_CheckUpdates"), command, "ArrowSync24", CheckForUpdatesAsync),
+            new(OdLocalization.Get("About_ReportBug"), command, "Bug24", () => RunAsync(OdShellCommand.ReportBug)),
+            new(OdLocalization.Get("Shell_OpenDataFolder"), command, "FolderOpen24", () => RunAsync(OdShellCommand.OpenDataFolder)),
             new(OdLocalization.Get("Shell_Quit"), command, "Power24", QuitAsync),
         ];
     }
@@ -242,6 +258,19 @@ public sealed partial class OdShellViewModel : ObservableObject, IDisposable
             ? [.. s.PinnedModules.Where(id => !string.Equals(id, item.Id, StringComparison.Ordinal))]
             : [.. s.PinnedModules, item.Id],
     });
+
+    /// <summary>Settings → About, where the check runs and says what it found.</summary>
+    private async Task CheckForUpdatesAsync()
+    {
+        await ShowSettingsAsync(OdSettingsSection.About);
+        await RunAsync(OdShellCommand.CheckForUpdates);
+    }
+
+    private Task RunAsync(OdShellCommand command)
+    {
+        CommandRequested?.Invoke(this, new OdShellCommandEventArgs(command));
+        return Task.CompletedTask;
+    }
 
     private Task ShowSettingsAsync(OdSettingsSection section)
     {
