@@ -42,28 +42,42 @@ public sealed partial class OdCalculatorViewModel : ObservableObject
         _save = save;
         _copy = copy;
         History.CollectionChanged += (_, _) => HistoryIsEmpty = History.Count == 0;
-        StandardKeys =
-        [
-            new("C", "", OdCalcKeyKind.Clear, OdLocalization.Get("Calc_Clear")),
-            new("⌫", "", OdCalcKeyKind.Backspace, OdLocalization.Get("Calc_Backspace")),
-            Named("%", OdLocalization.Get("Calc_Percent")), Named("÷", OdLocalization.Get("Calc_Divide")),
-            new("7"), new("8"), new("9"), Named("×", OdLocalization.Get("Calc_Multiply")),
-            new("4"), new("5"), new("6"), new("−", "-", OdCalcKeyKind.Input, OdLocalization.Get("Calc_Minus")),
-            new("1"), new("2"), new("3"), Named("+", OdLocalization.Get("Calc_Plus")),
-            new("±", "", OdCalcKeyKind.Negate, OdLocalization.Get("Calc_Negate")),
-            new("0"), Named(".", OdLocalization.Get("Calc_Decimal")),
-            new("=", "", OdCalcKeyKind.Evaluate, OdLocalization.Get("Calc_Equals")),
-        ];
+        StandardKeys = NewStandardKeys();
+        OdLocalization.FollowCulture(OnCultureChanged);
     }
 
     /// <summary>This session's calculations, newest first.</summary>
     public ObservableCollection<OdCalcHistoryEntry> History { get; } = [];
 
     /// <summary>The standard keypad, row by row (four keys per row).</summary>
-    public IReadOnlyList<OdCalcKey> StandardKeys { get; }
+    public IReadOnlyList<OdCalcKey> StandardKeys { get; private set; }
 
     /// <summary>The scientific keys (five per row); functions type their "(", which the user closes.</summary>
-    public IReadOnlyList<OdCalcKey> ScientificKeys { get; } =
+    public IReadOnlyList<OdCalcKey> ScientificKeys { get; private set; } = NewScientificKeys();
+
+    // A change of language: the keys again, with their names in it.
+    private void OnCultureChanged(object? sender, EventArgs e)
+    {
+        StandardKeys = NewStandardKeys();
+        ScientificKeys = NewScientificKeys();
+        OnPropertyChanged(nameof(StandardKeys));
+        OnPropertyChanged(nameof(ScientificKeys));
+    }
+
+    private static OdCalcKey[] NewStandardKeys() =>
+    [
+        new("C", "", OdCalcKeyKind.Clear, OdLocalization.Get("Calc_Clear")),
+        new("⌫", "", OdCalcKeyKind.Backspace, OdLocalization.Get("Calc_Backspace")),
+        Named("%", OdLocalization.Get("Calc_Percent")), Named("÷", OdLocalization.Get("Calc_Divide")),
+        new("7"), new("8"), new("9"), Named("×", OdLocalization.Get("Calc_Multiply")),
+        new("4"), new("5"), new("6"), new("−", "-", OdCalcKeyKind.Input, OdLocalization.Get("Calc_Minus")),
+        new("1"), new("2"), new("3"), Named("+", OdLocalization.Get("Calc_Plus")),
+        new("±", "", OdCalcKeyKind.Negate, OdLocalization.Get("Calc_Negate")),
+        new("0"), Named(".", OdLocalization.Get("Calc_Decimal")),
+        new("=", "", OdCalcKeyKind.Evaluate, OdLocalization.Get("Calc_Equals")),
+    ];
+
+    private static OdCalcKey[] NewScientificKeys() =>
     [
         Named("sin(", OdLocalization.Get("Calc_Sine")), Named("cos(", OdLocalization.Get("Calc_Cosine")), Named("tan(", OdLocalization.Get("Calc_Tangent")),
         Named("ln(", OdLocalization.Get("Calc_NaturalLog")), Named("log(", OdLocalization.Get("Calc_Log")),

@@ -83,6 +83,7 @@ public sealed partial class OdMediaViewModel : ObservableObject, IDisposable
         _session.PlayerChanged += OnPlayerChanged;
         _session.Failed += OnFailed;
         Refresh();
+        OdLocalization.FollowCulture(OnCultureChanged);
     }
 
     /// <summary>The player came or went: the view hands it to its <c>VideoView</c>.</summary>
@@ -168,6 +169,7 @@ public sealed partial class OdMediaViewModel : ObservableObject, IDisposable
 
     public void Dispose()
     {
+        OdLocalization.UnfollowCulture(OnCultureChanged);
         _session.Changed -= OnSessionChanged;
         _session.PlayerChanged -= OnPlayerChanged;
         _session.Failed -= OnFailed;
@@ -257,6 +259,14 @@ public sealed partial class OdMediaViewModel : ObservableObject, IDisposable
     private void OnPlayerChanged(object? sender, EventArgs e) => PlayerChanged?.Invoke(this, EventArgs.Empty);
 
     private void OnFailed(object? sender, OdMediaFailedEventArgs e) => Message = OdLocalization.Format("Media_Failed", e.File);
+
+    // A change of language: the title and the buttons' names again.
+    private void OnCultureChanged(object? sender, EventArgs e)
+    {
+        Refresh();
+        OnPropertyChanged(nameof(PlayPauseName));
+        OnPropertyChanged(nameof(MuteName));
+    }
 
     private void Refresh()
     {

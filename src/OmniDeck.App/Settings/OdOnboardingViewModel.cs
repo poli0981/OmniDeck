@@ -1,6 +1,7 @@
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using OmniDeck.Core.Localization;
 using OmniDeck.Core.Settings;
 using OmniDeck.Core.Storage;
 using OmniDeck.Core.Theming;
@@ -31,6 +32,7 @@ public sealed partial class OdOnboardingViewModel : ObservableObject
         _language = settings.Current.Language;
         _preset = settings.Current.Preset;
         Presets = OdPresetOption.All(preview);
+        OdLocalization.FollowCulture(OnCultureChanged);
     }
 
     /// <summary>Raised once the user is done.</summary>
@@ -55,6 +57,20 @@ public sealed partial class OdOnboardingViewModel : ObservableObject
     }
 
     partial void OnLanguageChanged(string value) => _settings.Update(s => s with { Language = value });
+
+    // Picking a language here switches it at once: the lists' texts follow, in place.
+    private void OnCultureChanged(object? sender, EventArgs e)
+    {
+        foreach (var choice in Languages)
+        {
+            choice.RefreshTitle();
+        }
+
+        foreach (var option in Presets)
+        {
+            option.RefreshTexts();
+        }
+    }
 
     partial void OnPresetChanged(string value) => _settings.Update(s => s with { Preset = value });
 }

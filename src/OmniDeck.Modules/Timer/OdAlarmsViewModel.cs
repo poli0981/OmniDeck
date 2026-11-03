@@ -17,15 +17,15 @@ public sealed partial class OdAlarmsViewModel : ObservableObject, IDisposable
         _service = service;
         RepeatOptions =
         [
-            new(OdAlarmRepeat.Once, OdLocalization.Get("Timer_RepeatOnce")),
-            new(OdAlarmRepeat.Daily, OdLocalization.Get("Timer_RepeatDaily")),
-            new(OdAlarmRepeat.Weekdays, OdLocalization.Get("Timer_RepeatWeekdays")),
-            new(OdAlarmRepeat.Weekends, OdLocalization.Get("Timer_RepeatWeekends")),
+            new(OdAlarmRepeat.Once, () => OdLocalization.Get("Timer_RepeatOnce")),
+            new(OdAlarmRepeat.Daily, () => OdLocalization.Get("Timer_RepeatDaily")),
+            new(OdAlarmRepeat.Weekdays, () => OdLocalization.Get("Timer_RepeatWeekdays")),
+            new(OdAlarmRepeat.Weekends, () => OdLocalization.Get("Timer_RepeatWeekends")),
         ];
         NewRepeat = RepeatOptions[1];
-        TimeHint = OdLocalization.Format("Timer_AlarmTimeHint", new TimeOnly(7, 30).ToString("t", CultureInfo.CurrentCulture));
         service.Changed += OnChanged;
         Sync();
+        OdLocalization.FollowCulture(OnCultureChanged);
     }
 
     public ObservableCollection<OdAlarmRowViewModel> Rows { get; } = [];
@@ -33,7 +33,7 @@ public sealed partial class OdAlarmsViewModel : ObservableObject, IDisposable
     public IReadOnlyList<OdAlarmRepeatOption> RepeatOptions { get; }
 
     /// <summary>How to type a time, in the culture's own form.</summary>
-    public string TimeHint { get; }
+    public string TimeHint { get; private set; } = Hint();
 
     public bool HasNoAlarms => Rows.Count == 0;
 
@@ -50,7 +50,11 @@ public sealed partial class OdAlarmsViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private string? _message;
 
-    public void Dispose() => _service.Changed -= OnChanged;
+    public void Dispose()
+    {
+        OdLocalization.UnfollowCulture(OnCultureChanged);
+        _service.Changed -= OnChanged;
+    }
 
     [RelayCommand]
     private void Add()
@@ -78,6 +82,21 @@ public sealed partial class OdAlarmsViewModel : ObservableObject, IDisposable
     }
 
     private void OnChanged(object? sender, EventArgs e) => Sync();
+
+    // A change of language: the repeats in place, so the form's choice stays, and the rows again.
+    private void OnCultureChanged(object? sender, EventArgs e)
+    {
+        foreach (var option in RepeatOptions)
+        {
+            option.RefreshLabel();
+        }
+
+        TimeHint = Hint();
+        OnPropertyChanged(nameof(TimeHint));
+        Sync();
+    }
+
+    private static string Hint() => OdLocalization.Format("Timer_AlarmTimeHint", new TimeOnly(7, 30).ToString("t", CultureInfo.CurrentCulture));
 
     private void Sync()
     {

@@ -39,7 +39,7 @@
                            HorizontalContentAlignment="Left"
                            AutomationProperties.Name="{res:OdLoc Shell_Search}"
                            Click="OnSearchClick"
-                           ToolTip="Ctrl+K">
+                           ToolTip="{res:OdLoc Shell_SearchShortcut}">
                     <DockPanel>
                         <ui:SymbolIcon Margin="{DynamicResource Od.Margin.Inline}"
                                        DockPanel.Dock="Left"

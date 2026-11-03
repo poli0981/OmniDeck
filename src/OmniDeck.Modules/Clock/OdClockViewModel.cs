@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using OmniDeck.Core.Localization;
 
 namespace OmniDeck.Modules.Clock;
 
@@ -43,6 +44,7 @@ public sealed partial class OdClockViewModel : ObservableObject, IDisposable
         }
 
         Tick();
+        OdLocalization.FollowCulture(OnCultureChanged);
     }
 
     public ObservableCollection<OdWorldClockViewModel> Clocks { get; } = [];
@@ -78,7 +80,13 @@ public sealed partial class OdClockViewModel : ObservableObject, IDisposable
         }
     }
 
-    public void Dispose() => StopTicking();
+    public void Dispose()
+    {
+        OdLocalization.UnfollowCulture(OnCultureChanged);
+        StopTicking();
+    }
+
+    private void OnCultureChanged(object? sender, EventArgs e) => Tick();
 
     [RelayCommand]
     private void AddZone()

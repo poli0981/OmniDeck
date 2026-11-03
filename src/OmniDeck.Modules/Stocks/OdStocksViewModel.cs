@@ -33,6 +33,7 @@ public sealed partial class OdStocksViewModel : ObservableObject, IDisposable
     private OdStocksSettings _settings;
     private CancellationTokenSource _work = new();
     private ITimer? _ticker;
+    private OdRefreshResult? _lastResult;
     private DateTimeOffset? _nextAttempt;
     private bool _refreshing;
 
@@ -54,6 +55,7 @@ public sealed partial class OdStocksViewModel : ObservableObject, IDisposable
         HasKey = secrets.Read(SecretName) is not null;
         ShowRows();
         ShowCredits();
+        OdLocalization.FollowCulture(OnCultureChanged);
     }
 
     public ObservableCollection<OdWatchRowViewModel> Rows { get; }
@@ -139,6 +141,7 @@ public sealed partial class OdStocksViewModel : ObservableObject, IDisposable
 
     public void Dispose()
     {
+        OdLocalization.UnfollowCulture(OnCultureChanged);
         _ticker?.Dispose();
         _ticker = null;
         _work.Cancel();
@@ -176,6 +179,7 @@ public sealed partial class OdStocksViewModel : ObservableObject, IDisposable
             }
 
             _nextAttempt = result.NextAttempt;
+            _lastResult = result;
             ShowResult(result);
             ShowRows();
         }
@@ -457,6 +461,22 @@ public sealed partial class OdStocksViewModel : ObservableObject, IDisposable
             { NextAttempt: { } next } => (OdLocalization.Format("Stocks_StatusMinute", local(next)), InfoBarSeverity.Informational),
             _ => ((string?)null, InfoBarSeverity.Informational),
         };
+    }
+
+    // A change of language: the rows, the status and the credits again, and the details, built anew from the cache.
+    private void OnCultureChanged(object? sender, EventArgs e)
+    {
+        ShowRows();
+        ShowCredits();
+        if (_lastResult is { } result)
+        {
+            ShowResult(result);
+        }
+
+        if (SelectedRow is { } row)
+        {
+            OnSelectedRowChanged(row);
+        }
     }
 
     private void ShowCredits()

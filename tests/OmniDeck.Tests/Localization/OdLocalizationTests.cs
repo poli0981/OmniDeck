@@ -50,7 +50,7 @@ public sealed class OdLocalizationTests
         localization.CultureChanged += OnCultureChanged;
         try
         {
-            var other = string.Equals(original.Name, "ja", StringComparison.Ordinal) ? CultureInfo.GetCultureInfo("vi") : CultureInfo.GetCultureInfo("ja");
+            var other = string.Equals(original.Name, "fr", StringComparison.Ordinal) ? CultureInfo.GetCultureInfo("de") : CultureInfo.GetCultureInfo("fr");
             localization.SetCulture(other);
             localization.SetCulture(other);
 
@@ -58,7 +58,7 @@ public sealed class OdLocalizationTests
             Assert.Equal(1, cultureChanges);
             Assert.Equal(other, CultureInfo.CurrentUICulture);
 
-            // Only English ships in P1: other languages fall back to the neutral strings.
+            // A language OmniDeck has no strings for falls back to the neutral (English) ones.
             Assert.Equal("Library", localization["Shell_Library"]);
         }
         finally
@@ -68,6 +68,40 @@ public sealed class OdLocalizationTests
             localization.SetCulture(original);
         }
     }
+
+    [Fact]
+    public void FollowCulture_CallsEveryFollower_EvenWhenOneFails()
+    {
+        var localization = OdLocalization.Instance;
+        var original = localization.Culture;
+        var failing = new Follower(fails: true);
+        var following = new Follower();
+        var gone = new Follower();
+        OdLocalization.FollowCulture(failing.OnCultureChanged);
+        OdLocalization.FollowCulture(following.OnCultureChanged);
+        OdLocalization.FollowCulture(gone.OnCultureChanged);
+        OdLocalization.UnfollowCulture(gone.OnCultureChanged);
+        try
+        {
+            localization.SetCulture(string.Equals(original.Name, "fr", StringComparison.Ordinal) ? CultureInfo.GetCultureInfo("de") : CultureInfo.GetCultureInfo("fr"));
+
+            Assert.Equal(1, failing.Calls);
+            Assert.Equal(1, following.Calls);
+            Assert.Equal(0, gone.Calls);
+        }
+        finally
+        {
+            OdLocalization.UnfollowCulture(failing.OnCultureChanged);
+            OdLocalization.UnfollowCulture(following.OnCultureChanged);
+            localization.SetCulture(original);
+        }
+
+        Assert.Equal(1, following.Calls);
+    }
+
+    [Fact]
+    public void FollowCulture_TakesOnlyAMethodOfAnObject() =>
+        Assert.Throws<ArgumentException>(() => OdLocalization.FollowCulture(IgnoreTheChange));
 
     [Fact]
     public void LocExtension_BindsToTheIndexer()
@@ -86,5 +120,24 @@ public sealed class OdLocalizationTests
         OdLocalization.Instance.TrackWindowLanguage();
 
         Assert.NotNull(OdLocalization.Instance.Culture);
+    }
+
+    private static void IgnoreTheChange(object? sender, EventArgs e)
+    {
+        // A static method has no object for FollowCulture to hold weakly.
+    }
+
+    private sealed class Follower(bool fails = false)
+    {
+        public int Calls { get; private set; }
+
+        public void OnCultureChanged(object? sender, EventArgs e)
+        {
+            Calls++;
+            if (fails)
+            {
+                throw new InvalidOperationException("This follower's data is gone.");
+            }
+        }
     }
 }

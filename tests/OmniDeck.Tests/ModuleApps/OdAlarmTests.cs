@@ -1,5 +1,6 @@
 using System.Globalization;
 using Microsoft.Extensions.Time.Testing;
+using OmniDeck.Core.Localization;
 using OmniDeck.Core.Storage;
 using OmniDeck.Modules.Timer;
 using OmniDeck.Tests.Localization;
@@ -155,6 +156,35 @@ public sealed class OdAlarmTests : IDisposable
 
         alarms.RemoveCommand.Execute(alarms.Rows[0]);
         Assert.Empty(service.Alarms);
+        return Task.CompletedTask;
+    });
+
+    [Fact]
+    public void TheForm_FollowsAChangeOfLanguage_AndKeepsItsChoice() => OdSta.Run(() =>
+    {
+        using var service = new OdAlarmService(_database, _time, _notifier);
+        using var alarms = new OdAlarmsViewModel(service);
+        service.Add(HalfPastSeven, OdAlarmRepeat.Daily, "Stand up");
+        var repeat = alarms.NewRepeat;
+        var changed = new List<string?>();
+        var labels = new List<string?>();
+        alarms.PropertyChanged += (_, e) => changed.Add(e.PropertyName);
+        alarms.RepeatOptions[0].PropertyChanged += (_, e) => labels.Add(e.PropertyName);
+        var original = OdLocalization.Instance.Culture;
+        try
+        {
+            OdLocalization.Instance.SetCulture(CultureInfo.GetCultureInfo(string.Equals(original.Name, "fr", StringComparison.Ordinal) ? "de" : "fr"));
+
+            Assert.Contains(nameof(OdAlarmsViewModel.TimeHint), changed, StringComparer.Ordinal);
+            Assert.Equal(new[] { "Label" }, labels, StringComparer.Ordinal);
+            Assert.Same(repeat, alarms.NewRepeat);
+            Assert.Single(alarms.Rows);
+        }
+        finally
+        {
+            OdLocalization.Instance.SetCulture(original);
+        }
+
         return Task.CompletedTask;
     });
 
