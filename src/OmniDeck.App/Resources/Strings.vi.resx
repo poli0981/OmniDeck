@@ -1,0 +1,568 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- The shell's UI strings, Vietnamese. A key missing here shows in English (Strings.resx). -->
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="App_Name" xml:space="preserve">
+    <value>OmniDeck</value>
+  </data>
+  <data name="Shell_Search" xml:space="preserve">
+    <value>Tìm kiếm mô-đun và lệnh</value>
+  </data>
+  <data name="Shell_Library" xml:space="preserve">
+    <value>Thư viện</value>
+  </data>
+  <data name="Shell_LibraryTitle" xml:space="preserve">
+    <value>Thư viện mô-đun</value>
+  </data>
+  <data name="Shell_LibraryIntro" xml:space="preserve">
+    <value>Mở một mô-đun, hoặc ghim để giữ mô-đun đó trên thanh bên.</value>
+  </data>
+  <data name="Shell_LibraryEmpty" xml:space="preserve">
+    <value>Chưa có mô-đun nào.</value>
+  </data>
+  <data name="Shell_Open" xml:space="preserve">
+    <value>Mở</value>
+  </data>
+  <data name="Shell_Pin" xml:space="preserve">
+    <value>Ghim vào thanh bên</value>
+  </data>
+  <data name="Shell_Unpin" xml:space="preserve">
+    <value>Bỏ ghim khỏi thanh bên</value>
+  </data>
+  <data name="Shell_Close" xml:space="preserve">
+    <value>Đóng</value>
+  </data>
+  <data name="Shell_PopOut" xml:space="preserve">
+    <value>Mở trong cửa sổ riêng</value>
+  </data>
+  <data name="Shell_PopIn" xml:space="preserve">
+    <value>Về cửa sổ chính</value>
+  </data>
+  <data name="Shell_PaletteCommand" xml:space="preserve">
+    <value>Lệnh</value>
+  </data>
+  <data name="Shell_Quit" xml:space="preserve">
+    <value>Thoát OmniDeck</value>
+  </data>
+  <data name="Tray_Open" xml:space="preserve">
+    <value>Mở OmniDeck</value>
+  </data>
+  <data name="Tray_QuickTimer" xml:space="preserve">
+    <value>Bắt đầu hẹn giờ 5 phút</value>
+  </data>
+  <data name="Tray_Quit" xml:space="preserve">
+    <value>Thoát</value>
+  </data>
+  <data name="Tray_StillRunningTitle" xml:space="preserve">
+    <value>OmniDeck vẫn đang chạy</value>
+  </data>
+  <data name="Tray_StillRunningMessage" xml:space="preserve">
+    <value>OmniDeck tiếp tục chạy trong khu vực thông báo. Để thoát, chọn Thoát trong menu của biểu tượng.</value>
+  </data>
+  <data name="Error_Title" xml:space="preserve">
+    <value>Đã xảy ra lỗi</value>
+  </data>
+  <data name="Error_UiMessage" xml:space="preserve">
+    <value>Đã xảy ra lỗi, nhưng OmniDeck vẫn đang chạy.
+
+Mã hỗ trợ: {0}
+
+{1}</value>
+  </data>
+  <data name="Error_StartFailed" xml:space="preserve">
+    <value>Không thể khởi động OmniDeck.
+
+{0}</value>
+  </data>
+  <data name="Memory_Title" xml:space="preserve">
+    <value>Mô-đun đang chạy</value>
+  </data>
+  <data name="Memory_Intro" xml:space="preserve">
+    <value>Theo thời gian, mô-đun bị ẩn sẽ lần lượt chuyển sang nhàn rỗi, tạm dừng rồi ngủ đông để tiết kiệm bộ nhớ. Bật Luôn chạy để một mô-đun không bị chuyển.</value>
+  </data>
+  <data name="Memory_InUse" xml:space="preserve">
+    <value>Đang dùng: {0}</value>
+  </data>
+  <data name="Memory_Limits" xml:space="preserve">
+    <value>Giới hạn mềm {0} · giới hạn cứng {1}</value>
+  </data>
+  <data name="Memory_SharedNote" xml:space="preserve">
+    <value>Mô-đun tích hợp dùng chung tiến trình của OmniDeck, nên chỉ ứng dụng web mới có số liệu riêng.</value>
+  </data>
+  <data name="Memory_SharedTitle" xml:space="preserve">
+    <value>Tiến trình web dùng chung</value>
+  </data>
+  <data name="Memory_SharedDescription" xml:space="preserve">
+    <value>Các tiến trình trình duyệt, đồ họa và trợ giúp mà mọi ứng dụng web đều dùng. Chúng đóng cùng ứng dụng web cuối cùng.</value>
+  </data>
+  <data name="Memory_KeepRunning" xml:space="preserve">
+    <value>Luôn chạy</value>
+  </data>
+  <data name="Memory_Suspend" xml:space="preserve">
+    <value>Tạm dừng</value>
+  </data>
+  <data name="Memory_Hibernate" xml:space="preserve">
+    <value>Ngủ đông</value>
+  </data>
+  <data name="Memory_UsedNow" xml:space="preserve">
+    <value>Đang hiển thị</value>
+  </data>
+  <data name="Memory_UsedJustNow" xml:space="preserve">
+    <value>Vừa dùng</value>
+  </data>
+  <data name="Memory_UsedMinutesAgo" xml:space="preserve">
+    <value>Dùng {0} phút trước</value>
+  </data>
+  <data name="Memory_UsedHoursAgo" xml:space="preserve">
+    <value>Dùng {0} giờ trước</value>
+  </data>
+  <data name="State_Created" xml:space="preserve">
+    <value>Chưa chạy</value>
+  </data>
+  <data name="State_Active" xml:space="preserve">
+    <value>Đang hoạt động</value>
+  </data>
+  <data name="State_Idle" xml:space="preserve">
+    <value>Nhàn rỗi</value>
+  </data>
+  <data name="State_Suspended" xml:space="preserve">
+    <value>Đã tạm dừng</value>
+  </data>
+  <data name="State_Hibernated" xml:space="preserve">
+    <value>Đã ngủ đông</value>
+  </data>
+  <data name="State_Closed" xml:space="preserve">
+    <value>Đã đóng</value>
+  </data>
+  <data name="Governor_HardCapTitle" xml:space="preserve">
+    <value>OmniDeck đang dùng nhiều bộ nhớ</value>
+  </data>
+  <data name="Governor_HardCapHibernatedOne" xml:space="preserve">
+    <value>Đã cho một mô-đun ngủ đông để không vượt quá giới hạn {0}.</value>
+  </data>
+  <data name="Governor_HardCapHibernated" xml:space="preserve">
+    <value>Đã cho {0} mô-đun ngủ đông để không vượt quá giới hạn {1}.</value>
+  </data>
+  <data name="Governor_HardCapKept" xml:space="preserve">
+    <value>Đã vượt giới hạn {0} nhưng không thể cho thêm mô-đun nào ngủ đông: các mô-đun đang mở đều đang được dùng hoặc đang bật Luôn chạy.</value>
+  </data>
+  <data name="Governor_HardCapShared" xml:space="preserve">
+    <value>Đã vượt giới hạn {0} vì các tiến trình dùng chung của những ứng dụng web đang mở chiếm {1}, chủ yếu cho đồ họa. Cho các mô-đun khác ngủ đông cũng không giảm được mức này.</value>
+  </data>
+  <data name="Governor_ResidentHibernatedTitle" xml:space="preserve">
+    <value>Đã cho {0} ngủ đông để tiết kiệm bộ nhớ</value>
+  </data>
+  <data name="Governor_ResidentHibernated" xml:space="preserve">
+    <value>Sẽ không có thông báo cho đến khi bạn mở lại. Bấm vào đây để mở.</value>
+  </data>
+  <data name="Settings_Nav" xml:space="preserve">
+    <value>Cài đặt</value>
+  </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Cài đặt</value>
+  </data>
+  <data name="Settings_General" xml:space="preserve">
+    <value>Chung</value>
+  </data>
+  <data name="Settings_Appearance" xml:space="preserve">
+    <value>Giao diện</value>
+  </data>
+  <data name="Settings_Memory" xml:space="preserve">
+    <value>Bộ nhớ</value>
+  </data>
+  <data name="Settings_Data" xml:space="preserve">
+    <value>Dữ liệu</value>
+  </data>
+  <data name="Settings_About" xml:space="preserve">
+    <value>Giới thiệu</value>
+  </data>
+  <data name="Settings_Language" xml:space="preserve">
+    <value>Ngôn ngữ</value>
+  </data>
+  <data name="Settings_CloseToTray" xml:space="preserve">
+    <value>Tiếp tục chạy trong khu vực thông báo khi đóng cửa sổ</value>
+  </data>
+  <data name="Settings_StartWithWindows" xml:space="preserve">
+    <value>Khởi động OmniDeck khi tôi đăng nhập vào Windows</value>
+  </data>
+  <data name="Settings_Theme" xml:space="preserve">
+    <value>Chủ đề</value>
+  </data>
+  <data name="Settings_Preset" xml:space="preserve">
+    <value>Bố cục</value>
+  </data>
+  <data name="Settings_FontScale" xml:space="preserve">
+    <value>Cỡ chữ</value>
+  </data>
+  <data name="Settings_Motion" xml:space="preserve">
+    <value>Hiệu ứng chuyển động</value>
+  </data>
+  <data name="Settings_AccentSystem" xml:space="preserve">
+    <value>Dùng màu nhấn của Windows</value>
+  </data>
+  <data name="Settings_IdleAfter" xml:space="preserve">
+    <value>Tạm dừng mô-đun bị ẩn sau (phút)</value>
+  </data>
+  <data name="Settings_HibernateAfter" xml:space="preserve">
+    <value>Cho mô-đun bị ẩn ngủ đông sau (phút)</value>
+  </data>
+  <data name="Settings_SoftCap" xml:space="preserve">
+    <value>Giới hạn bộ nhớ mềm (MB, 0: tự động)</value>
+  </data>
+  <data name="Settings_HardCap" xml:space="preserve">
+    <value>Giới hạn bộ nhớ cứng (MB, 0: tự động)</value>
+  </data>
+  <data name="Settings_DataFolder" xml:space="preserve">
+    <value>Thư mục dữ liệu</value>
+  </data>
+  <data name="Settings_OpenDataFolder" xml:space="preserve">
+    <value>Mở</value>
+  </data>
+  <data name="Settings_Export" xml:space="preserve">
+    <value>Xuất cài đặt…</value>
+  </data>
+  <data name="Settings_Import" xml:space="preserve">
+    <value>Nhập cài đặt…</value>
+  </data>
+  <data name="Settings_FileFilter" xml:space="preserve">
+    <value>Cài đặt OmniDeck (*.json)|*.json</value>
+  </data>
+  <data name="Settings_Exported" xml:space="preserve">
+    <value>Đã xuất cài đặt.</value>
+  </data>
+  <data name="Settings_Imported" xml:space="preserve">
+    <value>Đã nhập cài đặt.</value>
+  </data>
+  <data name="Settings_ImportFailed" xml:space="preserve">
+    <value>Tệp đó không phải là tệp cài đặt OmniDeck.</value>
+  </data>
+  <data name="Language_System" xml:space="preserve">
+    <value>Theo Windows</value>
+  </data>
+  <data name="Theme_System" xml:space="preserve">
+    <value>Theo Windows</value>
+  </data>
+  <data name="Theme_Light" xml:space="preserve">
+    <value>Sáng</value>
+  </data>
+  <data name="Theme_Dark" xml:space="preserve">
+    <value>Tối</value>
+  </data>
+  <data name="Preset_Dynamic" xml:space="preserve">
+    <value>Năng động</value>
+  </data>
+  <data name="Preset_DynamicHint" xml:space="preserve">
+    <value>Gọn và sinh động: chữ nhỏ hơn, nhiều chuyển động hơn.</value>
+  </data>
+  <data name="Preset_Standard" xml:space="preserve">
+    <value>Tiêu chuẩn</value>
+  </data>
+  <data name="Preset_StandardHint" xml:space="preserve">
+    <value>Cân bằng, phù hợp với hầu hết mọi người.</value>
+  </data>
+  <data name="Preset_Comfort" xml:space="preserve">
+    <value>Dễ nhìn</value>
+  </data>
+  <data name="Preset_ComfortHint" xml:space="preserve">
+    <value>Chữ và vùng bấm lớn hơn, không có chuyển động.</value>
+  </data>
+  <data name="Onboarding_Title" xml:space="preserve">
+    <value>Chào mừng đến với OmniDeck</value>
+  </data>
+  <data name="Onboarding_Intro" xml:space="preserve">
+    <value>Chọn ngôn ngữ và bố cục. Bố cục được áp dụng ngay khi bạn chọn.</value>
+  </data>
+  <data name="Onboarding_Later" xml:space="preserve">
+    <value>Bạn có thể đổi cả hai sau trong Cài đặt.</value>
+  </data>
+  <data name="Onboarding_Done" xml:space="preserve">
+    <value>Bắt đầu</value>
+  </data>
+  <data name="Legal_Title" xml:space="preserve">
+    <value>Trước khi bạn bắt đầu</value>
+  </data>
+  <data name="Legal_Intro" xml:space="preserve">
+    <value>OmniDeck là phần mềm tự do theo giấy phép GNU General Public License v3. Vui lòng đọc các tài liệu này: khi bạn tiếp tục, OmniDeck ghi nhận rằng bạn đã đọc chúng. Điều này không phải là điều kiện của giấy phép.</value>
+  </data>
+  <data name="Legal_Eula" xml:space="preserve">
+    <value>Thỏa thuận cấp phép</value>
+  </data>
+  <data name="Legal_Disclaimer" xml:space="preserve">
+    <value>Miễn trừ trách nhiệm</value>
+  </data>
+  <data name="Legal_Privacy" xml:space="preserve">
+    <value>Chính sách quyền riêng tư</value>
+  </data>
+  <data name="Legal_Notices" xml:space="preserve">
+    <value>Thông báo của bên thứ ba</value>
+  </data>
+  <data name="Legal_HaveRead" xml:space="preserve">
+    <value>Tôi đã đọc các tài liệu này</value>
+  </data>
+  <data name="Legal_Continue" xml:space="preserve">
+    <value>Tiếp tục</value>
+  </data>
+  <data name="Legal_Quit" xml:space="preserve">
+    <value>Thoát</value>
+  </data>
+  <data name="Legal_Close" xml:space="preserve">
+    <value>Đóng</value>
+  </data>
+  <data name="Legal_Missing" xml:space="preserve">
+    <value>Bản OmniDeck này thiếu {0}.</value>
+  </data>
+  <data name="About_Version" xml:space="preserve">
+    <value>Phiên bản {0}</value>
+  </data>
+  <data name="About_CheckUpdates" xml:space="preserve">
+    <value>Kiểm tra bản cập nhật</value>
+  </data>
+  <data name="About_Checking" xml:space="preserve">
+    <value>Đang kiểm tra bản cập nhật…</value>
+  </data>
+  <data name="About_UpToDate" xml:space="preserve">
+    <value>OmniDeck đã là phiên bản mới nhất.</value>
+  </data>
+  <data name="About_Available" xml:space="preserve">
+    <value>Đã có phiên bản {0}.</value>
+  </data>
+  <data name="About_Download" xml:space="preserve">
+    <value>Tải xuống và khởi động lại</value>
+  </data>
+  <data name="About_Downloading" xml:space="preserve">
+    <value>Đang tải xuống bản cập nhật: {0}%</value>
+  </data>
+  <data name="About_Failed" xml:space="preserve">
+    <value>Không thể cập nhật: {0}</value>
+  </data>
+  <data name="About_NotInstalled" xml:space="preserve">
+    <value>Cập nhật hoạt động trên bản OmniDeck đã cài đặt, không phải trên bản dựng phát triển.</value>
+  </data>
+  <data name="About_Links" xml:space="preserve">
+    <value>Liên kết</value>
+  </data>
+  <data name="About_GitHub" xml:space="preserve">
+    <value>Mã nguồn trên GitHub</value>
+  </data>
+  <data name="About_Discussions" xml:space="preserve">
+    <value>Thảo luận</value>
+  </data>
+  <data name="About_Discord" xml:space="preserve">
+    <value>Discord</value>
+  </data>
+  <data name="About_Legal" xml:space="preserve">
+    <value>Giấy phép và tài liệu pháp lý</value>
+  </data>
+  <data name="About_Credits" xml:space="preserve">
+    <value>OmniDeck được xây dựng bằng .NET, WPF-UI, Velopack, CommunityToolkit.Mvvm, H.NotifyIcon, Serilog, Dapper, SQLite và Markdig. Danh sách đầy đủ có trong Thông báo của bên thứ ba.</value>
+  </data>
+  <data name="Update_AvailableTitle" xml:space="preserve">
+    <value>Đã có OmniDeck {0}</value>
+  </data>
+  <data name="Update_AvailableMessage" xml:space="preserve">
+    <value>Mở Cài đặt → Giới thiệu để cài đặt.</value>
+  </data>
+  <data name="Dialog_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Dialog_Cancel" xml:space="preserve">
+    <value>Hủy</value>
+  </data>
+  <data name="Settings_WebApps" xml:space="preserve">
+    <value>Ứng dụng web</value>
+  </data>
+  <data name="WebApps_Intro" xml:space="preserve">
+    <value>Chọn những ứng dụng web được hiện thông báo. Ứng dụng đã bật thông báo sẽ tiếp tục chạy khi bị ẩn để có thể thông báo cho bạn; ứng dụng chỉ bị đóng khi OmniDeck thiếu bộ nhớ.</value>
+  </data>
+  <data name="WebApps_Notifications" xml:space="preserve">
+    <value>Thông báo</value>
+  </data>
+  <data name="WebApps_NoPermissions" xml:space="preserve">
+    <value>Chưa có yêu cầu quyền nào</value>
+  </data>
+  <data name="WebApps_Allowed" xml:space="preserve">
+    <value>{0}: đã cho phép</value>
+  </data>
+  <data name="WebApps_Blocked" xml:space="preserve">
+    <value>{0}: đã chặn</value>
+  </data>
+  <data name="WebApps_ResetPermissions" xml:space="preserve">
+    <value>Hỏi lại</value>
+  </data>
+  <data name="WebApps_DataTitle" xml:space="preserve">
+    <value>Dữ liệu đăng nhập</value>
+  </data>
+  <data name="WebApps_DataIntro" xml:space="preserve">
+    <value>Các ứng dụng trong cùng một nhóm dùng chung một lần đăng nhập. Xóa dữ liệu của một nhóm sẽ đăng xuất bạn khỏi tất cả ứng dụng trong nhóm và đóng chúng.</value>
+  </data>
+  <data name="WebApps_ClearData" xml:space="preserve">
+    <value>Xóa dữ liệu</value>
+  </data>
+  <data name="WebApps_ClearTitle" xml:space="preserve">
+    <value>Xóa dữ liệu đăng nhập?</value>
+  </data>
+  <data name="WebApps_ClearMessage" xml:space="preserve">
+    <value>Bạn sẽ bị đăng xuất khỏi {0}. Cookie, dữ liệu trang web và các trang đã lưu trong bộ nhớ đệm của các ứng dụng này sẽ bị xóa.</value>
+  </data>
+  <data name="WebApps_ClearConfirm" xml:space="preserve">
+    <value>Xóa dữ liệu</value>
+  </data>
+  <data name="WebApps_Cleared" xml:space="preserve">
+    <value>Đã xóa dữ liệu của {0}.</value>
+  </data>
+  <data name="WebApps_ClearFailed" xml:space="preserve">
+    <value>Không thể xóa dữ liệu. Khởi động lại OmniDeck rồi thử lại.</value>
+  </data>
+  <data name="WebApps_Catalog" xml:space="preserve">
+    <value>Danh mục ứng dụng web ngày {0}, gồm {1} ứng dụng.</value>
+  </data>
+  <data name="WebApps_Checked" xml:space="preserve">
+    <value>Đã kiểm tra danh mục mới lần cuối vào {0}.</value>
+  </data>
+  <data name="WebApps_NotChecked" xml:space="preserve">
+    <value>Chưa kiểm tra danh mục mới.</value>
+  </data>
+  <data name="About_ReportBug" xml:space="preserve">
+    <value>Báo lỗi</value>
+  </data>
+  <data name="Error_Report" xml:space="preserve">
+    <value>Báo lỗi</value>
+  </data>
+  <data name="Report_Title" xml:space="preserve">
+    <value>Báo lỗi</value>
+  </data>
+  <data name="Report_Intro" xml:space="preserve">
+    <value>OmniDeck lưu một báo cáo trên PC này và mở một issue mới trên GitHub trong trình duyệt của bạn, với các trường ngắn đã điền sẵn. Không có gì được gửi đi: bạn tự đính kèm báo cáo vào issue. Địa chỉ web được bỏ phần truy vấn; token, cookie, địa chỉ email, ID dài và tên người dùng của bạn được lược bỏ trước.</value>
+  </data>
+  <data name="Report_Subject" xml:space="preserve">
+    <value>Lỗi liên quan đến phần nào?</value>
+  </data>
+  <data name="Report_General" xml:space="preserve">
+    <value>OmniDeck nói chung</value>
+  </data>
+  <data name="Report_Preview" xml:space="preserve">
+    <value>Nội dung issue, cũng có trong báo cáo dưới tên issue.md</value>
+  </data>
+  <data name="Report_Save" xml:space="preserve">
+    <value>Lưu và mở GitHub</value>
+  </data>
+  <data name="Tray_Play" xml:space="preserve">
+    <value>Phát</value>
+  </data>
+  <data name="Tray_Pause" xml:space="preserve">
+    <value>Tạm dừng</value>
+  </data>
+  <data name="Tray_Next" xml:space="preserve">
+    <value>Tiếp theo</value>
+  </data>
+  <data name="Tray_Previous" xml:space="preserve">
+    <value>Trước đó</value>
+  </data>
+  <data name="About_Prereleases" xml:space="preserve">
+    <value>Nhận bản thử nghiệm (alpha và beta)</value>
+  </data>
+  <data name="About_PrereleasesNote" xml:space="preserve">
+    <value>Mọi phiên bản trước 1.0 đều là bản thử nghiệm. Từ 1.0 trở đi, tắt tùy chọn này để chỉ nhận bản ổn định.</value>
+  </data>
+  <data name="Shell_NavModules" xml:space="preserve">
+    <value>Mô-đun</value>
+  </data>
+  <data name="Shell_NavFooter" xml:space="preserve">
+    <value>Cài đặt và thư viện</value>
+  </data>
+  <data name="A11y_RowAction" xml:space="preserve">
+    <value>{0}, {1}</value>
+  </data>
+  <data name="A11y_Minimize" xml:space="preserve">
+    <value>Thu nhỏ</value>
+  </data>
+  <data name="A11y_Maximize" xml:space="preserve">
+    <value>Phóng to</value>
+  </data>
+  <data name="A11y_Restore" xml:space="preserve">
+    <value>Khôi phục</value>
+  </data>
+  <data name="A11y_Close" xml:space="preserve">
+    <value>Đóng</value>
+  </data>
+  <data name="A11y_OpenNavigation" xml:space="preserve">
+    <value>Mở ngăn dẫn hướng</value>
+  </data>
+  <data name="A11y_CloseNavigation" xml:space="preserve">
+    <value>Đóng ngăn dẫn hướng</value>
+  </data>
+  <data name="A11y_Increase" xml:space="preserve">
+    <value>Tăng</value>
+  </data>
+  <data name="A11y_Decrease" xml:space="preserve">
+    <value>Giảm</value>
+  </data>
+  <data name="A11y_ShowPassword" xml:space="preserve">
+    <value>Hiện mật khẩu</value>
+  </data>
+  <data name="A11y_ScrollUp" xml:space="preserve">
+    <value>Cuộn lên</value>
+  </data>
+  <data name="A11y_ScrollDown" xml:space="preserve">
+    <value>Cuộn xuống</value>
+  </data>
+  <data name="A11y_ScrollLeft" xml:space="preserve">
+    <value>Cuộn sang trái</value>
+  </data>
+  <data name="A11y_ScrollRight" xml:space="preserve">
+    <value>Cuộn sang phải</value>
+  </data>
+  <data name="A11y_PageUp" xml:space="preserve">
+    <value>Lên một trang</value>
+  </data>
+  <data name="A11y_PageDown" xml:space="preserve">
+    <value>Xuống một trang</value>
+  </data>
+  <data name="A11y_PageLeft" xml:space="preserve">
+    <value>Sang trái một trang</value>
+  </data>
+  <data name="A11y_PageRight" xml:space="preserve">
+    <value>Sang phải một trang</value>
+  </data>
+  <data name="Settings_AccentColors" xml:space="preserve">
+    <value>Màu nhấn</value>
+  </data>
+  <data name="Accent_Blue" xml:space="preserve">
+    <value>Xanh lam</value>
+  </data>
+  <data name="Accent_Purple" xml:space="preserve">
+    <value>Tím</value>
+  </data>
+  <data name="Accent_Pink" xml:space="preserve">
+    <value>Hồng</value>
+  </data>
+  <data name="Accent_Red" xml:space="preserve">
+    <value>Đỏ</value>
+  </data>
+  <data name="Accent_Orange" xml:space="preserve">
+    <value>Cam</value>
+  </data>
+  <data name="Accent_Green" xml:space="preserve">
+    <value>Xanh lục</value>
+  </data>
+  <data name="Shell_OpenDataFolder" xml:space="preserve">
+    <value>Mở thư mục dữ liệu</value>
+  </data>
+  <data name="Shell_SearchShortcut" xml:space="preserve">
+    <value>Ctrl+K</value>
+  </data>
+  <data name="A11y_Clear" xml:space="preserve">
+    <value>Xóa</value>
+  </data>
+</root>

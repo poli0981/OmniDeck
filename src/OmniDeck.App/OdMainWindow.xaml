@@ -37,6 +37,7 @@
                 <ui:Button Width="360"
                            Margin="{DynamicResource Od.Margin.Leading}"
                            HorizontalContentAlignment="Left"
+                           AutomationProperties.AutomationId="PaletteButton"
                            AutomationProperties.Name="{res:OdLoc Shell_Search}"
                            Click="OnSearchClick"
                            ToolTip="{res:OdLoc Shell_SearchShortcut}">

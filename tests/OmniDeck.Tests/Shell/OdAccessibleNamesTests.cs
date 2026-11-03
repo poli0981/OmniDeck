@@ -31,6 +31,7 @@ public sealed class OdAccessibleNamesTests
         Assert.Equal("[A11y_Decrease]", NameOf(new RepeatButton { Command = Slider.DecreaseLarge }));
         Assert.Equal("[A11y_PageDown]", NameOf(new RepeatButton { Name = "PageDown" }));
         Assert.Equal("[A11y_Increase]", NameOf(new RepeatButton { Name = "PART_InlineIncrementButton" }));
+        Assert.Equal("[A11y_Clear]", NameOf(new System.Windows.Controls.Button { Name = "PART_ClearButton" }));
         Assert.Equal("[A11y_Minimize]", NameOf(minimize));
         Assert.Null(OdAutomationNames.NameFor(new System.Windows.Controls.Button { Name = "Elsewhere" }));
         return Task.CompletedTask;

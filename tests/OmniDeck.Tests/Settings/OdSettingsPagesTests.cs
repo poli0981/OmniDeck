@@ -189,7 +189,8 @@ public sealed class OdSettingsPagesTests : IDisposable
         page.ShowSection(OdSettingsSection.Memory);
 
         Assert.Equal(2, page.SectionIndex);
-        Assert.Equal(new[] { "", "en" }, page.Languages.Select(l => l.Value), StringComparer.Ordinal);
+        Assert.Equal(new[] { "", "en", "vi" }, page.Languages.Select(l => l.Value), StringComparer.Ordinal);
+        Assert.Equal("Tiếng Việt", page.Languages[2].Title);
         Assert.Equal(new[] { "Follow Windows", "Light", "Dark" }, page.Themes.Select(t => t.Title), StringComparer.Ordinal);
         Assert.Equal(new[] { "Dynamic", "Standard", "Comfort" }, page.Presets.Select(p => p.Name), StringComparer.Ordinal);
         Assert.Equal("Larger text and targets, no motion.", page.Presets[2].Hint);
@@ -218,7 +219,7 @@ public sealed class OdSettingsPagesTests : IDisposable
         Assert.Equal(1, finished);
         Assert.Equal(3, onboarding.Presets.Count);
         Assert.Equal("Comfort", onboarding.Presets[2].Preview!["preset"]);
-        Assert.Equal(2, onboarding.Languages.Count);
+        Assert.Equal(3, onboarding.Languages.Count);
     }
 
     [Fact]
