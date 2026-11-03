@@ -3,9 +3,11 @@ using OmniDeck.Core.Modules;
 using OmniDeck.Core.Storage;
 using OmniDeck.Modules.Calculator;
 using OmniDeck.Modules.Clock;
+using OmniDeck.Modules.Stocks;
 using OmniDeck.Modules.Timer;
 using OmniDeck.Tests.Localization;
 using OmniDeck.Tests.Modules;
+using OmniDeck.Tests.Stocks;
 using OmniDeck.Tests.TestSupport;
 using Serilog.Core;
 
@@ -117,6 +119,39 @@ public sealed class OdBuiltInModulesTests : IDisposable
         Assert.Equal(timerShown, timer.StopwatchText);
         await host.SetMainWindowAwayAsync(away: false);
         Assert.NotEqual(timerShown, timer.StopwatchText, StringComparer.Ordinal);
+    });
+
+    [Fact]
+    public void Stocks_GoesDownTheLadder_AndComesBackWithANewView() => OdSta.Run(async () =>
+    {
+        using var host = NewHost(new OdStocksModule(new OdMemorySecrets()));
+        var hosted = Assert.Single(host.Modules);
+
+        var first = await host.ShowAsync("stocks");
+        Assert.IsType<OdStocksViewModel>(first.DataContext);
+        await host.HideAsync();
+        Assert.True(await hosted.Module.CanSuspendAsync());
+        Assert.True(await host.SuspendAsync("stocks", OdSuspendReason.Hidden));
+        Assert.True(await host.HibernateAsync("stocks"));
+
+        var second = await host.ShowAsync("stocks");
+        Assert.NotSame(first, second);
+        Assert.NotSame(first.DataContext, second.DataContext);
+        await host.CloseAsync("stocks");
+        Assert.Equal(OdModuleState.Closed, hosted.State);
+        Assert.Equal(OdRamClass.Light, hosted.Info.RamClass);
+    });
+
+    [Fact]
+    public void Stocks_HasNoViewToActivate_BeforeTheHostShowsIt() => OdSta.Run(async () =>
+    {
+        var stocks = new OdStocksModule(new OdMemorySecrets());
+
+        Assert.Throws<InvalidOperationException>(() => stocks.CreateView());
+        await stocks.ActivateAsync();
+        await stocks.DeactivateAsync();
+        await stocks.SuspendAsync(OdSuspendReason.Hidden);
+        await stocks.CloseAsync();
     });
 
     private OdModuleHost NewHost(params IOdModule[] modules)
