@@ -16,6 +16,7 @@ namespace OmniDeck.Modules;
 [JsonSerializable(typeof(OdCalculatorSettings))]
 [JsonSerializable(typeof(OdWeatherSettings))]
 [JsonSerializable(typeof(OdMediaSettings))]
+[JsonSerializable(typeof(OdStocksSettings))]
 [JsonSerializable(typeof(OdQuote))]
 [JsonSerializable(typeof(OdSeries))]
 [JsonSerializable(typeof(OdCreditState))]

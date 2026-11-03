@@ -28,6 +28,12 @@ public sealed class OdFakeModule(string id, OdRamClass ramClass = OdRamClass.Lig
     /// <summary>Makes <see cref="CloseAsync"/> fail.</summary>
     public bool ThrowOnClose { get; set; }
 
+    /// <summary>Makes <see cref="DeactivateAsync"/> fail.</summary>
+    public bool ThrowOnDeactivate { get; set; }
+
+    /// <summary>How often the host said the module left the screen; kept out of <see cref="Calls"/>.</summary>
+    public int Deactivations { get; private set; }
+
     public Task InitializeAsync(IOdModuleContext context)
     {
         Context = context;
@@ -51,6 +57,12 @@ public sealed class OdFakeModule(string id, OdRamClass ramClass = OdRamClass.Lig
         }
 
         Calls.Add("activate");
+    }
+
+    public Task DeactivateAsync()
+    {
+        Deactivations++;
+        return ThrowOnDeactivate ? throw new InvalidOperationException("deactivate failed") : Task.CompletedTask;
     }
 
     public Task<bool> CanSuspendAsync() => Task.FromResult(CanSuspend);

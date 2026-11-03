@@ -4,6 +4,7 @@ using OmniDeck.Modules.Calculator;
 using OmniDeck.Modules.Calendar;
 using OmniDeck.Modules.Clock;
 using OmniDeck.Modules.Media;
+using OmniDeck.Modules.Stocks;
 using OmniDeck.Modules.Timer;
 using OmniDeck.Modules.Weather;
 
@@ -28,6 +29,7 @@ public static class OdModulesServiceCollectionExtensions
         services.AddSingleton<IOdModule, OdTimerModule>();
         services.AddSingleton<IOdModule, OdCalculatorModule>();
         services.AddSingleton<IOdModule, OdWeatherModule>();
+        services.AddSingleton<IOdModule, OdStocksModule>();
         services.AddSingleton<IOdModule, OdCalendarModule>();
         services.AddSingleton<IOdModule, OdMediaModule>();
         return services;

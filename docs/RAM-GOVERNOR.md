@@ -56,7 +56,7 @@ The caps, the toasts and the task-manager panel all use it. The panel may show t
 - **> SoftCap:** hibernate the least-recently-used unpinned module, since Suspended frees almost no memory. Repeat on the next tick if still above.
 - **> HardCap:** force-hibernate LRU unpinned modules until below, then raise one toast summarizing what was hibernated. If the shared WebView2 processes alone keep the total above the cap (the GPU process grows with video), the toast says so instead of hibernating apps that would free nothing.
 
-Ordering hint: `RamClass.Heavy` modules (web apps, media, stocks charts) are preferred victims over `Light` ones at equal recency. Recency counts in poll intervals, so modules hidden within the same interval are equally recent.
+Ordering hint: `RamClass.Heavy` modules (web apps, media) are preferred victims over `Light` ones at equal recency. Recency counts in poll intervals, so modules hidden within the same interval are equally recent.
 
 As built in P2:
 
