@@ -7,7 +7,7 @@
 **OmniDeck** — ứng dụng desktop **Windows 11** (24H2+, x64) gom các mini-app native (đồng hồ, hẹn giờ, máy tính, thời tiết, lịch, chứng khoán, media player) và các web app tuyển chọn (Spotify, Discord, YouTube, Google…, chạy trên WebView2) vào một cửa sổ, với **RAM governor** tự suspend/hibernate module.
 
 - Open-source **GPL-3.0**; cài & cập nhật bằng **Velopack** (per-user, không admin).
-- Trạng thái: **alpha** — P0–P2 đã xong phần code (bản 0.2.0-alpha.N đang dogfood), P3 đang làm; lịch và các mốc ở `docs/ROADMAP.md`.
+- Trạng thái: **alpha** — P0–P2 xong (0.2.0, 03/11/2026); P3 xong phần code ở các PR draft #58–#69 (Legal 1.2 ở #70), merge theo thứ tự; lịch và các mốc ở `docs/ROADMAP.md`.
 
 ## 2. Luật vàng (KHÔNG được vi phạm)
 
