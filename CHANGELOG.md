@@ -6,6 +6,11 @@ All notable changes to OmniDeck are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+- Weather: the next 48 hours also show as a chart, the temperature as a line over the chance of rain.
+  Screen readers hear the chart sum the hours up; with the chart focused, the arrow keys read the
+  hours one by one, as the mouse does when it moves over it. The list of hours stays below it.
+
 ## [0.2.0-alpha.4] — 2026-11-03
 
 Fourth P2 alpha, the build to try out before 0.2.0: the memory governor now also rests the module
