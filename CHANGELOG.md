@@ -6,6 +6,13 @@ All notable changes to OmniDeck are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0-alpha.1] — 2026-11-03
+
+First P3 alpha, with all of phase P3 in it: Stocks with your own Twelve Data key, alarms in Timer,
+charts drawn by OmniDeck itself, the finished Dynamic and Comfort layouts, an accessibility pass for
+screen readers, the keyboard and large text, and OmniDeck in Vietnamese and Japanese. 0.3.0 follows
+once this alpha has been tried out.
+
 ### Added
 - Vietnamese (Tiếng Việt) and Japanese (日本語): Settings → General → Language, or the first-run setup.
 - Settings → About: Get pre-release versions. Without a choice of yours it follows the version you run, so the
@@ -323,7 +330,8 @@ user-facing features yet: the window only shows the version.
 - Supported platform narrowed to Windows 11 (24H2 or later), x64.
 - App data moves to `%LocalAppData%\OmniDeck.Data`, outside Velopack's install folder.
 
-[Unreleased]: https://github.com/poli0981/OmniDeck/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/poli0981/OmniDeck/compare/v0.3.0-alpha.1...HEAD
+[0.3.0-alpha.1]: https://github.com/poli0981/OmniDeck/compare/v0.2.0...v0.3.0-alpha.1
 [0.2.0]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.4...v0.2.0
 [0.2.0-alpha.4]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.3...v0.2.0-alpha.4
 [0.2.0-alpha.3]: https://github.com/poli0981/OmniDeck/compare/v0.2.0-alpha.2...v0.2.0-alpha.3

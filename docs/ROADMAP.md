@@ -68,7 +68,7 @@ Stocks module (Twelve Data with the user's own key, which spike #7 left as the o
 
 **Exit (0.3.0):** feature-complete against SPEC v1 scope.
 
-As delivered: twelve work packages, written while 0.2.0 was being dogfooded and opened as draft pull requests (#58–#69) that merge in order once 0.2.0 is tagged:
+As delivered: twelve work packages, written while 0.2.0 was being dogfooded and opened as draft pull requests (#58–#69) that merged in order once 0.2.0 was tagged, and came out together as `0.3.0-alpha.1` on 3 November 2026:
 
 - **Charts** drawn by OmniDeck itself rather than ScottPlot: candlesticks with volume, a line over bars, sparklines; each is one control screen readers read (a summary, then the values under the cursor as the arrow keys move it). Weather got its 48-hour chart from them.
 - **Stocks** on Twelve Data with the user's own key, kept with DPAPI: a watchlist that refreshes only while on screen and within the key's credits, and a listing's details from one month to five years, as a chart or a table.
