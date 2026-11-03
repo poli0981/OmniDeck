@@ -88,7 +88,8 @@
                 <ListBox x:Name="Watchlist"
                          Margin="{DynamicResource Od.Margin.Item}"
                          AutomationProperties.Name="{res:OdLoc Stocks_Watchlist}"
-                         ItemsSource="{Binding Rows}">
+                         ItemsSource="{Binding Rows}"
+                         SelectedItem="{Binding SelectedRow}">
                     <ListBox.InputBindings>
                         <KeyBinding Key="Delete"
                                     Command="{Binding RemoveCommand}"
@@ -154,6 +155,75 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
 
+                <ui:Card Margin="{DynamicResource Od.Margin.Tile}" Visibility="{Binding HasDetail, Converter={StaticResource Visible}}">
+                    <StackPanel DataContext="{Binding Detail}">
+                        <DockPanel Margin="{DynamicResource Od.Margin.Item}">
+                            <ui:Button Appearance="Transparent"
+                                       AutomationProperties.Name="{res:OdLoc Stocks_CloseDetail}"
+                                       Command="{Binding DataContext.CloseDetailCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                       DockPanel.Dock="Right"
+                                       Icon="{ui:SymbolIcon Dismiss24}"
+                                       ToolTip="{res:OdLoc Stocks_CloseDetail}" />
+                            <TextBlock VerticalAlignment="Center"
+                                       FontSize="{DynamicResource Od.Font.H2}"
+                                       FontWeight="SemiBold"
+                                       Text="{Binding Title}"
+                                       TextTrimming="CharacterEllipsis" />
+                        </DockPanel>
+                        <WrapPanel Margin="{DynamicResource Od.Margin.Item}" TextElement.Foreground="{DynamicResource TextFillColorSecondaryBrush}">
+                            <TextBlock Margin="{DynamicResource Od.Margin.Tile}" Text="{Binding Exchange}" />
+                            <TextBlock Margin="{DynamicResource Od.Margin.Tile}" Text="{Binding DayRange}" />
+                            <TextBlock Margin="{DynamicResource Od.Margin.Tile}" Text="{Binding YearRange}" />
+                            <TextBlock Margin="{DynamicResource Od.Margin.Tile}" Text="{Binding Volume}" />
+                        </WrapPanel>
+                        <ListBox Margin="{DynamicResource Od.Margin.Item}"
+                                 AutomationProperties.Name="{res:OdLoc Stocks_Ranges}"
+                                 ItemsSource="{Binding Ranges}"
+                                 SelectedItem="{Binding SelectedRange}">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                        </ListBox>
+                        <ui:ProgressRing Margin="{DynamicResource Od.Margin.Item}"
+                                         HorizontalAlignment="Left"
+                                         IsIndeterminate="True"
+                                         Visibility="{Binding IsLoading, Converter={StaticResource Visible}}" />
+                        <TextBlock Margin="{DynamicResource Od.Margin.Item}"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                   Text="{Binding Message}"
+                                   Visibility="{Binding HasMessage, Converter={StaticResource Visible}}" />
+                        <charts:OdCandleChart Margin="{DynamicResource Od.Margin.Item}"
+                                              Bars="{Binding Bars}"
+                                              CursorIndex="{Binding Cursor}"
+                                              Readout="{Binding Readout}"
+                                              Summary="{Binding Summary}" />
+                        <TextBlock Margin="{DynamicResource Od.Margin.Item}"
+                                   AutomationProperties.LiveSetting="Polite"
+                                   Text="{Binding Readout}"
+                                   TextWrapping="Wrap" />
+                        <CheckBox Margin="{DynamicResource Od.Margin.Item}"
+                                  Content="{res:OdLoc Stocks_ShowTable}"
+                                  IsChecked="{Binding ShowTable}" />
+                        <ListView MaxHeight="320"
+                                  Margin="{DynamicResource Od.Margin.Item}"
+                                  AutomationProperties.Name="{res:OdLoc Stocks_Table}"
+                                  ItemsSource="{Binding Table}"
+                                  Visibility="{Binding ShowTable, Converter={StaticResource Visible}}">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn DisplayMemberBinding="{Binding Date}" Header="{res:OdLoc Stocks_ColumnDate}" />
+                                    <GridViewColumn DisplayMemberBinding="{Binding Open}" Header="{res:OdLoc Stocks_ColumnOpen}" />
+                                    <GridViewColumn DisplayMemberBinding="{Binding High}" Header="{res:OdLoc Stocks_ColumnHigh}" />
+                                    <GridViewColumn DisplayMemberBinding="{Binding Low}" Header="{res:OdLoc Stocks_ColumnLow}" />
+                                    <GridViewColumn DisplayMemberBinding="{Binding Close}" Header="{res:OdLoc Stocks_ColumnClose}" />
+                                    <GridViewColumn DisplayMemberBinding="{Binding Volume}" Header="{res:OdLoc Stocks_ColumnVolume}" />
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </StackPanel>
+                </ui:Card>
                 <TextBlock Margin="{DynamicResource Od.Margin.Item}"
                            FontSize="{DynamicResource Od.Font.H2}"
                            FontWeight="SemiBold"
