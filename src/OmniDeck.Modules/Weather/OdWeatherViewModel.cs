@@ -5,6 +5,7 @@ using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OmniDeck.Core.Localization;
+using OmniDeck.Modules.Charts;
 
 namespace OmniDeck.Modules.Weather;
 
@@ -96,6 +97,24 @@ public sealed partial class OdWeatherViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     private string? _updated;
+
+    /// <summary>The next hours for the chart: the temperature as the line, the chance of rain as the bars.</summary>
+    [ObservableProperty]
+    private IReadOnlyList<OdChartPoint> _hourlyPoints = [];
+
+    /// <summary>The next hours in one sentence: the chart's name for screen readers.</summary>
+    [ObservableProperty]
+    private string _hourlySummary = "";
+
+    /// <summary>The hour the chart's cursor is on, or -1.</summary>
+    [ObservableProperty]
+    private int _hourlyCursor = -1;
+
+    /// <summary>The hour under the chart's cursor, in words.</summary>
+    [ObservableProperty]
+    private string _hourlyReadout = "";
+
+    private IReadOnlyList<OdHourlyWeather> _hourly = [];
 
     /// <summary>Shows the forecast for the place on screen; the cache answers while it is fresh.</summary>
     public Task ShowAsync() => LoadAsync(refresh: false);
@@ -204,6 +223,35 @@ public sealed partial class OdWeatherViewModel : ObservableObject, IDisposable
 
     partial void OnSelectedUnitsChanged(OdWeatherUnitsOption? value) => Rechoose();
 
+    partial void OnHourlyCursorChanged(int value) =>
+        HourlyReadout = value >= 0 && value < _hourly.Count ? Readout(_hourly[value]) : "";
+
+    private static string Readout(OdHourlyWeather hour) => OdLocalization.Format("Weather_ChartReadout",
+        hour.Time.ToString("dddd", CultureInfo.CurrentCulture),
+        hour.Time.ToString("t", CultureInfo.CurrentCulture),
+        OdWeatherText.Temperature(hour.Temperature),
+        OdWeatherCodes.Describe(hour.Code),
+        OdWeatherText.Percent(hour.PrecipitationChance));
+
+    private static string Summarize(IReadOnlyList<OdHourlyWeather> hours)
+    {
+        if (hours.Count == 0)
+        {
+            return "";
+        }
+
+        var low = OdWeatherText.Temperature(hours.Min(hour => hour.Temperature));
+        var high = OdWeatherText.Temperature(hours.Max(hour => hour.Temperature));
+        return hours.Where(hour => hour.PrecipitationChance > 0).MaxBy(hour => hour.PrecipitationChance) is { } wettest
+            ? OdLocalization.Format("Weather_ChartSummary",
+                low,
+                high,
+                wettest.Time.ToString("dddd", CultureInfo.CurrentCulture),
+                wettest.Time.ToString("t", CultureInfo.CurrentCulture),
+                OdWeatherText.Percent(wettest.PrecipitationChance))
+            : OdLocalization.Format("Weather_ChartSummaryDry", low, high);
+    }
+
     private void Rechoose()
     {
         if (_restoring)
@@ -273,6 +321,10 @@ public sealed partial class OdWeatherViewModel : ObservableObject, IDisposable
     {
         Hours.Clear();
         Days.Clear();
+        HourlyCursor = -1;
+        _hourly = forecast?.Hourly ?? [];
+        HourlyPoints = [.. _hourly.Select(hour => new OdChartPoint(hour.Time, hour.Temperature, hour.PrecipitationChance))];
+        HourlySummary = Summarize(_hourly);
         if (forecast is null)
         {
             Now = null;

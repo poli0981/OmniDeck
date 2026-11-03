@@ -1,6 +1,7 @@
 ﻿<UserControl x:Class="OmniDeck.Modules.Weather.OdWeatherView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:charts="clr-namespace:OmniDeck.Modules.Charts"
              xmlns:res="clr-namespace:OmniDeck.Core.Localization;assembly=OmniDeck.Core"
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              xmlns:weather="clr-namespace:OmniDeck.Modules.Weather">
@@ -99,6 +100,12 @@
                            FontSize="{DynamicResource Od.Font.H2}"
                            FontWeight="SemiBold"
                            Text="{res:OdLoc Weather_Next48Hours}" />
+                <charts:OdLineBarChart Margin="{DynamicResource Od.Margin.Item}"
+                                       CursorIndex="{Binding HourlyCursor}"
+                                       Points="{Binding HourlyPoints}"
+                                       Readout="{Binding HourlyReadout}"
+                                       Summary="{Binding HourlySummary}"
+                                       ValueSuffix="°" />
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                     <ItemsControl Focusable="False" ItemsSource="{Binding Hours}">
                         <ItemsControl.ItemsPanel>

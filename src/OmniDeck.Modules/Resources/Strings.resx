@@ -604,4 +604,19 @@
   <data name="Media_ExitFullscreen" xml:space="preserve">
     <value>Leave full screen (Esc)</value>
   </data>
+  <data name="Chart_Type" xml:space="preserve">
+    <value>chart</value>
+  </data>
+  <data name="Chart_KeyboardHint" xml:space="preserve">
+    <value>The left and right arrow keys read the values one by one; Home and End go to the first and the last.</value>
+  </data>
+  <data name="Weather_ChartSummary" xml:space="preserve">
+    <value>Next 48 hours: from {0} to {1}; rain is most likely on {2} at {3} ({4}).</value>
+  </data>
+  <data name="Weather_ChartSummaryDry" xml:space="preserve">
+    <value>Next 48 hours: from {0} to {1}.</value>
+  </data>
+  <data name="Weather_ChartReadout" xml:space="preserve">
+    <value>{0} at {1}: {2}, {3}, {4} chance of rain</value>
+  </data>
 </root>
