@@ -111,6 +111,7 @@ public sealed partial class OdTimerViewModel : ObservableObject, IDisposable
 
     public void Dispose()
     {
+        OdLocalization.UnfollowCulture(OnCultureChanged);
         StopTicking();
         _service.Changed -= OnServiceChanged;
         Alarms?.Dispose();

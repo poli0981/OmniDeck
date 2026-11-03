@@ -169,6 +169,7 @@ public sealed partial class OdMediaViewModel : ObservableObject, IDisposable
 
     public void Dispose()
     {
+        OdLocalization.UnfollowCulture(OnCultureChanged);
         _session.Changed -= OnSessionChanged;
         _session.PlayerChanged -= OnPlayerChanged;
         _session.Failed -= OnFailed;
