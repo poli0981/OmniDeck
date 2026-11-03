@@ -1,6 +1,6 @@
 # OmniDeck — Disclaimer
 
-Version 1.1 — effective from the first release after 0.0.1-alpha.1. Changes since 1.0: the Stooq stock data service is no longer used, and Messenger is no longer in the web app catalog.
+Version 1.2 — effective from 0.3.0. No changes since 1.1; the legal documents share one version number.
 
 ## Pre-release software
 

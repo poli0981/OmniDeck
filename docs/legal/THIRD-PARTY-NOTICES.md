@@ -2,7 +2,7 @@
 
 OmniDeck is licensed under GPL-3.0. This file lists the third-party components OmniDeck builds include, with their licenses, and ships in the app's `legal` folder. The self-contained .NET runtime's own license and third-party notices ship next to it, in `legal\Microsoft.NETCore.App\` and `legal\Microsoft.WindowsDesktop.App\`.
 
-**Maintenance note:** verify this file against the shipped packages at every release (`dotnet list src/OmniDeck.App package --include-transitive` plus a license check) — it is authoritative only when it matches what ships. When a planned component (§2) lands, move it to §1 and add its license text to §6.
+**Maintenance note:** verify this file against the shipped packages at every release (`dotnet list src/OmniDeck.App package --include-transitive` plus a license check) — it is authoritative only when it matches what ships. A newly bundled component goes in §1, with its license text in §5.
 
 ## 1. Bundled in current builds
 
@@ -24,24 +24,18 @@ OmniDeck is licensed under GPL-3.0. This file lists the third-party components O
 | SQLite (the `e_sqlite3` native library) | bundled with SQLitePCLRaw 2.1.13 | public domain | local database engine |
 | Ical.Net | 5.2.3 | MIT | calendar repeats and .ics import/export |
 | NodaTime (with the IANA time zone database, public domain) | 3.2.2 | Apache-2.0 | time zones for Ical.Net |
-| Microsoft.Web.WebView2 (Core, WPF and WinForms bindings, WebView2Loader) | 1.0.4314.35 | BSD-3-Clause | web app engine bindings; the WebView2 Runtime itself is not bundled (§3) |
+| Microsoft.Web.WebView2 (Core, WPF and WinForms bindings, WebView2Loader) | 1.0.4314.35 | BSD-3-Clause | web app engine bindings; the WebView2 Runtime itself is not bundled (§2) |
 | LibVLCSharp + LibVLCSharp.WPF | 3.10.2 | LGPL-2.1-or-later | media player bindings |
 | libVLC (`VideoLAN.LibVLC.Windows`: libvlc, libvlccore and the plugins in `libvlc\win-x64`) | 3.0.24 | LGPL-2.1-or-later core and most plugins; some plugins GPL-2.0-or-later | media engine |
 
 libVLC note: OmniDeck redistributes the libVLC 3.0.24 binaries unmodified, as separate files in `libvlc\win-x64` that can be replaced, with the plugin folders listed in docs/SPEC.md §3.6. Source for that exact version is available from VideoLAN (https://download.videolan.org/pub/videolan/vlc/3.0.24/) and LibVLCSharp's from https://code.videolan.org/videolan/LibVLCSharp. The combination is distributed under GPL-3.0 terms, compatible with the LGPL-2.1+ and GPL-2.0+ components.
 
-## 2. Planned components (bundled from the version that introduces them)
-
-| Component | License | Role | Phase |
-|---|---|---|---|
-| ScottPlot.WPF (+ SkiaSharp, OpenTK) | MIT | stock charts | P3 |
-
-## 3. Not bundled
+## 2. Not bundled
 
 - **Microsoft Edge WebView2 Runtime** — ships with Windows 11 and is updated by Microsoft under Microsoft's license terms; OmniDeck does not redistribute it.
 - **Development-time tools** (used to build and check OmniDeck, never distributed): Roslynator (Apache-2.0), Meziantou.Analyzer (MIT), ReferenceTrimmer (MIT), XamlStyler (Apache-2.0), xUnit (Apache-2.0), coverlet (MIT), Microsoft.NET.Test.Sdk (MIT), Microsoft.Extensions.TimeProvider.Testing (MIT), Velopack CLI `vpk` (MIT), SonarScanner for .NET (LGPL-3.0), SonarAnalyzer.CSharp (SONAR Source-Available License v1.0).
 
-## 4. Data services (not bundled; accessed at runtime)
+## 3. Data services (not bundled; accessed at runtime)
 
 | Service | Terms | Use |
 |---|---|---|
@@ -49,11 +43,11 @@ libVLC note: OmniDeck redistributes the libVLC 3.0.24 binaries unmodified, as se
 | Twelve Data | user's own API key under Twelve Data's terms | stock quotes, price history and symbol search (only with the user's key) |
 | GitHub | GitHub Terms of Service | releases, catalog refresh, issues |
 
-## 5. Third-party web applications
+## 4. Third-party web applications
 
 Web apps in the catalog (Spotify, Discord, YouTube, Gmail, Google Calendar, Google Drive, Google Maps, Facebook) are loaded from their providers' own servers and are not components of OmniDeck. All associated trademarks belong to their respective owners; see DISCLAIMER.md.
 
-## 6. License texts
+## 5. License texts
 
 ### MIT License
 

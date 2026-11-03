@@ -4,7 +4,7 @@ namespace OmniDeck.Core.Legal;
 public static class OdLegal
 {
     /// <summary>The version every document in docs/legal carries; a test keeps the two in step.</summary>
-    public const string Version = "1.1";
+    public const string Version = "1.2";
 
     /// <summary>The documents the legal gate shows, in order.</summary>
     public static IReadOnlyList<OdLegalDocument> Documents { get; } =
