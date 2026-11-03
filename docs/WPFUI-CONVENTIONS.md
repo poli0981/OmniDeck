@@ -89,7 +89,11 @@ Snackbar/dialog services need a presenter host registered from the shell window 
 
 ## 6. Theming with Od.* tokens
 
-- Module views consume **`Od.*` tokens only** (fonts, spacing, radius, motion — see [UI-MODES](UI-MODES.md)). CI greps for literal `FontSize=` in module views.
+- Module views consume **`Od.*` tokens only** (fonts, spacing, radius, motion — see [UI-MODES](UI-MODES.md)). CI greps every view for a literal `FontSize`, and for a literal `Margin`, `Padding` or `CornerRadius` other than zero.
+- Text size reaches views through property inheritance, and three things in WPF-UI 4.3 cut it off:
+  - the navigation view's frame passes neither the text color nor the size into its pages, so each page and the module stage set `Foreground` and `FontSize` themselves;
+  - `ListBox` is styled at 14 px and `ToolTip` at 12 px, so `OdStyles.xaml` restyles both from the tokens;
+  - the sidebar item template sets 14 px on its label, so the shell gives its items a label template of its own (`NavLabel`).
 - Colors come from WPF-UI theme resources via `DynamicResource` (e.g. `TextFillColorPrimaryBrush`, `ControlFillColorDefaultBrush` — look keys up in the Gallery/theme dictionaries, don't guess). Never hardcode a brush.
 - Preset dictionaries may override WPF-UI resource keys **deliberately and documented** — each override gets a comment stating why.
 - Accent color (user override in Appearance settings) goes through `ApplicationAccentColorManager` — one call site in the theme engine, nowhere else.

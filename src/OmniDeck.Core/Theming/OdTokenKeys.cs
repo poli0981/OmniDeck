@@ -18,12 +18,27 @@ public static class OdTokenKeys
     /// <summary>The gap after a tile in a wrapping grid, such as the module library.</summary>
     public const string MarginTile = "Od.Margin.Tile";
 
+    /// <summary>The gap before an element in a row, such as the title bar's search box after the title.</summary>
+    public const string MarginLeading = "Od.Margin.Leading";
+
+    /// <summary>The gap after an element in a row of text or icons.</summary>
+    public const string MarginInline = "Od.Margin.Inline";
+
+    /// <summary>Half a density unit all round, between the keys of a keypad.</summary>
+    public const string MarginTight = "Od.Margin.Tight";
+
     public const string HitTargetMin = "Od.HitTarget.Min";
     public const string CornerRadius = "Od.Corner.Radius";
     public const string MotionDuration = "Od.Motion.Duration";
     public const string ChartLineWeight = "Od.Chart.LineWeight";
     public const string NavMaxVisibleItems = "Od.Nav.MaxVisibleItems";
     public const string NavShowLabels = "Od.Nav.ShowLabels";
+
+    /// <summary>The size of the sidebar's icons.</summary>
+    public const string NavIconSize = "Od.Nav.IconSize";
+
+    /// <summary>The contrast secondary and tertiary text meet: 4.5 (AA) or 7 (AAA, Comfort).</summary>
+    public const string ContrastTarget = "Od.Contrast.Target";
 
     /// <summary>Marks the preset dictionary inside the merged dictionaries; its value is the preset name.</summary>
     public const string PresetMarker = "Od.Preset";

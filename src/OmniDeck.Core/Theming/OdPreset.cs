@@ -14,16 +14,18 @@ public sealed record OdPreset(
     int MotionMilliseconds,
     double ChartLineWeight,
     int NavMaxVisibleItems,
-    bool NavShowLabels)
+    bool NavShowLabels,
+    double ContrastTarget,
+    double NavIconSize)
 {
     /// <summary>Dense, vivid, animated.</summary>
-    public static readonly OdPreset Dynamic = new("Dynamic", 13.5, 1.35, 4, 32, 8, 180, 1.5, 0, NavShowLabels: false);
+    public static readonly OdPreset Dynamic = new("Dynamic", 13.5, 1.35, 4, 32, 8, 180, 1.5, 0, NavShowLabels: false, OdContrast.Aa, NavIconSize: 16);
 
     /// <summary>The default, balanced.</summary>
-    public static readonly OdPreset Standard = new("Standard", 15.5, 1.30, 6, 36, 6, 100, 2, 0, NavShowLabels: true);
+    public static readonly OdPreset Standard = new("Standard", 15.5, 1.30, 6, 36, 6, 100, 2, 0, NavShowLabels: true, OdContrast.Aa, NavIconSize: 16);
 
     /// <summary>Large type, calm, no motion.</summary>
-    public static readonly OdPreset Comfort = new("Comfort", 19, 1.25, 10, 44, 6, 0, 3, 6, NavShowLabels: true);
+    public static readonly OdPreset Comfort = new("Comfort", 19, 1.25, 10, 44, 6, 0, 3, 6, NavShowLabels: true, OdContrast.Aaa, NavIconSize: 22);
 
     public static IReadOnlyList<OdPreset> All { get; } = [Dynamic, Standard, Comfort];
 

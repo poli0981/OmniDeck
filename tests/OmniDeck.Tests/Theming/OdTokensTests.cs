@@ -21,6 +21,21 @@ public sealed class OdTokensTests
         Assert.Equal(motionMs, tokens.MotionMilliseconds);
     }
 
+    [Theory]
+    [InlineData("Dynamic", 1.5, 0, false, 16, 4.5)]
+    [InlineData("Standard", 2, 0, true, 16, 4.5)]
+    [InlineData("Comfort", 3, 6, true, 22, 7)]
+    public void Presets_SidebarChartsAndContrast_MatchTheUiModesTable(string name, double lineWeight, int maxItems, bool labels, double iconSize, double contrast)
+    {
+        var tokens = OdTokens.Compute(OdPreset.FromName(name), textScale: 2, fontScale: 1.4, motionEnabled: true);
+
+        Assert.Equal(lineWeight, tokens.ChartLineWeight);
+        Assert.Equal(maxItems, tokens.NavMaxVisibleItems);
+        Assert.Equal(labels, tokens.NavShowLabels);
+        Assert.Equal(iconSize, tokens.NavIconSize);
+        Assert.Equal(contrast, tokens.ContrastTarget);
+    }
+
     [Fact]
     public void Headings_FollowThePresetScale()
     {

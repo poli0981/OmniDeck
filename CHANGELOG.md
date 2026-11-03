@@ -23,6 +23,21 @@ All notable changes to OmniDeck are documented here. The format follows
 - Weather: the next 48 hours also show as a chart, the temperature as a line over the chance of rain.
   Screen readers hear the chart sum the hours up; with the chart focused, the arrow keys read the
   hours one by one, as the mouse does when it moves over it. The list of hours stays below it.
+- First run: each layout card shows its layout's own text sizes and colors, so the three can be
+  compared side by side before you pick one.
+
+### Changed
+- Fainter text (descriptions, captions, times) is darker on the light theme, so that it reads at a
+  contrast of at least 4.5:1 in every layout; in Comfort it reaches 7:1 on both themes. High Contrast
+  keeps Windows' colors.
+- Comfort has larger sidebar icons, and in every layout check boxes, radio buttons, drop-downs,
+  switches, list and menu items and sidebar items are at least as tall as the layout's touch target.
+
+### Fixed
+- Much of the text on the Settings, Library and Memory pages and in the modules, and the sidebar's labels,
+  stayed small whatever the layout, Settings → Appearance → Text size or Windows' text size said. It
+  now follows all three.
+- The selected layout card's description was hard to read on the accent color.
 
 ## [0.2.0-alpha.4] — 2026-11-03
 

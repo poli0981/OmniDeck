@@ -14,6 +14,14 @@
                  PreviewKeyDown="OnPreviewKeyDown"
                  WindowBackdropType="Mica"
                  WindowStartupLocation="CenterScreen">
+    <ui:FluentWindow.Resources>
+        <!--  Sidebar labels at the preset's text size: WPF-UI's item template sets 14 px on its content.  -->
+        <DataTemplate x:Key="NavLabel">
+            <TextBlock FontSize="{DynamicResource Od.Font.Base}"
+                       Text="{Binding}"
+                       TextTrimming="CharacterEllipsis" />
+        </DataTemplate>
+    </ui:FluentWindow.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -26,13 +34,13 @@
             <!--  Looks like a search box; opens the command palette, as Ctrl+K does.  -->
             <ui:TitleBar.CenterContent>
                 <ui:Button Width="360"
-                           Margin="16,0,0,0"
+                           Margin="{DynamicResource Od.Margin.Leading}"
                            HorizontalContentAlignment="Left"
                            AutomationProperties.Name="{res:OdLoc Shell_Search}"
                            Click="OnSearchClick"
                            ToolTip="Ctrl+K">
                     <DockPanel>
-                        <ui:SymbolIcon Margin="0,0,8,0"
+                        <ui:SymbolIcon Margin="{DynamicResource Od.Margin.Inline}"
                                        DockPanel.Dock="Left"
                                        Symbol="Search24" />
                         <TextBlock VerticalAlignment="Center"

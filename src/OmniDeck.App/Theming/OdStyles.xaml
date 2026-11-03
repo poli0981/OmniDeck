@@ -21,4 +21,43 @@
     <Style BasedOn="{StaticResource DefaultUiCardControlStyle}" TargetType="{x:Type ui:CardControl}">
         <Setter Property="Padding" Value="{DynamicResource Od.Padding.Card}" />
     </Style>
+    <!--  The preset's minimum hit target (docs/UI-MODES.md §2) on the other controls people click or tap.  -->
+    <Style BasedOn="{StaticResource DefaultCheckBoxStyle}" TargetType="{x:Type CheckBox}">
+        <Setter Property="MinHeight" Value="{DynamicResource Od.HitTarget.Min}" />
+    </Style>
+    <Style BasedOn="{StaticResource DefaultRadioButtonStyle}" TargetType="{x:Type RadioButton}">
+        <Setter Property="MinHeight" Value="{DynamicResource Od.HitTarget.Min}" />
+    </Style>
+    <Style BasedOn="{StaticResource DefaultComboBoxStyle}" TargetType="{x:Type ComboBox}">
+        <Setter Property="MinHeight" Value="{DynamicResource Od.HitTarget.Min}" />
+    </Style>
+    <Style BasedOn="{StaticResource DefaultListBoxItemStyle}" TargetType="{x:Type ListBoxItem}">
+        <Setter Property="MinHeight" Value="{DynamicResource Od.HitTarget.Min}" />
+    </Style>
+    <Style BasedOn="{StaticResource DefaultUiToggleSwitchStyle}" TargetType="{x:Type ui:ToggleSwitch}">
+        <Setter Property="MinHeight" Value="{DynamicResource Od.HitTarget.Min}" />
+    </Style>
+    <Style BasedOn="{StaticResource UiMenuItem}" TargetType="{x:Type MenuItem}">
+        <Setter Property="MinHeight" Value="{DynamicResource Od.HitTarget.Min}" />
+    </Style>
+    <!--
+        A preset card's hint: secondary text, but the selected card's own text color once the card is
+        filled with the accent, where secondary text would fall short of AA.
+    -->
+    <Style x:Key="PresetHint" TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
+                <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+    <!--  WPF-UI sets lists at 14 px and tooltips at 12 px whatever the preset; these follow its text sizes.  -->
+    <Style BasedOn="{StaticResource DefaultListBoxStyle}" TargetType="{x:Type ListBox}">
+        <Setter Property="FontSize" Value="{DynamicResource Od.Font.Base}" />
+    </Style>
+    <Style BasedOn="{StaticResource DefaultToolTipStyle}" TargetType="{x:Type ToolTip}">
+        <Setter Property="FontSize" Value="{DynamicResource Od.Font.Caption}" />
+    </Style>
 </ResourceDictionary>

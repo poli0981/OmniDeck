@@ -4,7 +4,9 @@
              xmlns:res="clr-namespace:OmniDeck.Core.Localization;assembly=OmniDeck.Core"
              xmlns:shell="clr-namespace:OmniDeck.App.Shell"
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             FontSize="{DynamicResource Od.Font.Base}"
              Foreground="{DynamicResource TextFillColorPrimaryBrush}">
+    <!--  The navigation view's frame does not pass the window's text color and size down: pages set their own.  -->
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="Visible" />
         <shell:OdSymbolConverter x:Key="Symbol" />
@@ -52,8 +54,8 @@
                                                    Text="{Binding Title}"
                                                    TextTrimming="CharacterEllipsis" />
                                         <WrapPanel>
-                                            <TextBlock Margin="0,0,12,0" Text="{Binding StateText}" />
-                                            <TextBlock Margin="0,0,12,0"
+                                            <TextBlock Margin="{DynamicResource Od.Margin.Inline}" Text="{Binding StateText}" />
+                                            <TextBlock Margin="{DynamicResource Od.Margin.Inline}"
                                                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                                        Text="{Binding LastUsedText}" />
                                             <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}" Text="{Binding MemoryText}" />
