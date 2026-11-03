@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -97,20 +98,23 @@ public sealed class OdCatalogTests : IDisposable
         var bundled = _temp.Combine("bundled.json");
         var saved = Path.Combine(_temp.Path, "saved", "webapps.json");
         File.WriteAllText(bundled, RepositoryCatalog);
+        var shipped = OdCatalogJson.Parse(RepositoryCatalog).Updated;
+        var today = DateOnly.ParseExact(shipped, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+        var later = today.AddDays(1).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 
-        Assert.Equal("2026-11-02", OdCatalogService.Load(bundled, saved, Today, Logger.None).Updated);
+        Assert.Equal(shipped, OdCatalogService.Load(bundled, saved, today, Logger.None).Updated);
 
         Directory.CreateDirectory(Path.GetDirectoryName(saved)!);
-        File.WriteAllText(saved, Changed(root => root["updated"] = "2026-11-03"));
-        Assert.Equal("2026-11-03", OdCatalogService.Load(bundled, saved, Today, Logger.None).Updated);
+        File.WriteAllText(saved, Changed(root => root["updated"] = later));
+        Assert.Equal(later, OdCatalogService.Load(bundled, saved, today, Logger.None).Updated);
 
         File.WriteAllText(saved, Changed(root => root["updated"] = "2026-10-01"));
-        Assert.Equal("2026-11-02", OdCatalogService.Load(bundled, saved, Today, Logger.None).Updated);
+        Assert.Equal(shipped, OdCatalogService.Load(bundled, saved, today, Logger.None).Updated);
 
         File.WriteAllText(saved, "{ broken");
-        Assert.Equal("2026-11-02", OdCatalogService.Load(bundled, saved, Today, Logger.None).Updated);
+        Assert.Equal(shipped, OdCatalogService.Load(bundled, saved, today, Logger.None).Updated);
 
-        Assert.Empty(OdCatalogService.Load(_temp.Combine("missing.json"), _temp.Combine("missing-too.json"), Today, Logger.None).Apps);
+        Assert.Empty(OdCatalogService.Load(_temp.Combine("missing.json"), _temp.Combine("missing-too.json"), today, Logger.None).Apps);
     }
 
     [Fact]
