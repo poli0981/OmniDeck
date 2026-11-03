@@ -7,6 +7,8 @@ All notable changes to OmniDeck are documented here. The format follows
 ## [Unreleased]
 
 ### Added
+- Settings → About: Get pre-release versions. Without a choice of yours it follows the version you run, so the
+  alphas and betas keep getting alphas and betas, and from 1.0 a stable install gets stable versions only.
 - Timer: alarms at a time of day, once, every day, on weekdays or at weekends, each with an optional
   label and a switch. They ring as a notification that opens Timer, while OmniDeck runs (in the
   notification area too), as the screen says. A one-off alarm turns itself off once it rang; one the PC

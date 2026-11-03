@@ -472,4 +472,10 @@ Support code: {0}
   <data name="Tray_Previous" xml:space="preserve">
     <value>Previous</value>
   </data>
+  <data name="About_Prereleases" xml:space="preserve">
+    <value>Get pre-release versions (alphas and betas)</value>
+  </data>
+  <data name="About_PrereleasesNote" xml:space="preserve">
+    <value>Every version before 1.0 is a pre-release. From 1.0 on, leave this off to get stable versions only.</value>
+  </data>
 </root>

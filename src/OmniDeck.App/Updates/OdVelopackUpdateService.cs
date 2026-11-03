@@ -1,38 +1,50 @@
+using OmniDeck.Core;
+using OmniDeck.Core.Settings;
 using Velopack;
 using Velopack.Sources;
 
 namespace OmniDeck.App.Updates;
 
 /// <summary>
-/// <see cref="IOdUpdateService"/> over Velopack and this repository's GitHub releases. Every version
-/// below 1.0.0 is a pre-release, so pre-releases are included. Per-user install: no UAC.
+/// <see cref="IOdUpdateService"/> over Velopack and this repository's GitHub releases. Each check asks
+/// the channel in use (<see cref="OdUpdateChannel"/>): with pre-releases while the user wants them or a
+/// pre-release build runs, stable releases only otherwise. Per-user install: no UAC.
 /// </summary>
-public sealed class OdVelopackUpdateService : IOdUpdateService
+public sealed class OdVelopackUpdateService(IOdSettingsService settings) : IOdUpdateService
 {
     private const string Repository = "https://github.com/poli0981/OmniDeck";
 
-    private readonly Lazy<UpdateManager> _manager = new(() => new UpdateManager(new GithubSource(Repository, accessToken: null, prerelease: true)));
-    private UpdateInfo? _pending;
+    private static readonly string Running = OdVersionInfo.FromAssembly(typeof(OdVelopackUpdateService).Assembly).Version;
 
-    public bool IsInstalled => _manager.Value.IsInstalled;
+    private readonly Lazy<UpdateManager> _installed = new(() => Manager(prereleases: true));
+
+    // The manager that found the pending update downloads and applies it, whatever the channel is by then.
+    private (UpdateManager Manager, UpdateInfo Update)? _pending;
+
+    public bool IsInstalled => _installed.Value.IsInstalled;
 
     public async Task<string?> CheckAsync(CancellationToken cancellationToken)
     {
+        var manager = Manager(OdUpdateChannel.IncludesPrereleases(settings.Current.Prereleases, Running));
+
         // CheckForUpdatesAsync takes no token; waiting on it through Task.Run makes the wait cancellable.
-        _pending = await Task.Run(() => _manager.Value.CheckForUpdatesAsync(), cancellationToken);
-        return _pending?.TargetFullRelease.Version.ToString();
+        var update = await Task.Run(() => manager.CheckForUpdatesAsync(), cancellationToken);
+        _pending = update is null ? null : (manager, update);
+        return update?.TargetFullRelease.Version.ToString();
     }
 
     public Task DownloadAsync(IProgress<int> progress, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(progress);
-        var pending = _pending ?? throw new InvalidOperationException("Check for updates first.");
-        return _manager.Value.DownloadUpdatesAsync(pending, progress.Report, cancelToken: cancellationToken);
+        var (manager, update) = _pending ?? throw new InvalidOperationException("Check for updates first.");
+        return manager.DownloadUpdatesAsync(update, progress.Report, cancelToken: cancellationToken);
     }
 
     public void ApplyAndRestart()
     {
-        var pending = _pending ?? throw new InvalidOperationException("Check for updates first.");
-        _manager.Value.ApplyUpdatesAndRestart(pending.TargetFullRelease);
+        var (manager, update) = _pending ?? throw new InvalidOperationException("Check for updates first.");
+        manager.ApplyUpdatesAndRestart(update.TargetFullRelease);
     }
+
+    private static UpdateManager Manager(bool prereleases) => new(new GithubSource(Repository, accessToken: null, prerelease: prereleases));
 }
