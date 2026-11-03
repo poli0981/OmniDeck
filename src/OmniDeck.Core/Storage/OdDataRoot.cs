@@ -67,6 +67,9 @@ public sealed class OdDataRoot
 
     public string WebView2Directory => Path.Combine(Root, "WebView2");
 
+    /// <summary>Secrets the user entered (the Twelve Data key), each encrypted for this Windows user only.</summary>
+    public string SecretsDirectory => Path.Combine(Root, "secrets");
+
     /// <summary>The last web-app catalog fetched from the repository (docs/WEBAPP-CATALOG.md).</summary>
     public string CatalogFile => Path.Combine(Root, "catalog", "webapps.json");
 
