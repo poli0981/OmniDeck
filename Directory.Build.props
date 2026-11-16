@@ -55,7 +55,7 @@
        SonarAnalyzer's source-available license) out of dependency review and the release SBOM,
        while Dependabot still updates them. Runtime package versions stay in each .csproj. -->
   <ItemGroup>
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="10.35.0.4138">
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="10.36.0.15337">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -63,7 +63,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Meziantou.Analyzer" Version="3.0.321">
+    <PackageReference Include="Meziantou.Analyzer" Version="3.0.339">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
